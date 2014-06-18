@@ -72,14 +72,16 @@ def update_repo(name, files, message)
 end
 
 
-configs = parse_config('config.yml')
-options = parse_opts(ARGV)
+configs  = parse_config('config.yml')
+defaults = configs['default']
+options  = parse_opts(ARGV)
 
 local_files = Find.find(MODULE_FILES_DIR).collect { |file| file if !File.directory?(file) }.compact
 module_files = local_files.map { |file| file.sub(/#{MODULE_FILES_DIR}/, '') }
 
-configs.keys.each do |puppet_module|
+configs.reject {|k,v| k == 'default'}.each do |puppet_module, moduleconfigs|
   puts "Syncing #{puppet_module}"
+  module_configs = defaults.merge(module_configs || {})
   local_files.each do |file|
     erb = build(file)
     template = render(erb, configs[puppet_module])
