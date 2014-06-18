@@ -3,21 +3,16 @@
 require 'erb'
 require 'find'
 require 'git'
-
-# git pull all repos
-# read config params
-# render templates
-# rsync rendered templates to repos
-# git commit
-# git push
-
-MODULE_FILES_DIR = 'moduleroot/'
-modules = [ 'puppetlabs-mysql' ]
+require 'yaml'
 
 class ForgeModuleFile
   def initialize(rvms=[])
     @rvms = rvms
   end
+end
+
+def parse_config(config_file)
+  YAML.load_file(config_file)
 end
 
 def build(from_erb_template)
@@ -28,7 +23,7 @@ def build(from_erb_template)
 end
 
 def render(template, options = {})
-  ForgeModuleFile.new(options[:rvms]).render()
+  ForgeModuleFile.new(options['rvms']).render()
 end
 
 def sync(template, to_file)
@@ -46,14 +41,22 @@ def update_repo(name, files, message)
   # TODO: repo.push
 end
 
+MODULE_FILES_DIR = 'moduleroot/'
+modules = [ 'puppetlabs-mysql', 'puppetlabs-apache' ]
+
 # Assume this directory is at the same level as module directories
 proj_root = File.expand_path(File.join(File.dirname(__FILE__), '..'))
 
+configs = parse_config('config.yml')
+
 files = Find.find(MODULE_FILES_DIR).collect { |file| file if !File.directory?(file) }.compact
-files.each do |file|
-  erb = build(file)
-  template = render(erb, { :rvms => ['1.8.7', '1.9.3', '2.0.0', '2.1.0'] })
-  sync(template, "#{proj_root}/#{modules[0]}/#{file.sub(/#{MODULE_FILES_DIR}/, '')}")
+
+modules.each do |puppet_module|
+  files.each do |file|
+    erb = build(file)
+    template = render(erb, configs[puppet_module])
+    sync(template, "#{proj_root}/#{puppet_module}/#{file.sub(/#{MODULE_FILES_DIR}/, '')}")
+  end
+  files = files.map { |file| file.sub(/#{MODULE_FILES_DIR}/, '') }
+  update_repo(puppet_module, files, 'testing updating .travis.yml')
 end
-files = files.map { |file| file.sub(/#{MODULE_FILES_DIR}/, '') }
-update_repo(modules[0], files, 'testing updating .travis.yml')
