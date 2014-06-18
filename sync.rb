@@ -13,8 +13,8 @@ CONF_FILE        = 'config.yml'
 PROJ_ROOT = File.expand_path(File.join(File.dirname(__FILE__), '..'))
 
 class ForgeModuleFile
-  def initialize(rvms=[])
-    @rvms = rvms
+  def initialize(configs= {})
+    @configs = configs
   end
 end
 
@@ -54,8 +54,8 @@ def build(from_erb_template)
   erb_obj
 end
 
-def render(template, options = {})
-  ForgeModuleFile.new(options['rvms']).render()
+def render(template, configs = {})
+  ForgeModuleFile.new(configs).render()
 end
 
 def sync(template, to_file)
@@ -77,6 +77,9 @@ def update_repo(name, files, message)
   end
 end
 
+def local_file(file)
+  MODULE_FILES_DIR + file
+end
 
 options  = parse_opts(ARGV)
 configs  = parse_config(options[:config])
@@ -88,10 +91,11 @@ module_files = local_files.map { |file| file.sub(/#{MODULE_FILES_DIR}/, '') }
 configs.reject {|k,v| k == 'default'}.each do |puppet_module, module_configs|
   puts "Syncing #{puppet_module}"
   module_configs = defaults.merge(module_configs || {})
-  local_files.each do |file|
-    erb = build(file)
-    template = render(erb, module_configs)
-    sync(template, "#{PROJ_ROOT}/#{puppet_module}/#{file.sub(/#{MODULE_FILES_DIR}/, '')}")
+  module_files.each do |file|
+    module_configs[file] = defaults[file].merge(module_configs[file] || {})
+    erb = build(local_file(file))
+    template = render(erb, module_configs[file] || {})
+    sync(template, "#{PROJ_ROOT}/#{puppet_module}/#{file}")
   end
   update_repo(puppet_module, module_files, options[:message])
 end

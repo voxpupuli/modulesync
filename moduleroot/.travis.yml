@@ -6,20 +6,20 @@ language: ruby
 bundler_args: --without development
 script: "bundle exec rake spec SPEC_OPTS='--format documentation'"
 rvm:
-<% for rvm in @rvms -%>
+<% for rvm in @configs['rvms'] -%>
   - <%= rvm %>
 <% end -%>
 env:
   matrix:
-    - PUPPET_GEM_VERSION="~> 2.7.0"
-    - PUPPET_GEM_VERSION="~> 3.3.0"
-    - PUPPET_GEM_VERSION="~> 3.4.0"
+<% for puppet in @configs['puppets'] -%>
+    - PUPPET_GEM_VERSION="~> <%= puppet %>"
+<% end -%>
 matrix:
   fast_finish: true
   exclude:
-    - rvm: 1.9.3
-      env: PUPPET_GEM_VERSION="~> 2.7.0"
-    - rvm: 2.0.0
-      env: PUPPET_GEM_VERSION="~> 2.7.0"
+<% for exclude in @configs['excludes'] -%>
+  - rvm: <%= exclude['rvm'] %>
+    env: <%= exclude['env'] %>
+<% end -%>
 notifications:
   email: false
