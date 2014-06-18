@@ -28,8 +28,6 @@ def parse_opts(args)
             'Commit message to apply to updated modules') do |msg|
       options[:message] = msg
     end
-
-
   end.parse!
 
   options.fetch(:message) do
@@ -62,8 +60,12 @@ def update_repo(name, files, message)
   repo.branch('master').checkout
   repo.pull
   repo.add(files)
-  repo.commit(message)
-  # TODO: repo.push
+  begin
+    repo.commit(message)
+    # TODO: repo.push
+  rescue Git::GitExecuteError => git_error
+    puts "There were no files to update in #{name}. Not committing." if git_error.message.include? "nothing to commit, working directory clean"
+  end
 end
 
 MODULE_FILES_DIR = 'moduleroot/'
