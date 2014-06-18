@@ -25,19 +25,17 @@ def parse_opts(args)
   options = {}
   opt_parser = OptionParser.new do |opts|
     opts.banner = "Usage: sync.rb -m <commit message>"
-    opts.on_tail('-h', '--help', 'Show usage') do
-      puts opts.help
-      exit
-    end
     opts.on('-m', '--message <msg>',
             'Commit message to apply to updated modules') do |msg|
       options[:message] = msg
     end
+    options[:help] = opts.help
   end.parse!
 
   options.fetch(:message) do
-    puts opts.help
-    raise OptionParser::MissingArgument, "A commit message is required."
+    puts options[:help]
+    puts "A commit message is required."
+    exit
   end
 
   options
