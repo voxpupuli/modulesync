@@ -7,6 +7,7 @@ require 'yaml'
 require 'optparse'
 
 MODULE_FILES_DIR = 'moduleroot/'
+CONF_FILE        = 'config.yml'
 
 # Assume this directory is at the same level as module directories
 PROJ_ROOT = File.expand_path(File.join(File.dirname(__FILE__), '..'))
@@ -23,11 +24,16 @@ end
 
 def parse_opts(args)
   options = {}
+  options[:config] = CONF_FILE
   opt_parser = OptionParser.new do |opts|
-    opts.banner = "Usage: sync.rb -m <commit message>"
+    opts.banner = "Usage: sync.rb -m <commit message> [-f <configfile>]"
     opts.on('-m', '--message <msg>',
             'Commit message to apply to updated modules') do |msg|
       options[:message] = msg
+    end
+    opts.on('-f', '--config <configfile>',
+            'Config file to read from. Default is config.yml.') do |configfile|
+      options[:config] = configfile || CONF_FILE
     end
     options[:help] = opts.help
   end.parse!
@@ -72,19 +78,19 @@ def update_repo(name, files, message)
 end
 
 
-configs  = parse_config('config.yml')
-defaults = configs['default']
 options  = parse_opts(ARGV)
+configs  = parse_config(options[:config])
+defaults = configs['default']
 
 local_files = Find.find(MODULE_FILES_DIR).collect { |file| file if !File.directory?(file) }.compact
 module_files = local_files.map { |file| file.sub(/#{MODULE_FILES_DIR}/, '') }
 
-configs.reject {|k,v| k == 'default'}.each do |puppet_module, moduleconfigs|
+configs.reject {|k,v| k == 'default'}.each do |puppet_module, module_configs|
   puts "Syncing #{puppet_module}"
   module_configs = defaults.merge(module_configs || {})
   local_files.each do |file|
     erb = build(file)
-    template = render(erb, configs[puppet_module])
+    template = render(erb, module_configs)
     sync(template, "#{PROJ_ROOT}/#{puppet_module}/#{file.sub(/#{MODULE_FILES_DIR}/, '')}")
   end
   update_repo(puppet_module, module_files, options[:message])
