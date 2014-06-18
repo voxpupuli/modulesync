@@ -1,6 +1,7 @@
 #!/usr/bin/env ruby
 
 require 'erb'
+require 'find'
 require 'git'
 
 # git pull all repos
@@ -10,7 +11,7 @@ require 'git'
 # git commit
 # git push
 
-MODULE_DIR = 'moduleroot/'
+MODULE_FILES_DIR = 'moduleroot/'
 modules = [ 'puppetlabs-mysql' ]
 
 class ForgeModuleFile
@@ -45,7 +46,14 @@ def update_repo(name, files, message)
   # TODO: repo.push
 end
 
-erb = build(MODULE_DIR + '.travis.yml')
-template = render(erb, { :rvms => ['1.8.7', '1.9.3', '2.0.0', '2.1.0'] })
-sync(template, '../' + modules[0] + '/' + '.travis.yml')
-update_repo(modules[0], ['.travis.yml'], 'testing updating .travis.yml')
+# Assume this directory is at the same level as module directories
+proj_root = File.expand_path(File.join(File.dirname(__FILE__), '..'))
+
+files = Find.find(MODULE_FILES_DIR).collect { |file| file if !File.directory?(file) }.compact
+files.each do |file|
+  erb = build(file)
+  template = render(erb, { :rvms => ['1.8.7', '1.9.3', '2.0.0', '2.1.0'] })
+  sync(template, "#{proj_root}/#{modules[0]}/#{file.sub(/#{MODULE_FILES_DIR}/, '')}")
+end
+files = files.map { |file| file.sub(/#{MODULE_FILES_DIR}/, '') }
+update_repo(modules[0], files, 'testing updating .travis.yml')
