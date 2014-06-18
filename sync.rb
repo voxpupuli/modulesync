@@ -7,7 +7,6 @@ require 'yaml'
 require 'optparse'
 
 MODULE_FILES_DIR = 'moduleroot/'
-modules = [ 'puppetlabs-mysql', 'puppetlabs-apache' ]
 
 # Assume this directory is at the same level as module directories
 PROJ_ROOT = File.expand_path(File.join(File.dirname(__FILE__), '..'))
@@ -81,7 +80,7 @@ options = parse_opts(ARGV)
 local_files = Find.find(MODULE_FILES_DIR).collect { |file| file if !File.directory?(file) }.compact
 module_files = local_files.map { |file| file.sub(/#{MODULE_FILES_DIR}/, '') }
 
-modules.each do |puppet_module|
+configs.keys.each do |puppet_module|
   puts "Syncing #{puppet_module}"
   local_files.each do |file|
     erb = build(file)
