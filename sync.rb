@@ -6,6 +6,12 @@ require 'git'
 require 'yaml'
 require 'optparse'
 
+MODULE_FILES_DIR = 'moduleroot/'
+modules = [ 'puppetlabs-mysql', 'puppetlabs-apache' ]
+
+# Assume this directory is at the same level as module directories
+PROJ_ROOT = File.expand_path(File.join(File.dirname(__FILE__), '..'))
+
 class ForgeModuleFile
   def initialize(rvms=[])
     @rvms = rvms
@@ -56,7 +62,7 @@ def sync(template, to_file)
 end
 
 def update_repo(name, files, message)
-  repo = Git.open('../' + name)
+  repo = Git.open("#{PROJ_ROOT}/#{name}")
   repo.branch('master').checkout
   repo.pull
   repo.add(files)
@@ -68,11 +74,6 @@ def update_repo(name, files, message)
   end
 end
 
-MODULE_FILES_DIR = 'moduleroot/'
-modules = [ 'puppetlabs-mysql', 'puppetlabs-apache' ]
-
-# Assume this directory is at the same level as module directories
-proj_root = File.expand_path(File.join(File.dirname(__FILE__), '..'))
 
 configs = parse_config('config.yml')
 options = parse_opts(ARGV)
@@ -85,7 +86,7 @@ modules.each do |puppet_module|
   local_files.each do |file|
     erb = build(file)
     template = render(erb, configs[puppet_module])
-    sync(template, "#{proj_root}/#{puppet_module}/#{file.sub(/#{MODULE_FILES_DIR}/, '')}")
+    sync(template, "#{PROJ_ROOT}/#{puppet_module}/#{file.sub(/#{MODULE_FILES_DIR}/, '')}")
   end
   update_repo(puppet_module, module_files, options[:message])
 end
