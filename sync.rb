@@ -4,6 +4,7 @@ require 'erb'
 require 'find'
 require 'git'
 require 'yaml'
+require 'optparse'
 
 class ForgeModuleFile
   def initialize(rvms=[])
@@ -13,6 +14,30 @@ end
 
 def parse_config(config_file)
   YAML.load_file(config_file)
+end
+
+def parse_opts(args)
+  options = {}
+  opt_parser = OptionParser.new do |opts|
+    opts.banner = "Usage: sync.rb -m <commit message>"
+    opts.on_tail('-h', '--help', 'Show usage') do
+      puts opts.help
+      exit
+    end
+    opts.on('-m', '--message <msg>',
+            'Commit message to apply to updated modules') do |msg|
+      options[:message] = msg
+    end
+
+
+  end.parse!
+
+  options.fetch(:message) do
+    puts opts.help
+    raise OptionParser::MissingArgument, "A commit message is required."
+  end
+
+  options
 end
 
 def build(from_erb_template)
@@ -48,15 +73,17 @@ modules = [ 'puppetlabs-mysql', 'puppetlabs-apache' ]
 proj_root = File.expand_path(File.join(File.dirname(__FILE__), '..'))
 
 configs = parse_config('config.yml')
+options = parse_opts(ARGV)
 
-files = Find.find(MODULE_FILES_DIR).collect { |file| file if !File.directory?(file) }.compact
+local_files = Find.find(MODULE_FILES_DIR).collect { |file| file if !File.directory?(file) }.compact
+module_files = local_files.map { |file| file.sub(/#{MODULE_FILES_DIR}/, '') }
 
 modules.each do |puppet_module|
-  files.each do |file|
+  puts "Syncing #{puppet_module}"
+  local_files.each do |file|
     erb = build(file)
     template = render(erb, configs[puppet_module])
     sync(template, "#{proj_root}/#{puppet_module}/#{file.sub(/#{MODULE_FILES_DIR}/, '')}")
   end
-  files = files.map { |file| file.sub(/#{MODULE_FILES_DIR}/, '') }
-  update_repo(puppet_module, files, 'testing updating .travis.yml')
+  update_repo(puppet_module, module_files, options[:message])
 end
