@@ -6,8 +6,10 @@ require 'git'
 require 'yaml'
 require 'optparse'
 
-MODULE_FILES_DIR = 'moduleroot/'
-CONF_FILE        = 'config.yml'
+MODULE_FILES_DIR     = 'moduleroot/'
+DEFAULT_CONF_FILE    = 'default.yml'
+MODULE_CONF_FILE     = '.sync.yml'
+MANAGED_MODULES_CONF = 'managed_modules.yml'
 
 # Assume this directory is at the same level as module directories
 PROJ_ROOT = File.expand_path(File.join(File.dirname(__FILE__), '..'))
@@ -19,12 +21,16 @@ class ForgeModuleFile
 end
 
 def parse_config(config_file)
-  YAML.load_file(config_file)
+  if File.exist?(config_file)
+    YAML.load_file(config_file)
+  else
+    {}
+  end
 end
 
 def parse_opts(args)
   options = {}
-  options[:config] = CONF_FILE
+  options[:config] = DEFAULT_CONF_FILE
   opt_parser = OptionParser.new do |opts|
     opts.banner = "Usage: sync.rb -m <commit message> [-f <configfile>]"
     opts.on('-m', '--message <msg>',
@@ -32,8 +38,8 @@ def parse_opts(args)
       options[:message] = msg
     end
     opts.on('-f', '--config <configfile>',
-            'Config file to read from. Default is config.yml.') do |configfile|
-      options[:config] = configfile || CONF_FILE
+            'Config file to read from. Default is default.yml.') do |configfile|
+      options[:config] = configfile || DEFAULT_CONF_FILE
     end
     options[:help] = opts.help
   end.parse!
@@ -82,15 +88,15 @@ def local_file(file)
 end
 
 options  = parse_opts(ARGV)
-configs  = parse_config(options[:config])
-defaults = configs['default']
+defaults  = parse_config(options[:config])
 
 local_files = Find.find(MODULE_FILES_DIR).collect { |file| file if !File.directory?(file) }.compact
 module_files = local_files.map { |file| file.sub(/#{MODULE_FILES_DIR}/, '') }
 
-configs.reject {|k,v| k == 'default'}.each do |puppet_module, module_configs|
+managed_modules = parse_config(MANAGED_MODULES_CONF)
+managed_modules.each do |puppet_module|
   puts "Syncing #{puppet_module}"
-  module_configs = defaults.merge(module_configs || {})
+  module_configs = parse_config("#{PROJ_ROOT}/#{puppet_module}/#{MODULE_CONF_FILE}")
   module_files.each do |file|
     module_configs[file] = defaults[file].merge(module_configs[file] || {}) if defaults[file]
     erb = build(local_file(file))
