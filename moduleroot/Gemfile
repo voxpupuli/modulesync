@@ -1,0 +1,16 @@
+source ENV['GEM_SOURCE'] || 'https://rubygems.org'
+
+group :development, :test do
+<% maxlen = @configs['gems'].map! {|gem| { 'name' => gem['name'], 'version' => gem['version'], 'length' => gem['name'].length + (("', '".length if gem['version']) || 0) + gem['version'].to_s.length } }.map{|gem| gem['length']}.max %>
+<% @configs['gems'].each do |gem| -%>
+  gem '<%= gem['name'] %>'<%= ", '#{gem['version']}'" if gem['version'] %>, <%= ' ' * (maxlen - gem['length']) %> :require => false
+<% end -%>
+end
+
+if puppetversion = ENV['PUPPET_GEM_VERSION']
+  gem 'puppet', puppetversion, :require => false
+else
+  gem 'puppet', :require => false
+end
+
+# vim:ft=ruby

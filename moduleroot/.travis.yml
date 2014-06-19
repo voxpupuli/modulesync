@@ -4,7 +4,7 @@ branches:
     - master
 language: ruby
 bundler_args: --without development
-script: "bundle exec rake spec SPEC_OPTS='--format documentation'"
+script: <%= @configs['script'] %>
 rvm:
 <% for rvm in @configs['rvms'] -%>
   - <%= rvm %>
