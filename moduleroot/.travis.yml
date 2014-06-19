@@ -6,18 +6,18 @@ language: ruby
 bundler_args: --without development
 script: <%= @configs['script'] %>
 rvm:
-<% for rvm in @configs['rvms'] -%>
+<% @configs['rvms'].each do |rvm| -%>
   - <%= rvm %>
 <% end -%>
 env:
   matrix:
-<% for puppet in @configs['puppets'] -%>
+<% @configs['puppets'].each do |puppet| -%>
     - PUPPET_GEM_VERSION="~> <%= puppet %>"
 <% end -%>
 matrix:
   fast_finish: true
   exclude:
-<% for exclude in @configs['excludes'] -%>
+<% @configs['excludes'].each do |exclude| -%>
   - rvm: <%= exclude['rvm'] %>
     env: <%= exclude['env'] %>
 <% end -%>
