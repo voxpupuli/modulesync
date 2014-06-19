@@ -28,6 +28,10 @@ default:
       - name: beaker-rspec
       - name: rspec
         version: '~> 2.11'
+  LICENSE:
+    copyrights:
+      - year: 2012
+        owner: Puppet Labs Inc
 
 puppetlabs-mysql:
   .travis.yml:
