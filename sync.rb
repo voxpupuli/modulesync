@@ -92,7 +92,7 @@ configs.reject {|k,v| k == 'default'}.each do |puppet_module, module_configs|
   puts "Syncing #{puppet_module}"
   module_configs = defaults.merge(module_configs || {})
   module_files.each do |file|
-    module_configs[file] = defaults[file].merge(module_configs[file] || {})
+    module_configs[file] = defaults[file].merge(module_configs[file] || {}) if defaults[file]
     erb = build(local_file(file))
     template = render(erb, module_configs[file] || {})
     sync(template, "#{PROJ_ROOT}/#{puppet_module}/#{file}")
