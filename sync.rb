@@ -7,7 +7,7 @@ require 'yaml'
 require 'optparse'
 
 MODULE_FILES_DIR     = 'moduleroot/'
-DEFAULT_CONF_FILE    = 'default.yml'
+DEFAULT_CONF_FILE    = 'config_defaults.yml'
 MODULE_CONF_FILE     = '.sync.yml'
 MANAGED_MODULES_CONF = 'managed_modules.yml'
 
@@ -38,7 +38,7 @@ def parse_opts(args)
       options[:message] = msg
     end
     opts.on('-f', '--config <configfile>',
-            'Config file to read from. Default is default.yml.') do |configfile|
+            'Config file to read from. Default is config_defaults.yml.') do |configfile|
       options[:config] = configfile || DEFAULT_CONF_FILE
     end
     options[:help] = opts.help
