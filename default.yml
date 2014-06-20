@@ -15,17 +15,17 @@
     - 3.3.0
     - 3.4.0
 Gemfile:
-  gems:
-    - name: rake
+  required:
+    - gem: rake
       version: 10.1.1
-    - name: rspec-puppet
+    - gem: rspec-puppet
       version: '>=1.0.0'
-    - name: puppetlabs_spec_helper
-    - name: serverspec
-    - name: puppet-lint
-    - name: beaker
-    - name: beaker-rspec
-    - name: rspec
+    - gem: puppetlabs_spec_helper
+    - gem: serverspec
+    - gem: puppet-lint
+    - gem: beaker
+    - gem: beaker-rspec
+    - gem: rspec
       version: '~> 2.11'
 LICENSE:
   copyrights:

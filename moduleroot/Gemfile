@@ -1,9 +1,10 @@
 source ENV['GEM_SOURCE'] || 'https://rubygems.org'
 
 group :development, :test do
-<% maxlen = @configs['gems'].map! {|gem| { 'name' => gem['name'], 'version' => gem['version'], 'length' => gem['name'].length + (("', '".length if gem['version']) || 0) + gem['version'].to_s.length } }.map{|gem| gem['length']}.max %>
-<% @configs['gems'].each do |gem| -%>
-  gem '<%= gem['name'] %>'<%= ", '#{gem['version']}'" if gem['version'] %>, <%= ' ' * (maxlen - gem['length']) %> :require => false
+<% gems = @configs['required'] + (@configs['optional'] || []) %>
+<% maxlen = gems.map! {|gem| { 'gem' => gem['gem'], 'version' => gem['version'], 'length' => gem['gem'].length + (("', '".length if gem['version']) || 0) + gem['version'].to_s.length } }.map{|gem| gem['length']}.max %>
+<% gems.each do |gem| -%>
+  gem '<%= gem['gem'] %>'<%= ", '#{gem['version']}'" if gem['version'] %>, <%= ' ' * (maxlen - gem['length']) %> :require => false
 <% end -%>
 end
 
