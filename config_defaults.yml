@@ -10,10 +10,10 @@
       env: PUPPET_GEM_VERSION="~> 2.7.0"
     - rvm: 2.0.0
       env: PUPPET_GEM_VERSION="~> 2.7.0"
-  puppets:
-    - 2.7.0
-    - 3.3.0
-    - 3.4.0
+  env_matrix:
+    - PUPPET_GEM_VERSION="~> 2.7.0"
+    - PUPPET_GEM_VERSION="~> 3.3.0"
+    - PUPPET_GEM_VERSION="~> 3.4.0"
 Gemfile:
   required:
     - gem: rake
