@@ -10,6 +10,12 @@
        - work around RubyGems 2.2.0 breaking ruby 1.8.7
        - https://github.com/rubygems/rubygems/pull/763
        - https://github.com/freerange/mocha/commit/66bab2a8f4e7cd8734bf88e6f32157c0d5153125
+   -
+     configs:
+       after_install:
+         - stuff
+     comments:
+       - stuff
   excludes:
     - rvm: 1.9.3
       env: PUPPET_GEM_VERSION="2.7.6" FACTER_GEM_VERSION="1.6.0"
@@ -28,3 +34,12 @@
     - PUPPET_GEM_VERSION="~> 2.7.0" FACTER_GEM_VERSION="~> 1.6.0"
     - PUPPET_GEM_VERSION="~> 2.7.0" FACTER_GEM_VERSION="~> 1.7.0"
     - PUPPET_GEM_VERSION="~> 3.0"
+Rakefile:
+  unmanaged: true
+LICENSE:
+  copyrights:
+    - year: 2012
+      owner: R.I.Pienaar
+Gemfile:
+  optional:
+    - gem: pry

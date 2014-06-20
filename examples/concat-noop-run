@@ -1,0 +1,150 @@
+> ./sync.rb --noop
+Syncing puppetlabs-concat
+Not managing Rakefile in puppetlabs-concat
+Using no-op. Files in puppetlabs-concat may be changed but will not be committed.
+Files changed:
+diff --git a/.gitignore b/.gitignore
+index d681eca..57bf2d8 100644
+--- a/.gitignore
++++ b/.gitignore
+@@ -1,8 +1,7 @@
+-.pkg
++pkg/
+ Gemfile.lock
+-vendor
+-spec/fixtures
+-.rspec_system
+-.bundle
+-*.sw*
+-.vagrant
++vendor/
++spec/fixtures/
++.bundle/
++.vagrant/
++
+diff --git a/.sync.yml b/.sync.yml
+index 2cc8695..62b69ae 100644
+--- a/.sync.yml
++++ b/.sync.yml
+@@ -38,7 +38,7 @@ Rakefile:
+   unmanaged: true
+ LICENSE:
+   copyrights:
+-    - year: 2014
++    - year: 2012
+       owner: R.I.Pienaar
+ Gemfile:
+   optional:
+diff --git a/.travis.yml b/.travis.yml
+index 1288819..9404bf7 100644
+--- a/.travis.yml
++++ b/.travis.yml
+@@ -5,12 +5,6 @@ branches:
+ language: ruby
+ bundler_args: --without development
+ script: bundle exec rake spec SPEC_OPTS='--format documentation'
+-# work around RubyGems 2.2.0 breaking ruby 1.8.7
+-# https://github.com/rubygems/rubygems/pull/763
+-# https://github.com/freerange/mocha/commit/66bab2a8f4e7cd8734bf88e6f32157c0d5153125
+-before_install:
+-  - gem update --system 2.1.11
+-  - gem --version
+ rvm:
+   - 1.8.7
+   - 1.9.3
+@@ -38,3 +32,13 @@ matrix:
+       env: PUPPET_GEM_VERSION="~> 2.7.0" FACTER_GEM_VERSION="~> 1.7.0"
+ notifications:
+   email: false
++# work around RubyGems 2.2.0 breaking ruby 1.8.7
++# https://github.com/rubygems/rubygems/pull/763
++# https://github.com/freerange/mocha/commit/66bab2a8f4e7cd8734bf88e6f32157c0d5153125
++before_install:
++- gem update --system 2.1.11
++- gem --version
++
+diff --git a/Gemfile b/Gemfile
+index 56b9775..cccfc58 100644
+--- a/Gemfile
++++ b/Gemfile
+@@ -1,14 +1,17 @@
+-source ENV['GEM_SOURCE'] || "https://rubygems.org"
++source ENV['GEM_SOURCE'] || 'https://rubygems.org'
+
+ group :development, :test do
+-  gem 'rake',                    :require => false
+-  gem 'rspec-puppet',            :require => false
+-  gem 'puppetlabs_spec_helper',  :require => false
+-  gem 'beaker',                  :require => false
+-  gem 'beaker-rspec',            :require => false
+-  gem 'puppet-lint',             :require => false
+-  gem 'serverspec',              :require => false
+-  gem 'pry',                     :require => false
++
++
++  gem 'rake', '10.1.1',           :require => false
++  gem 'rspec-puppet', '>=1.0.0',  :require => false
++  gem 'puppetlabs_spec_helper',   :require => false
++  gem 'serverspec',               :require => false
++  gem 'puppet-lint',              :require => false
++  gem 'beaker',                   :require => false
++  gem 'beaker-rspec',             :require => false
++  gem 'rspec', '~> 2.11',         :require => false
++  gem 'pry',                      :require => false
+ end
+
+ if puppetversion = ENV['PUPPET_GEM_VERSION']
+diff --git a/LICENSE b/LICENSE
+index 6a9e9a1..3072280 100644
+--- a/LICENSE
++++ b/LICENSE
+@@ -1,14 +1,17 @@
+-   Copyright 2012 R.I.Pienaar
+
+-   Licensed under the Apache License, Version 2.0 (the "License");
+-   you may not use this file except in compliance with the License.
+-   You may obtain a copy of the License at
++Copyright (C) 2012 R.I.Pienaar
+
+-     http://www.apache.org/licenses/LICENSE-2.0
+
+-   Unless required by applicable law or agreed to in writing, software
+-   distributed under the License is distributed on an "AS IS" BASIS,
+-   WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+-   See the License for the specific language governing permissions and
+-   limitations under the License.
++Puppet Labs can be contacted at: info@puppetlabs.com
+
++Licensed under the Apache License, Version 2.0 (the "License");
++you may not use this file except in compliance with the License.
++You may obtain a copy of the License at
++
++    http://www.apache.org/licenses/LICENSE-2.0
++
++Unless required by applicable law or agreed to in writing, software
++distributed under the License is distributed on an "AS IS" BASIS,
++WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
++See the License for the specific language governing permissions and
++limitations under the License.
+diff --git a/spec/acceptance/nodesets/default.yml b/spec/acceptance/nodesets/default.yml
+index ae812b0..05540ed 100644
+--- a/spec/acceptance/nodesets/default.yml
++++ b/spec/acceptance/nodesets/default.yml
+@@ -1,10 +1,10 @@
+ HOSTS:
+-  centos-64-x64.localdomain:
++  centos-64-x64:
+     roles:
+       - master
+     platform: el-6-x86_64
+-    box : centos-65-x64-virtualbox-nocm
+-    box_url : http://puppet-vagrant-boxes.puppetlabs.com/centos-65-x64-virtualbox-nocm.box
++    box : centos-64-x64-vbox4210-nocm
++    box_url : http://puppet-vagrant-boxes.puppetlabs.com/centos-64-x64-vbox4210-nocm.box
+     hypervisor : vagrant
+ CONFIG:
+   type: foss
+Files added:
+spec/acceptance/nodesets/centos-510-x64.yml
+spec/acceptance/nodesets/centos-65-x64.yml
+spec/spec.opts
