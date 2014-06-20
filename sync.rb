@@ -32,7 +32,7 @@ def parse_opts(args)
   options = {}
   options[:config] = DEFAULT_CONF_FILE
   opt_parser = OptionParser.new do |opts|
-    opts.banner = "Usage: sync.rb -m <commit message> [-f <configfile>]"
+    opts.banner = "Usage: sync.rb -m <commit message> [-f <configfile>] [--noop]"
     opts.on('-m', '--message <msg>',
             'Commit message to apply to updated modules') do |msg|
       options[:message] = msg
@@ -41,13 +41,19 @@ def parse_opts(args)
             'Config file to read from. Default is config_defaults.yml.') do |configfile|
       options[:config] = configfile || DEFAULT_CONF_FILE
     end
+    opts.on('--noop',
+            'No-op mode') do |msg|
+      options[:noop] = true
+    end
     options[:help] = opts.help
   end.parse!
 
   options.fetch(:message) do
-    puts options[:help]
-    puts "A commit message is required."
-    exit
+    if ! options[:noop]
+      puts options[:help]
+      puts "A commit message is required."
+      exit
+    end
   end
 
   options
@@ -88,6 +94,19 @@ def update_repo(name, files, message)
   end
 end
 
+def update_repo_noop(name)
+  repo = Git.open("#{PROJ_ROOT}/#{name}")
+  repo.branch('master').checkout
+  puts "Files changed: "
+  repo.diff('HEAD', '--').each do |diff|
+    puts diff.patch
+  end
+  puts "Files added: "
+  repo.status.untracked.each do |file,_|
+    puts file
+  end
+end
+
 def local_file(file)
   MODULE_FILES_DIR + file
 end
@@ -112,5 +131,10 @@ managed_modules.each do |puppet_module|
       sync(template, "#{PROJ_ROOT}/#{puppet_module}/#{file}")
     end
   end
-  update_repo(puppet_module, module_files, options[:message])
+  if options[:noop]
+    puts "Using no-op. Files in #{puppet_module} may be changed but will not be committed."
+    update_repo_noop(puppet_module)
+  else
+    update_repo(puppet_module, module_files, options[:message])
+  end
 end
