@@ -103,10 +103,14 @@ managed_modules.each do |puppet_module|
   puts "Syncing #{puppet_module}"
   module_configs = parse_config("#{PROJ_ROOT}/#{puppet_module}/#{MODULE_CONF_FILE}")
   module_files.each do |file|
-    module_configs[file] = defaults[file].merge(module_configs[file] || {}) if defaults[file]
-    erb = build(local_file(file))
-    template = render(erb, module_configs[file] || {})
-    sync(template, "#{PROJ_ROOT}/#{puppet_module}/#{file}")
+    if module_configs[file] && module_configs[file]['unmanaged'] == true
+      puts "Not managing #{file} in #{puppet_module}"
+    else
+      module_configs[file] = defaults[file].merge(module_configs[file] || {}) if defaults[file]
+      erb = build(local_file(file))
+      template = render(erb, module_configs[file] || {})
+      sync(template, "#{PROJ_ROOT}/#{puppet_module}/#{file}")
+    end
   end
   update_repo(puppet_module, module_files, options[:message])
 end
