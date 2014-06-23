@@ -1,0 +1,33 @@
+#!/usr/bin/env bash
+
+HOOK_FILE=.git/hooks/pre-push
+
+activate() {
+  cat - > $HOOK_FILE <<EOF
+#!/usr/bin/env bash
+
+current_branch=\`git symbolic-ref HEAD | sed -e 's,.*/\(.*\),\1,'\`
+if [ "\$current_branch" == 'master' ]; then
+  git_dir=\`git rev-parse --show-toplevel\`
+  message=\`git log -1 --format=%B\`
+  \${git_dir}/sync.rb -m "\$message"
+fi
+EOF
+}
+
+deactivate() {
+  rm $HOOK_FILE
+}
+
+usage() {
+  echo "To activate: ./hook activate"
+  echo "To deactivate: ./hook deactivate"
+}
+
+if [ "$1" == activate ]; then
+  activate
+elif [ "$1" == deactivate ]; then
+  deactivate
+else
+  usage
+fi
