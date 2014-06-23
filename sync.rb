@@ -11,8 +11,7 @@ DEFAULT_CONF_FILE    = 'config_defaults.yml'
 MODULE_CONF_FILE     = '.sync.yml'
 MANAGED_MODULES_CONF = 'managed_modules.yml'
 
-# Assume this directory is at the same level as module directories
-PROJ_ROOT = File.expand_path(File.join(File.dirname(__FILE__), '..'))
+PROJ_ROOT = './modules'
 
 class ForgeModuleFile
   def initialize(configs= {})
@@ -76,10 +75,27 @@ def sync(template, to_file)
   end
 end
 
+def pull_repo(name)
+  if ! Dir.exists?(PROJ_ROOT)
+    Dir.mkdir(PROJ_ROOT)
+  end
+  # Repo needs to be cloned in the cwd
+  if ! Dir.exists?("#{PROJ_ROOT}/#{name}") || ! Dir.exists?("#{PROJ_ROOT}/#{name}/.git")
+    puts "Cloning repository fresh"
+    repo = Git.clone("git@github.com:puppetlabs/#{name}.git", "#{PROJ_ROOT}/#{name}")
+  # Repo already cloned, check out master and override local changes
+  else
+    puts "Overriding any local changes to repositories in #{PROJ_ROOT}"
+    repo = Git.open("#{PROJ_ROOT}/#{name}")
+    repo.branch('master').checkout
+    repo.reset_hard
+    repo.pull
+  end
+end
+
 def update_repo(name, files, message)
   repo = Git.open("#{PROJ_ROOT}/#{name}")
-  repo.branch('master').checkout
-  repo.pull
+  # master branch will already be checked out after pull_repo
   repo.add(files)
   begin
     repo.commit(message)
@@ -120,6 +136,7 @@ module_files = local_files.map { |file| file.sub(/#{MODULE_FILES_DIR}/, '') }
 managed_modules = parse_config(MANAGED_MODULES_CONF)
 managed_modules.each do |puppet_module|
   puts "Syncing #{puppet_module}"
+  pull_repo(puppet_module)
   module_configs = parse_config("#{PROJ_ROOT}/#{puppet_module}/#{MODULE_CONF_FILE}")
   module_files.each do |file|
     if module_configs[file] && module_configs[file]['unmanaged'] == true
