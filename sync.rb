@@ -7,7 +7,7 @@ require 'yaml'
 require 'optparse'
 
 MODULE_FILES_DIR     = 'moduleroot/'
-DEFAULT_CONF_FILE    = 'config_defaults.yml'
+CONF_FILE    = 'config_defaults.yml'
 MODULE_CONF_FILE     = '.sync.yml'
 MANAGED_MODULES_CONF = 'managed_modules.yml'
 
@@ -29,16 +29,11 @@ end
 
 def parse_opts(args)
   options = {}
-  options[:config] = DEFAULT_CONF_FILE
   opt_parser = OptionParser.new do |opts|
-    opts.banner = "Usage: sync.rb -m <commit message> [-f <configfile>] [--noop]"
+    opts.banner = "Usage: sync.rb -m <commit message> [--noop]"
     opts.on('-m', '--message <msg>',
             'Commit message to apply to updated modules') do |msg|
       options[:message] = msg
-    end
-    opts.on('-f', '--config <configfile>',
-            'Config file to read from. Default is config_defaults.yml.') do |configfile|
-      options[:config] = configfile || DEFAULT_CONF_FILE
     end
     opts.on('--noop',
             'No-op mode') do |msg|
@@ -128,7 +123,7 @@ def local_file(file)
 end
 
 options  = parse_opts(ARGV)
-defaults  = parse_config(options[:config])
+defaults  = parse_config(CONF_FILE)
 
 local_files = Find.find(MODULE_FILES_DIR).collect { |file| file if !File.directory?(file) }.compact
 module_files = local_files.map { |file| file.sub(/#{MODULE_FILES_DIR}/, '') }
