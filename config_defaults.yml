@@ -27,7 +27,3 @@ Gemfile:
     - gem: beaker-rspec
     - gem: rspec
       version: '~> 2.11'
-LICENSE:
-  copyrights:
-    - year: 2012
-      owner: Puppet Labs Inc
