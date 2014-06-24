@@ -23,19 +23,21 @@ index d681eca..233f3bf 100644
 +.vagrant/
 +
 diff --git a/.travis.yml b/.travis.yml
-index 1288819..7600a30 100644
+index 1288819..c9f8a61 100644
 --- a/.travis.yml
 +++ b/.travis.yml
-@@ -5,12 +5,6 @@ branches:
+@@ -4,13 +4,7 @@ branches:
+     - master
  language: ruby
  bundler_args: --without development
- script: bundle exec rake spec SPEC_OPTS='--format documentation'
+-script: bundle exec rake spec SPEC_OPTS='--format documentation'
 -# work around RubyGems 2.2.0 breaking ruby 1.8.7
 -# https://github.com/rubygems/rubygems/pull/763
 -# https://github.com/freerange/mocha/commit/66bab2a8f4e7cd8734bf88e6f32157c0d5153125
 -before_install:
 -  - gem update --system 2.1.11
 -  - gem --version
++script: "bundle exec rake spec SPEC_OPTS='--format documentation'"
  rvm:
    - 1.8.7
    - 1.9.3
@@ -98,19 +100,6 @@ index cee9397..233f3bf 100644
 +spec/fixtures/
 +.vagrant/
 +
-diff --git a/.travis.yml b/.travis.yml
-index bf76d5a..aec1f0a 100644
---- a/.travis.yml
-+++ b/.travis.yml
-@@ -4,7 +4,7 @@ branches:
-     - master
- language: ruby
- bundler_args: --without development
--script: "bundle exec rake spec SPEC_OPTS='--format documentation'"
-+script: bundle exec rake spec SPEC_OPTS='--format documentation'
- rvm:
-   - 1.8.7
-   - 1.9.3
 diff --git a/Gemfile b/Gemfile
 index 46b1354..3ac2be7 100644
 --- a/Gemfile
@@ -137,3 +126,353 @@ index 46b1354..3ac2be7 100644
  if puppetversion = ENV['PUPPET_GEM_VERSION']
 Files added:
 CONTRIBUTING.md
+Syncing puppetlabs-apache
+Overriding any local changes to repositories in ./modules
+Not managing Gemfile in puppetlabs-apache
+Not managing Rakefile in puppetlabs-apache
+Not managing spec/spec_helper.rb in puppetlabs-apache
+Using no-op. Files in puppetlabs-apache may be changed but will not be committed.
+Files changed:
+diff --git a/.gitignore b/.gitignore
+index f751a15..233f3bf 100644
+--- a/.gitignore
++++ b/.gitignore
+@@ -1,8 +1,6 @@
+-.pkg
++pkg/
+ Gemfile.lock
+-vendor
+-spec/fixtures
+-.rspec_system
+-.bundle
+-.vagrant
+-.*sw*
++vendor/
++spec/fixtures/
++.vagrant/
++
+diff --git a/.travis.yml b/.travis.yml
+index 1d00b8e..f13556c 100644
+--- a/.travis.yml
++++ b/.travis.yml
+@@ -1,7 +1,7 @@
+ ---
+ branches:
+   only:
+-  - master
++    - master
+ language: ruby
+ bundler_args: --without development
+ script: "bundle exec rake spec SPEC_OPTS='--format documentation'"
+diff --git a/spec/acceptance/nodesets/centos-59-x64.yml b/spec/acceptance/nodesets/centos-59-x64.yml
+index cde1fe5..2ad90b8 100644
+--- a/spec/acceptance/nodesets/centos-59-x64.yml
++++ b/spec/acceptance/nodesets/centos-59-x64.yml
+@@ -7,5 +7,4 @@ HOSTS:
+     box_url : http://puppet-vagrant-boxes.puppetlabs.com/centos-59-x64-vbox4210-nocm.box
+     hypervisor : vagrant
+ CONFIG:
+-  log_level: debug
+   type: git
+diff --git a/spec/acceptance/nodesets/centos-64-x64-pe.yml b/spec/acceptance/nodesets/centos-64-x64-pe.yml
+index e408d1b..7d9242f 100644
+--- a/spec/acceptance/nodesets/centos-64-x64-pe.yml
++++ b/spec/acceptance/nodesets/centos-64-x64-pe.yml
+@@ -9,5 +9,4 @@ HOSTS:
+     box_url : http://puppet-vagrant-boxes.puppetlabs.com/centos-64-x64-vbox4210-nocm.box
+     hypervisor : vagrant
+ CONFIG:
+-  log_level: debug
+   type: pe
+diff --git a/spec/acceptance/nodesets/centos-65-x64.yml b/spec/acceptance/nodesets/centos-65-x64.yml
+index ac76349..4e2cb80 100644
+--- a/spec/acceptance/nodesets/centos-65-x64.yml
++++ b/spec/acceptance/nodesets/centos-65-x64.yml
+@@ -3,9 +3,8 @@ HOSTS:
+     roles:
+       - master
+     platform: el-6-x86_64
+-    box : centos-65-x64-virtualbox-nocm
++    box : centos-65-x64-vbox436-nocm
+     box_url : http://puppet-vagrant-boxes.puppetlabs.com/centos-65-x64-virtualbox-nocm.box
+     hypervisor : vagrant
+ CONFIG:
+-  log_level: debug
+-  type: git
++  type: foss
+diff --git a/spec/acceptance/nodesets/ubuntu-server-10044-x64.yml b/spec/acceptance/nodesets/ubuntu-server-10044-x64.yml
+index c1b8bdf..5ca1514 100644
+--- a/spec/acceptance/nodesets/ubuntu-server-10044-x64.yml
++++ b/spec/acceptance/nodesets/ubuntu-server-10044-x64.yml
+@@ -7,5 +7,4 @@ HOSTS:
+     box_url : http://puppet-vagrant-boxes.puppetlabs.com/ubuntu-server-10044-x64-vbox4210-nocm.box
+     hypervisor : vagrant
+ CONFIG:
+-  log_level: debug
+-  type: git
++  type: foss
+diff --git a/spec/acceptance/nodesets/ubuntu-server-12042-x64.yml b/spec/acceptance/nodesets/ubuntu-server-12042-x64.yml
+index f7df2cc..d065b30 100644
+--- a/spec/acceptance/nodesets/ubuntu-server-12042-x64.yml
++++ b/spec/acceptance/nodesets/ubuntu-server-12042-x64.yml
+@@ -7,5 +7,4 @@ HOSTS:
+     box_url : http://puppet-vagrant-boxes.puppetlabs.com/ubuntu-server-12042-x64-vbox4210-nocm.box
+     hypervisor : vagrant
+ CONFIG:
+-  log_level: debug
+-  type: git
++  type: foss
+diff --git a/spec/spec.opts b/spec/spec.opts
+index de653df..91cd642 100644
+--- a/spec/spec.opts
++++ b/spec/spec.opts
+@@ -1,4 +1,6 @@
+---format s
++--format
++s
+ --colour
+---loadby mtime
++--loadby
++mtime
+ --backtrace
+Files added:
+spec/acceptance/nodesets/centos-510-x64.yml
+(ruby-2.0.0-p481) colleen@tak:~/dev/gitsync> rm modules/puppetlabs-apache/spec/acceptance/nodesets/centos-510-x64.yml
+(ruby-2.0.0-p481) colleen@tak:~/dev/gitsync> ./sync.rb --noop
+Syncing puppetlabs-concat
+Overriding any local changes to repositories in ./modules
+Not managing Rakefile in puppetlabs-concat
+Using no-op. Files in puppetlabs-concat may be changed but will not be committed.
+Files changed:
+diff --git a/.gitignore b/.gitignore
+index d681eca..233f3bf 100644
+--- a/.gitignore
++++ b/.gitignore
+@@ -1,8 +1,6 @@
+-.pkg
++pkg/
+ Gemfile.lock
+-vendor
+-spec/fixtures
+-.rspec_system
+-.bundle
+-*.sw*
+-.vagrant
++vendor/
++spec/fixtures/
++.vagrant/
++
+diff --git a/.travis.yml b/.travis.yml
+index 1288819..c9f8a61 100644
+--- a/.travis.yml
++++ b/.travis.yml
+@@ -4,13 +4,7 @@ branches:
+     - master
+ language: ruby
+ bundler_args: --without development
+-script: bundle exec rake spec SPEC_OPTS='--format documentation'
+-# work around RubyGems 2.2.0 breaking ruby 1.8.7
+-# https://github.com/rubygems/rubygems/pull/763
+-# https://github.com/freerange/mocha/commit/66bab2a8f4e7cd8734bf88e6f32157c0d5153125
+-before_install:
+-  - gem update --system 2.1.11
+-  - gem --version
++script: "bundle exec rake spec SPEC_OPTS='--format documentation'"
+ rvm:
+   - 1.8.7
+   - 1.9.3
+@@ -38,3 +32,10 @@ matrix:
+       env: PUPPET_GEM_VERSION="~> 2.7.0" FACTER_GEM_VERSION="~> 1.7.0"
+ notifications:
+   email: false
++# work around RubyGems 2.2.0 breaking ruby 1.8.7
++# https://github.com/rubygems/rubygems/pull/763
++# https://github.com/freerange/mocha/commit/66bab2a8f4e7cd8734bf88e6f32157c0d5153125
++before_install:
++- gem update --system 2.1.11
++- gem --version
++
+diff --git a/Gemfile b/Gemfile
+index 56b9775..a0d368f 100644
+--- a/Gemfile
++++ b/Gemfile
+@@ -1,13 +1,13 @@
+-source ENV['GEM_SOURCE'] || "https://rubygems.org"
++source ENV['GEM_SOURCE'] || 'https://rubygems.org'
+
+ group :development, :test do
+   gem 'rake',                    :require => false
+   gem 'rspec-puppet',            :require => false
+   gem 'puppetlabs_spec_helper',  :require => false
++  gem 'serverspec',              :require => false
++  gem 'puppet-lint',             :require => false
+   gem 'beaker',                  :require => false
+   gem 'beaker-rspec',            :require => false
+-  gem 'puppet-lint',             :require => false
+-  gem 'serverspec',              :require => false
+   gem 'pry',                     :require => false
+ end
+
+Files added:
+CONTRIBUTING.md
+spec/acceptance/nodesets/centos-510-x64.yml
+spec/acceptance/nodesets/centos-65-x64.yml
+spec/spec.opts
+Syncing puppetlabs-mysql
+Overriding any local changes to repositories in ./modules
+Not managing spec/spec_helper.rb in puppetlabs-mysql
+Using no-op. Files in puppetlabs-mysql may be changed but will not be committed.
+Files changed:
+diff --git a/.gitignore b/.gitignore
+index cee9397..233f3bf 100644
+--- a/.gitignore
++++ b/.gitignore
+@@ -1,8 +1,6 @@
+-*.swp
+ pkg/
+ Gemfile.lock
+-.rspec_system
+-spec/fixtures
+-/coverage/
+-.vagrant
+-.bundle
++vendor/
++spec/fixtures/
++.vagrant/
++
+diff --git a/Gemfile b/Gemfile
+index 46b1354..3ac2be7 100644
+--- a/Gemfile
++++ b/Gemfile
+@@ -1,15 +1,16 @@
+ source ENV['GEM_SOURCE'] || 'https://rubygems.org'
+
+ group :development, :test do
+-  gem 'mime-types', '<2.0',      :require => false
++  gem 'rake',                    :require => false
+   gem 'rspec-puppet',            :require => false
+   gem 'puppetlabs_spec_helper',  :require => false
+   gem 'serverspec',              :require => false
+   gem 'puppet-lint',             :require => false
+-  gem 'pry',                     :require => false
+-  gem 'simplecov',               :require => false
+   gem 'beaker',                  :require => false
+   gem 'beaker-rspec',            :require => false
++  gem 'pry',                     :require => false
++  gem 'simplecov',               :require => false
++  gem 'mime-types', '<2.0',      :require => false
+ end
+
+ if puppetversion = ENV['PUPPET_GEM_VERSION']
+Files added:
+CONTRIBUTING.md
+Syncing puppetlabs-apache
+Overriding any local changes to repositories in ./modules
+Not managing Gemfile in puppetlabs-apache
+Not managing Rakefile in puppetlabs-apache
+Not managing spec/spec_helper.rb in puppetlabs-apache
+Using no-op. Files in puppetlabs-apache may be changed but will not be committed.
+Files changed:
+diff --git a/.gitignore b/.gitignore
+index f751a15..233f3bf 100644
+--- a/.gitignore
++++ b/.gitignore
+@@ -1,8 +1,6 @@
+-.pkg
++pkg/
+ Gemfile.lock
+-vendor
+-spec/fixtures
+-.rspec_system
+-.bundle
+-.vagrant
+-.*sw*
++vendor/
++spec/fixtures/
++.vagrant/
++
+diff --git a/.travis.yml b/.travis.yml
+index 1d00b8e..f13556c 100644
+--- a/.travis.yml
++++ b/.travis.yml
+@@ -1,7 +1,7 @@
+ ---
+ branches:
+   only:
+-  - master
++    - master
+ language: ruby
+ bundler_args: --without development
+ script: "bundle exec rake spec SPEC_OPTS='--format documentation'"
+diff --git a/spec/acceptance/nodesets/centos-59-x64.yml b/spec/acceptance/nodesets/centos-59-x64.yml
+index cde1fe5..2ad90b8 100644
+--- a/spec/acceptance/nodesets/centos-59-x64.yml
++++ b/spec/acceptance/nodesets/centos-59-x64.yml
+@@ -7,5 +7,4 @@ HOSTS:
+     box_url : http://puppet-vagrant-boxes.puppetlabs.com/centos-59-x64-vbox4210-nocm.box
+     hypervisor : vagrant
+ CONFIG:
+-  log_level: debug
+   type: git
+diff --git a/spec/acceptance/nodesets/centos-64-x64-pe.yml b/spec/acceptance/nodesets/centos-64-x64-pe.yml
+index e408d1b..7d9242f 100644
+--- a/spec/acceptance/nodesets/centos-64-x64-pe.yml
++++ b/spec/acceptance/nodesets/centos-64-x64-pe.yml
+@@ -9,5 +9,4 @@ HOSTS:
+     box_url : http://puppet-vagrant-boxes.puppetlabs.com/centos-64-x64-vbox4210-nocm.box
+     hypervisor : vagrant
+ CONFIG:
+-  log_level: debug
+   type: pe
+diff --git a/spec/acceptance/nodesets/centos-65-x64.yml b/spec/acceptance/nodesets/centos-65-x64.yml
+index ac76349..4e2cb80 100644
+--- a/spec/acceptance/nodesets/centos-65-x64.yml
++++ b/spec/acceptance/nodesets/centos-65-x64.yml
+@@ -3,9 +3,8 @@ HOSTS:
+     roles:
+       - master
+     platform: el-6-x86_64
+-    box : centos-65-x64-virtualbox-nocm
++    box : centos-65-x64-vbox436-nocm
+     box_url : http://puppet-vagrant-boxes.puppetlabs.com/centos-65-x64-virtualbox-nocm.box
+     hypervisor : vagrant
+ CONFIG:
+-  log_level: debug
+-  type: git
++  type: foss
+diff --git a/spec/acceptance/nodesets/ubuntu-server-10044-x64.yml b/spec/acceptance/nodesets/ubuntu-server-10044-x64.yml
+index c1b8bdf..5ca1514 100644
+--- a/spec/acceptance/nodesets/ubuntu-server-10044-x64.yml
++++ b/spec/acceptance/nodesets/ubuntu-server-10044-x64.yml
+@@ -7,5 +7,4 @@ HOSTS:
+     box_url : http://puppet-vagrant-boxes.puppetlabs.com/ubuntu-server-10044-x64-vbox4210-nocm.box
+     hypervisor : vagrant
+ CONFIG:
+-  log_level: debug
+-  type: git
++  type: foss
+diff --git a/spec/acceptance/nodesets/ubuntu-server-12042-x64.yml b/spec/acceptance/nodesets/ubuntu-server-12042-x64.yml
+index f7df2cc..d065b30 100644
+--- a/spec/acceptance/nodesets/ubuntu-server-12042-x64.yml
++++ b/spec/acceptance/nodesets/ubuntu-server-12042-x64.yml
+@@ -7,5 +7,4 @@ HOSTS:
+     box_url : http://puppet-vagrant-boxes.puppetlabs.com/ubuntu-server-12042-x64-vbox4210-nocm.box
+     hypervisor : vagrant
+ CONFIG:
+-  log_level: debug
+-  type: git
++  type: foss
+diff --git a/spec/spec.opts b/spec/spec.opts
+index de653df..91cd642 100644
+--- a/spec/spec.opts
++++ b/spec/spec.opts
+@@ -1,4 +1,6 @@
+---format s
++--format
++s
+ --colour
+---loadby mtime
++--loadby
++mtime
+ --backtrace
+Files added:

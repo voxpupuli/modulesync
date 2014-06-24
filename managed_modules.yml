@@ -1,3 +1,4 @@
 ---
 - puppetlabs-concat
 - puppetlabs-mysql
+- puppetlabs-apache
