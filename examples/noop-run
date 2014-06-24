@@ -76,3 +76,64 @@ CONTRIBUTING.md
 spec/acceptance/nodesets/centos-510-x64.yml
 spec/acceptance/nodesets/centos-65-x64.yml
 spec/spec.opts
+Syncing puppetlabs-mysql
+Overriding any local changes to repositories in ./modules
+Not managing spec/spec_helper.rb in puppetlabs-mysql
+Using no-op. Files in puppetlabs-mysql may be changed but will not be committed.
+Files changed:
+diff --git a/.gitignore b/.gitignore
+index cee9397..233f3bf 100644
+--- a/.gitignore
++++ b/.gitignore
+@@ -1,8 +1,6 @@
+-*.swp
+ pkg/
+ Gemfile.lock
+-.rspec_system
+-spec/fixtures
+-/coverage/
+-.vagrant
+-.bundle
++vendor/
++spec/fixtures/
++.vagrant/
++
+diff --git a/.travis.yml b/.travis.yml
+index bf76d5a..aec1f0a 100644
+--- a/.travis.yml
++++ b/.travis.yml
+@@ -4,7 +4,7 @@ branches:
+     - master
+ language: ruby
+ bundler_args: --without development
+-script: "bundle exec rake spec SPEC_OPTS='--format documentation'"
++script: bundle exec rake spec SPEC_OPTS='--format documentation'
+ rvm:
+   - 1.8.7
+   - 1.9.3
+diff --git a/Gemfile b/Gemfile
+index 46b1354..3ac2be7 100644
+--- a/Gemfile
++++ b/Gemfile
+@@ -1,15 +1,16 @@
+ source ENV['GEM_SOURCE'] || 'https://rubygems.org'
+
+ group :development, :test do
+-  gem 'mime-types', '<2.0',      :require => false
++  gem 'rake',                    :require => false
+   gem 'rspec-puppet',            :require => false
+   gem 'puppetlabs_spec_helper',  :require => false
+   gem 'serverspec',              :require => false
+   gem 'puppet-lint',             :require => false
+-  gem 'pry',                     :require => false
+-  gem 'simplecov',               :require => false
+   gem 'beaker',                  :require => false
+   gem 'beaker-rspec',            :require => false
++  gem 'pry',                     :require => false
++  gem 'simplecov',               :require => false
++  gem 'mime-types', '<2.0',      :require => false
+ end
+
+ if puppetversion = ENV['PUPPET_GEM_VERSION']
+Files added:
+CONTRIBUTING.md
