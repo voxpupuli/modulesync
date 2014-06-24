@@ -53,6 +53,12 @@ def parse_opts(args)
   options
 end
 
+def remove(file)
+  if File.exists?(file)
+    File.delete(file)
+  end
+end
+
 def build(from_erb_template)
   erb_obj = ERB.new(File.read(from_erb_template), nil, '-')
   erb_obj.filename = from_erb_template.chomp('.erb')
@@ -91,7 +97,13 @@ end
 def update_repo(name, files, message)
   repo = Git.open("#{PROJ_ROOT}/#{name}")
   # master branch will already be checked out after pull_repo
-  repo.add(files)
+  files.each do |file|
+    if repo.status.deleted.include?(file)
+      repo.remove(file)
+    else
+      repo.add(file)
+    end
+  end
   begin
     repo.commit(message)
     # TODO: repo.push
@@ -122,6 +134,10 @@ def local_file(file)
   MODULE_FILES_DIR + file
 end
 
+def module_file(puppet_module, file)
+  "#{PROJ_ROOT}/#{puppet_module}/#{file}"
+end
+
 options  = parse_opts(ARGV)
 defaults  = parse_config(CONF_FILE)
 
@@ -133,13 +149,16 @@ managed_modules.each do |puppet_module|
   puts "Syncing #{puppet_module}"
   pull_repo(puppet_module)
   module_configs = parse_config("#{PROJ_ROOT}/#{puppet_module}/#{MODULE_CONF_FILE}")
-  module_files.each do |file|
-    if module_configs[file] && module_configs[file]['unmanaged'] == true
+  files_to_manage = module_files | defaults.keys | module_configs.keys
+  files_to_manage.each do |file|
+    file_configs = (defaults[file] || {}).merge(module_configs[file] || {})
+    if file_configs['unmanaged']
       puts "Not managing #{file} in #{puppet_module}"
+    elsif file_configs['delete']
+      remove(module_file(puppet_module, file))
     else
-      module_configs[file] = defaults[file].merge(module_configs[file] || {}) if defaults[file]
       erb = build(local_file(file))
-      template = render(erb, module_configs[file] || {})
+      template = render(erb, file_configs)
       sync(template, "#{PROJ_ROOT}/#{puppet_module}/#{file}")
     end
   end
@@ -149,6 +168,6 @@ managed_modules.each do |puppet_module|
     puts "\n\n"
     puts '--------------------------------'
   else
-    update_repo(puppet_module, module_files, options[:message])
+    update_repo(puppet_module, files_to_manage, options[:message])
   end
 end
