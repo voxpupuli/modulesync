@@ -146,6 +146,8 @@ managed_modules.each do |puppet_module|
   if options[:noop]
     puts "Using no-op. Files in #{puppet_module} may be changed but will not be committed."
     update_repo_noop(puppet_module)
+    puts "\n\n"
+    puts '--------------------------------'
   else
     update_repo(puppet_module, module_files, options[:message])
   end
