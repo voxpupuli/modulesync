@@ -2,7 +2,6 @@ pkg/
 Gemfile.lock
 vendor/
 spec/fixtures/
-.bundle/
 .vagrant/
 <% if ! @configs['paths'].nil? %>
 <% @configs['paths'].each do |path| %>

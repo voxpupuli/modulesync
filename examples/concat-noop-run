@@ -1,13 +1,14 @@
 > ./sync.rb --noop
 Syncing puppetlabs-concat
+Overriding any local changes to repositories in ./modules
 Not managing Rakefile in puppetlabs-concat
 Using no-op. Files in puppetlabs-concat may be changed but will not be committed.
 Files changed:
 diff --git a/.gitignore b/.gitignore
-index d681eca..57bf2d8 100644
+index d681eca..233f3bf 100644
 --- a/.gitignore
 +++ b/.gitignore
-@@ -1,8 +1,7 @@
+@@ -1,8 +1,6 @@
 -.pkg
 +pkg/
  Gemfile.lock
@@ -19,7 +20,6 @@ index d681eca..57bf2d8 100644
 -.vagrant
 +vendor/
 +spec/fixtures/
-+.bundle/
 +.vagrant/
 +
 diff --git a/.travis.yml b/.travis.yml
@@ -51,55 +51,28 @@ index 1288819..7600a30 100644
 +- gem --version
 +
 diff --git a/Gemfile b/Gemfile
-index 56b9775..cccfc58 100644
+index 56b9775..a0d368f 100644
 --- a/Gemfile
 +++ b/Gemfile
-@@ -1,14 +1,17 @@
+@@ -1,13 +1,13 @@
 -source ENV['GEM_SOURCE'] || "https://rubygems.org"
 +source ENV['GEM_SOURCE'] || 'https://rubygems.org'
 
  group :development, :test do
--  gem 'rake',                    :require => false
--  gem 'rspec-puppet',            :require => false
--  gem 'puppetlabs_spec_helper',  :require => false
--  gem 'beaker',                  :require => false
--  gem 'beaker-rspec',            :require => false
+   gem 'rake',                    :require => false
+   gem 'rspec-puppet',            :require => false
+   gem 'puppetlabs_spec_helper',  :require => false
++  gem 'serverspec',              :require => false
++  gem 'puppet-lint',             :require => false
+   gem 'beaker',                  :require => false
+   gem 'beaker-rspec',            :require => false
 -  gem 'puppet-lint',             :require => false
 -  gem 'serverspec',              :require => false
--  gem 'pry',                     :require => false
-+
-+
-+  gem 'rake', '10.1.1',           :require => false
-+  gem 'rspec-puppet', '>=1.0.0',  :require => false
-+  gem 'puppetlabs_spec_helper',   :require => false
-+  gem 'serverspec',               :require => false
-+  gem 'puppet-lint',              :require => false
-+  gem 'beaker',                   :require => false
-+  gem 'beaker-rspec',             :require => false
-+  gem 'rspec', '~> 2.11',         :require => false
-+  gem 'pry',                      :require => false
+   gem 'pry',                     :require => false
  end
 
- if puppetversion = ENV['PUPPET_GEM_VERSION']
-diff --git a/spec/acceptance/nodesets/default.yml b/spec/acceptance/nodesets/default.yml
-index ae812b0..05540ed 100644
---- a/spec/acceptance/nodesets/default.yml
-+++ b/spec/acceptance/nodesets/default.yml
-@@ -1,10 +1,10 @@
- HOSTS:
--  centos-64-x64.localdomain:
-+  centos-64-x64:
-     roles:
-       - master
-     platform: el-6-x86_64
--    box : centos-65-x64-virtualbox-nocm
--    box_url : http://puppet-vagrant-boxes.puppetlabs.com/centos-65-x64-virtualbox-nocm.box
-+    box : centos-64-x64-vbox4210-nocm
-+    box_url : http://puppet-vagrant-boxes.puppetlabs.com/centos-64-x64-vbox4210-nocm.box
-     hypervisor : vagrant
- CONFIG:
-   type: foss
 Files added:
+CONTRIBUTING.md
 spec/acceptance/nodesets/centos-510-x64.yml
 spec/acceptance/nodesets/centos-65-x64.yml
 spec/spec.opts

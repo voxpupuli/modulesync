@@ -17,13 +17,9 @@
 Gemfile:
   required:
     - gem: rake
-      version: 10.1.1
     - gem: rspec-puppet
-      version: '>=1.0.0'
     - gem: puppetlabs_spec_helper
     - gem: serverspec
     - gem: puppet-lint
     - gem: beaker
     - gem: beaker-rspec
-    - gem: rspec
-      version: '~> 2.11'
