@@ -1,6 +1,6 @@
 ---
 .travis.yml:
-  script: "bundle exec rake spec SPEC_OPTS='--format documentation'"
+  script: "\"bundle exec rake spec SPEC_OPTS='--format documentation'\""
   rvms:
     - 1.8.7
     - 1.9.3
