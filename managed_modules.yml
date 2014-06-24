@@ -2,3 +2,4 @@
 - puppetlabs-concat
 - puppetlabs-mysql
 - puppetlabs-apache
+- puppetlabs-postgresql

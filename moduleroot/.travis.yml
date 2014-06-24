@@ -12,14 +12,14 @@ rvm:
 env:
   matrix:
 <% @configs['env_matrix'].each do |opt| -%>
-    - <%= opt %>
+  - <%= opt %>
 <% end -%>
 matrix:
   fast_finish: true
   exclude:
 <% @configs['excludes'].each do |exclude| -%>
-    - rvm: <%= exclude['rvm'] %>
-      env: <%= exclude['env'] %>
+  - rvm: <%= exclude['rvm'] %>
+    env: <%= exclude['env'] %>
 <% end -%>
 notifications:
   email: false
