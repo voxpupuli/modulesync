@@ -28,3 +28,12 @@
     - PUPPET_GEM_VERSION="~> 2.7.0" FACTER_GEM_VERSION="~> 1.6.0"
     - PUPPET_GEM_VERSION="~> 2.7.0" FACTER_GEM_VERSION="~> 1.7.0"
     - PUPPET_GEM_VERSION="~> 3.0"
+Rakefile:
+  unmanaged: true
+LICENSE:
+  copyrights:
+    - year: 2012
+      owner: R.I.Pienaar
+Gemfile:
+  optional:
+    - gem: pry
