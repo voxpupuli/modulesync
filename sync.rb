@@ -7,7 +7,7 @@ require 'yaml'
 require 'optparse'
 
 MODULE_FILES_DIR     = 'moduleroot/'
-CONF_FILE    = 'config_defaults.yml'
+CONF_FILE            = 'config_defaults.yml'
 MODULE_CONF_FILE     = '.sync.yml'
 MANAGED_MODULES_CONF = 'managed_modules.yml'
 
@@ -29,11 +29,16 @@ end
 
 def parse_opts(args)
   options = {}
+  options[:remote] = 'git@github.com:puppetlabs/'
   opt_parser = OptionParser.new do |opts|
     opts.banner = "Usage: sync.rb -m <commit message> [--noop]"
     opts.on('-m', '--message <msg>',
             'Commit message to apply to updated modules') do |msg|
       options[:message] = msg
+    end
+    opts.on('-r', '--remote <url>',
+            'Remote github namespace to clone from and push to. Defaults to git@github.com:puppetlabs/') do |remote|
+      options[:remote] = remote
     end
     opts.on('--noop',
             'No-op mode') do |msg|
@@ -76,14 +81,14 @@ def sync(template, to_file)
   end
 end
 
-def pull_repo(name)
+def pull_repo(org, name)
   if ! Dir.exists?(PROJ_ROOT)
     Dir.mkdir(PROJ_ROOT)
   end
   # Repo needs to be cloned in the cwd
   if ! Dir.exists?("#{PROJ_ROOT}/#{name}") || ! Dir.exists?("#{PROJ_ROOT}/#{name}/.git")
     puts "Cloning repository fresh"
-    repo = Git.clone("git@github.com:puppetlabs/#{name}.git", "#{PROJ_ROOT}/#{name}")
+    repo = Git.clone("#{org}/#{name}.git", "#{PROJ_ROOT}/#{name}")
   # Repo already cloned, check out master and override local changes
   else
     puts "Overriding any local changes to repositories in #{PROJ_ROOT}"
@@ -147,7 +152,7 @@ module_files = local_files.map { |file| file.sub(/#{MODULE_FILES_DIR}/, '') }
 managed_modules = parse_config(MANAGED_MODULES_CONF)
 managed_modules.each do |puppet_module|
   puts "Syncing #{puppet_module}"
-  pull_repo(puppet_module)
+  pull_repo(options[:remote], puppet_module)
   module_configs = parse_config("#{PROJ_ROOT}/#{puppet_module}/#{MODULE_CONF_FILE}")
   files_to_manage = module_files | defaults.keys | module_configs.keys
   files_to_manage.each do |file|
