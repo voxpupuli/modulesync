@@ -111,7 +111,7 @@ def update_repo(name, files, message)
   end
   begin
     repo.commit(message)
-    # TODO: repo.push
+    repo.push
   rescue Git::GitExecuteError => git_error
     if git_error.message.include? "nothing to commit, working directory clean"
       puts "There were no files to update in #{name}. Not committing."
