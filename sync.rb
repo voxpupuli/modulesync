@@ -122,6 +122,13 @@ def update_repo(name, files, message)
   end
 end
 
+# Needed because of a bug in the git gem that lists ignored files as untracked under some circumstances
+# https://github.com/schacon/ruby-git/issues/130
+def untracked_unignored_files(repo)
+  ignored = File.open("#{repo.dir.path}/.gitignore").read.split
+  repo.status.untracked.keep_if{|f,_| !ignored.any?{|i| f.match(/#{i}/)}}
+end
+
 def update_repo_noop(name)
   repo = Git.open("#{PROJ_ROOT}/#{name}")
   repo.branch('master').checkout
@@ -130,7 +137,7 @@ def update_repo_noop(name)
     puts diff.patch
   end
   puts "Files added: "
-  repo.status.untracked.each do |file,_|
+  untracked_unignored_files(repo).each do |file,_|
     puts file
   end
 end
