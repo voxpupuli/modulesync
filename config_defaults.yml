@@ -23,3 +23,5 @@ Gemfile:
     - gem: puppet-lint
     - gem: beaker
     - gem: beaker-rspec
+    - gem: pry
+    - gem: simplecov
