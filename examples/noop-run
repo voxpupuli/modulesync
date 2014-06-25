@@ -1,6 +1,5 @@
 Syncing puppetlabs-concat
 Overriding any local changes to repositories in ./modules
-Not managing Rakefile in puppetlabs-concat
 Using no-op. Files in puppetlabs-concat may be changed but will not be committed.
 Files changed: 
 diff --git a/.gitignore b/.gitignore
@@ -108,6 +107,22 @@ index 56b9775..a0d368f 100644
    gem 'pry',                     :require => false
  end
  
+diff --git a/Rakefile b/Rakefile
+index 23aea87..5868545 100644
+--- a/Rakefile
++++ b/Rakefile
+@@ -1,5 +1,10 @@
+ require 'puppetlabs_spec_helper/rake_tasks'
+ require 'puppet-lint/tasks/puppet-lint'
+ 
++PuppetLint.configuration.fail_on_warnings
+ PuppetLint.configuration.send('disable_80chars')
+-PuppetLint.configuration.send('disable_quoted_booleans')
++PuppetLint.configuration.send('disable_class_inherits_from_params_class')
++PuppetLint.configuration.send('disable_class_parameter_defaults')
++PuppetLint.configuration.send('disable_documentation')
++PuppetLint.configuration.send('disable_single_quote_string_with_variables')
++PuppetLint.configuration.ignore_paths = ["spec/**/*.pp", "pkg/**/*.pp"]
 Files added: 
 CONTRIBUTING.md
 spec/acceptance/nodesets/centos-510-x64.yml
@@ -189,6 +204,21 @@ index 46b1354..3ac2be7 100644
  end
  
  if puppetversion = ENV['PUPPET_GEM_VERSION']
+diff --git a/Rakefile b/Rakefile
+index cd3d379..5868545 100644
+--- a/Rakefile
++++ b/Rakefile
+@@ -1 +1,10 @@
+ require 'puppetlabs_spec_helper/rake_tasks'
++require 'puppet-lint/tasks/puppet-lint'
++
++PuppetLint.configuration.fail_on_warnings
++PuppetLint.configuration.send('disable_80chars')
++PuppetLint.configuration.send('disable_class_inherits_from_params_class')
++PuppetLint.configuration.send('disable_class_parameter_defaults')
++PuppetLint.configuration.send('disable_documentation')
++PuppetLint.configuration.send('disable_single_quote_string_with_variables')
++PuppetLint.configuration.ignore_paths = ["spec/**/*.pp", "pkg/**/*.pp"]
 Files added: 
 CONTRIBUTING.md
 
@@ -197,7 +227,6 @@ CONTRIBUTING.md
 Syncing puppetlabs-apache
 Overriding any local changes to repositories in ./modules
 Not managing Gemfile in puppetlabs-apache
-Not managing Rakefile in puppetlabs-apache
 Not managing spec/spec_helper.rb in puppetlabs-apache
 Using no-op. Files in puppetlabs-apache may be changed but will not be committed.
 Files changed: 

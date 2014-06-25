@@ -20,5 +20,3 @@ Gemfile:
   unmanaged: true
 spec/spec_helper.rb:
   unmanaged: true
-Rakefile:
-  unmanaged: true
