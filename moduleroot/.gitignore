@@ -4,8 +4,8 @@ vendor/
 spec/fixtures/
 .vagrant/
 .bundle/
-<% if ! @configs['paths'].nil? %>
-<% @configs['paths'].each do |path| %>
+<% if ! @configs['paths'].nil? -%>
+<% @configs['paths'].each do |path| -%>
 <%= path %>
-<% end %>
-<% end %>
+<% end -%>
+<% end -%>
