@@ -29,7 +29,7 @@ end
 
 def parse_opts(args)
   options = {}
-  options[:remote] = 'git@github.com:puppetlabs/'
+  options[:remote] = 'git@github.com:puppetlabs'
   opt_parser = OptionParser.new do |opts|
     opts.banner = "Usage: sync.rb -m <commit message> [--noop]"
     opts.on('-m', '--message <msg>',
