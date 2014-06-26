@@ -162,10 +162,12 @@ managed_modules.each do |puppet_module|
   pull_repo(options[:remote], puppet_module)
   module_configs = parse_config("#{PROJ_ROOT}/#{puppet_module}/#{MODULE_CONF_FILE}")
   files_to_manage = module_files | defaults.keys | module_configs.keys
+  files_to_delete = []
   files_to_manage.each do |file|
     file_configs = (defaults[file] || {}).merge(module_configs[file] || {})
     if file_configs['unmanaged']
       puts "Not managing #{file} in #{puppet_module}"
+      files_to_delete << file
     elsif file_configs['delete']
       remove(module_file(puppet_module, file))
     else
@@ -174,6 +176,7 @@ managed_modules.each do |puppet_module|
       sync(template, "#{PROJ_ROOT}/#{puppet_module}/#{file}")
     end
   end
+  files_to_manage -= files_to_delete
   if options[:noop]
     puts "Using no-op. Files in #{puppet_module} may be changed but will not be committed."
     update_repo_noop(puppet_module)
