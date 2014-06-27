@@ -1,35 +1,19 @@
 ---
-branches:
-  only:
-    - master
 language: ruby
 bundler_args: --without development
 script: <%= @configs['script'] %>
-rvm:
-<% @configs['rvms'].each do |rvm| -%>
-  - <%= rvm %>
-<% end -%>
-env:
-  matrix:
-<% @configs['env_matrix'].each do |opt| -%>
-  - <%= opt %>
-<% end -%>
 matrix:
   fast_finish: true
-  exclude:
-<% @configs['excludes'].each do |exclude| -%>
-  - rvm: <%= exclude['rvm'] %>
-    env: <%= exclude['env'] %>
+  include:
+<% @configs['includes'].each do |include| -%>
+  - rvm: <%= include['rvm'] %>
+    env: <%= include['env'] %>
+<% end -%>
+<% if @configs['extras'] -%>
+<%   @configs['extras'].each do |extra| -%>
+  - rvm: <%= extra['rvm'] %>
+    env: <%= extra['env'] %>
+<%   end -%>
 <% end -%>
 notifications:
   email: false
-<% if @configs['additional'] -%>
-<%   @configs['additional'].each do |additional_config| -%>
-<%     if additional_config['comments'] -%>
-<%       additional_config['comments'].each do |comment| -%>
-<%=        "# #{comment}" %>
-<%       end -%>
-<%     end -%>
-<%=    additional_config['configs'].to_yaml.sub(/^---.*\n/, '') -%>
-<%   end %>
-<% end -%>
