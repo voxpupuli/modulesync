@@ -2,6 +2,7 @@
 
 require 'erb'
 require 'find'
+require 'fileutils'
 require 'git'
 require 'yaml'
 require 'optparse'
@@ -76,6 +77,10 @@ def render(template, configs = {})
 end
 
 def sync(template, to_file)
+  path = to_file.rpartition('/').first
+  if(! path.empty?)
+    FileUtils.mkdir_p(path)
+  end
   File.open(to_file, 'w') do |file|
     file.write(template)
   end
