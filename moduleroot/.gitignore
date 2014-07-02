@@ -4,6 +4,7 @@ vendor/
 spec/fixtures/
 .vagrant/
 .bundle/
+.*sw*
 coverage/
 <% if ! @configs['paths'].nil? -%>
 <% @configs['paths'].each do |path| -%>
