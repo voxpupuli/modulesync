@@ -21,3 +21,10 @@ Gemfile:
   - gem: beaker-rspec
   - gem: pry
   - gem: simplecov
+Rakefile:
+  default_disabled_lint_checks:
+  - 'disable_80chars'
+  - 'disable_class_inherits_from_params_class'
+  - 'disable_class_parameter_defaults'
+  - 'disable_documentation'
+  - 'disable_single_quote_string_with_variables'
