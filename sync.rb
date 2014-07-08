@@ -31,6 +31,7 @@ end
 def parse_opts(args)
   options = {}
   options[:remote] = 'git@github.com:puppetlabs'
+  options[:branch] = 'master'
   opt_parser = OptionParser.new do |opts|
     opts.banner = "Usage: sync.rb -m <commit message> [--noop]"
     opts.on('-m', '--message <msg>',
@@ -40,6 +41,10 @@ def parse_opts(args)
     opts.on('-r', '--remote <url>',
             'Remote github namespace to clone from and push to. Defaults to git@github.com:puppetlabs/') do |remote|
       options[:remote] = remote
+    end
+    opts.on('-b', '--branch <branch>',
+            'Branch name to make the changes in. Defaults to "master"') do |branch|
+      options[:branch] = branch
     end
     opts.on('--noop',
             'No-op mode') do |msg|
@@ -104,9 +109,10 @@ def pull_repo(org, name)
   end
 end
 
-def update_repo(name, files, message)
+def update_repo(name, files, message, branch)
   repo = Git.open("#{PROJ_ROOT}/#{name}")
   # master branch will already be checked out after pull_repo
+  repo.branch(branch).checkout
   files.each do |file|
     if repo.status.deleted.include?(file)
       repo.remove(file)
@@ -134,9 +140,9 @@ def untracked_unignored_files(repo)
   repo.status.untracked.keep_if{|f,_| !ignored.any?{|i| f.match(/#{i}/)}}
 end
 
-def update_repo_noop(name)
+def update_repo_noop(name, branch)
   repo = Git.open("#{PROJ_ROOT}/#{name}")
-  repo.branch('master').checkout
+  repo.branch(branch).checkout
   puts "Files changed: "
   repo.diff('HEAD', '--').each do |diff|
     puts diff.patch
@@ -184,10 +190,10 @@ managed_modules.each do |puppet_module|
   files_to_manage -= files_to_delete
   if options[:noop]
     puts "Using no-op. Files in #{puppet_module} may be changed but will not be committed."
-    update_repo_noop(puppet_module)
+    update_repo_noop(puppet_module, options[:branch])
     puts "\n\n"
     puts '--------------------------------'
   else
-    update_repo(puppet_module, files_to_manage, options[:message])
+    update_repo(puppet_module, files_to_manage, options[:message], options[:branch])
   end
 end
