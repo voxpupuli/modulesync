@@ -32,6 +32,7 @@ def parse_opts(args)
   options = {}
   options[:remote] = 'git@github.com:puppetlabs'
   options[:branch] = 'master'
+  options[:managed_modules_conf] = MANAGED_MODULES_CONF
   opt_parser = OptionParser.new do |opts|
     opts.banner = "Usage: sync.rb -m <commit message> [--noop]"
     opts.on('-m', '--message <msg>',
@@ -41,6 +42,11 @@ def parse_opts(args)
     opts.on('-r', '--remote <url>',
             'Remote github namespace to clone from and push to. Defaults to git@github.com:puppetlabs/') do |remote|
       options[:remote] = remote
+    end
+    opts.on('-c', '--managedmodules <file>',
+            'Config file to list modules to manage.
+                                     Defaults to "managed_modules.yml" which lists the Puppet Labs supported modules.') do |file|
+      options[:managed_modules_conf] = file
     end
     opts.on('-b', '--branch <branch>',
             'Branch name to make the changes in. Defaults to "master"') do |branch|
@@ -167,7 +173,12 @@ defaults  = parse_config(CONF_FILE)
 local_files = Find.find(MODULE_FILES_DIR).collect { |file| file if !File.directory?(file) }.compact
 module_files = local_files.map { |file| file.sub(/#{MODULE_FILES_DIR}/, '') }
 
-managed_modules = parse_config(MANAGED_MODULES_CONF)
+managed_modules = parse_config(options[:managed_modules_conf])
+if managed_modules.empty?
+  puts "No modules found. Check that you specified the write config file."
+  exit
+end
+
 managed_modules.each do |puppet_module|
   puts "Syncing #{puppet_module}"
   pull_repo(options[:remote], puppet_module)
