@@ -3,7 +3,6 @@ require 'modulesync/cli'
 require 'modulesync/constants'
 require 'modulesync/git'
 require 'modulesync/renderer'
-require 'modulesync/version'
 
 module ModuleSync
   include Constants
