@@ -59,16 +59,23 @@ module ModuleSync
     end
 
     def self.update_noop(name, branch)
+      puts "Using no-op. Files in #{name} may be changed but will not be committed."
+
       repo = ::Git.open("#{PROJ_ROOT}/#{name}")
       repo.branch(branch).checkout
+
       puts "Files changed: "
       repo.diff('HEAD', '--').each do |diff|
         puts diff.patch
       end
+
       puts "Files added: "
       untracked_unignored_files(repo).each do |file,_|
         puts file
       end
+
+      puts "\n\n"
+      puts '--------------------------------'
     end
   end
 end

@@ -11,6 +11,12 @@ module ModuleSync
       }
     end
 
+    def fail(message)
+      puts @options[:help]
+      puts message
+      exit
+    end
+
     def parse_opts(args)
       @options = defaults
       opt_parser = OptionParser.new do |opts|
@@ -23,10 +29,9 @@ module ModuleSync
                 'Remote github namespace to clone from and push to. Defaults to git@github.com:puppetlabs') do |namespace|
           @options[:namespace] = namespace
         end
-        opts.on('-c', '--managedmodules <file>',
-                'Config file to list modules to manage.
-                                         Defaults to "managed_modules.yml" which lists the Puppet Labs supported modules.') do |file|
-          @options[:managed_modules_conf] = file
+        opts.on('-c', '--configs <directory>',
+                'The local directory or remote repository to define the list of managed modules, the file templates, and the default values for template variables.') do |configs|
+          @options[:configs] = configs
         end
         opts.on('-b', '--branch <branch>',
                 'Branch name to make the changes in. Defaults to "master"') do |branch|
@@ -41,10 +46,12 @@ module ModuleSync
 
       @options.fetch(:message) do
         if ! @options[:noop]
-          puts @options[:help]
-          puts "A commit message is required."
-          exit
+          fail("A commit message is required.")
         end
+      end
+
+      @options.fetch(:configs) do
+        fail("The configs directory is required.")
       end
     end
 
