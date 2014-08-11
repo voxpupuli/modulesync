@@ -2,6 +2,7 @@ require 'fileutils'
 require 'modulesync/cli'
 require 'modulesync/constants'
 require 'modulesync/git'
+require 'modulesync/hook'
 require 'modulesync/renderer'
 require 'modulesync/util'
 
@@ -79,8 +80,8 @@ correct directory with -c."
           Git.update(puppet_module, files_to_manage, options[:message], options[:branch])
         end
       end
-    else
-      
+    elsif options[:command] == 'hook'
+      Hook.hook(args[1], options)
     end
   end
 

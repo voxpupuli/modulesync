@@ -6,5 +6,6 @@ module ModuleSync
     MODULESYNC_CONF_FILE = 'modulesync.yml'
     PROJ_ROOT            = './modules'
     ENDPOINT             = 'git@github.com'
+    HOOK_FILE            = '.git/hooks/pre-push'
   end
 end

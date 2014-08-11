@@ -1,8 +1,10 @@
 require 'optparse'
+require 'modulesync/constants'
 require 'modulesync/util'
 
 module ModuleSync
   class CLI
+    include Constants
 
     def defaults
       {
@@ -16,6 +18,7 @@ module ModuleSync
     def commands_available
       [
         'update',
+        'hook',
       ]
     end
 
@@ -27,10 +30,10 @@ module ModuleSync
 
     def parse_opts(args)
       @options = defaults
-      @options.merge!(Util.parse_config(Constants::MODULESYNC_CONF_FILE))
+      @options.merge!(Util.parse_config(MODULESYNC_CONF_FILE))
       @options[:command] = args[0] if commands_available.include?(args[0])
       opt_parser = OptionParser.new do |opts|
-        opts.banner = "Usage: msync update [-m <commit message>] [-c <directory> ] [--noop] [-n <namespace>] [-b <branch>]"
+        opts.banner = "Usage: msync update [-m <commit message>] [-c <directory> ] [--noop] [-n <namespace>] [-b <branch>] | hook [activate|deactivate] [-c <directory> ] [-n <namespace>] [-b <branch>]"
         opts.on('-m', '--message <msg>',
                 'Commit message to apply to updated modules') do |msg|
           @options[:message] = msg
@@ -55,7 +58,7 @@ module ModuleSync
       end.parse!
 
       @options.fetch(:message) do
-        if ! @options[:noop]
+        if @options[:command] == 'update' && ! @options[:noop]
           fail("A commit message is required unless using noop.")
         end
       end
@@ -63,6 +66,12 @@ module ModuleSync
       @options.fetch(:command) do
         fail("A command is required.")
       end
+
+      if @options[:command] == 'hook' &&
+           (! args.include?('activate') && ! args.include?('deactivate'))
+        fail("You must activate or deactivate the hook.")
+      end
+
     end
 
     def options
