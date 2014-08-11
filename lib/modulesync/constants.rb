@@ -1,9 +1,10 @@
 module ModuleSync
   module Constants
-    MODULE_FILES_DIR = 'moduleroot/'
-    CONF_FILE        = 'config_defaults.yml'
-    MODULE_CONF_FILE = '.sync.yml'
-    PROJ_ROOT        = './modules'
-    ENDPOINT         = 'git@github.com'
+    MODULE_FILES_DIR     = 'moduleroot/'
+    CONF_FILE            = 'config_defaults.yml'
+    MODULE_CONF_FILE     = '.sync.yml'
+    MODULESYNC_CONF_FILE = 'modulesync.yml'
+    PROJ_ROOT            = './modules'
+    ENDPOINT             = 'git@github.com'
   end
 end

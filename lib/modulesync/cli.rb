@@ -1,4 +1,5 @@
 require 'optparse'
+require 'modulesync/util'
 
 module ModuleSync
   class CLI
@@ -26,6 +27,7 @@ module ModuleSync
 
     def parse_opts(args)
       @options = defaults
+      @options.merge!(Util.parse_config(Constants::MODULESYNC_CONF_FILE))
       @options[:command] = args[0] if commands_available.include?(args[0])
       opt_parser = OptionParser.new do |opts|
         opts.banner = "Usage: msync update [-m <commit message>] [-c <directory> ] [--noop] [-n <namespace>] [-b <branch>]"

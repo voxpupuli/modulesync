@@ -1,6 +1,5 @@
 require 'erb'
 require 'find'
-require 'yaml'
 
 module ModuleSync
   module Renderer
@@ -8,14 +7,6 @@ module ModuleSync
     class ForgeModuleFile
       def initialize(configs= {})
         @configs = configs
-      end
-    end
-
-    def self.parse_config(config_file)
-      if File.exist?(config_file)
-        YAML.load_file(config_file) || {}
-      else
-        {}
       end
     end
 

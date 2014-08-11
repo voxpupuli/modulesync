@@ -3,6 +3,7 @@ require 'modulesync/cli'
 require 'modulesync/constants'
 require 'modulesync/git'
 require 'modulesync/renderer'
+require 'modulesync/util'
 
 module ModuleSync
   include Constants
@@ -11,7 +12,7 @@ module ModuleSync
     "#{config_path}/#{MODULE_FILES_DIR}/#{file}"
   end
 
-   def self.module_file(puppet_module, file)
+  def self.module_file(puppet_module, file)
     "#{PROJ_ROOT}/#{puppet_module}/#{file}"
   end
 
@@ -31,7 +32,7 @@ correct directory with -c."
   end
 
   def self.managed_modules(path)
-    managed_modules = Renderer.parse_config(path)
+    managed_modules = Util.parse_config(path)
     if managed_modules.empty?
       puts "No modules found. Check that you specified the write configs directory containing managed_modules.yml."
       exit
@@ -44,7 +45,7 @@ correct directory with -c."
     cli.parse_opts(args)
     options  = cli.options
     if options[:command] == 'update'
-      defaults = Renderer.parse_config("#{options[:configs]}/#{CONF_FILE}")
+      defaults = Util.parse_config("#{options[:configs]}/#{CONF_FILE}")
 
       path = "#{options[:configs]}/#{MODULE_FILES_DIR}"
       local_files = self.local_files(path)
@@ -55,7 +56,7 @@ correct directory with -c."
       managed_modules.each do |puppet_module|
         puts "Syncing #{puppet_module}"
         Git.pull(options[:namespace], puppet_module)
-        module_configs = Renderer.parse_config("#{PROJ_ROOT}/#{puppet_module}/#{MODULE_CONF_FILE}")
+        module_configs = Util.parse_config("#{PROJ_ROOT}/#{puppet_module}/#{MODULE_CONF_FILE}")
         files_to_manage = module_files | defaults.keys | module_configs.keys
         files_to_delete = []
         files_to_manage.each do |file|
