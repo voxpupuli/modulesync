@@ -8,7 +8,5 @@
 - puppetlabs-mysql
 - puppetlabs-ntp
 - puppetlabs-postgresql
-- puppetlabs-reboot
-- puppetlabs-registry
 - puppetlabs-stdlib
 - puppetlabs-vcsrepo
