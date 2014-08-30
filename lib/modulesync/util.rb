@@ -5,7 +5,7 @@ module ModuleSync
 
     def self.parse_config(config_file)
       if File.exist?(config_file)
-        Hash.transform_keys_to_symbols(YAML.load_file(config_file)) || {}
+        YAML.load_file(config_file) || {}
       else
         {}
       end
