@@ -33,7 +33,7 @@ module ModuleSync
       @options.merge!(Hash.transform_keys_to_symbols(Util.parse_config(MODULESYNC_CONF_FILE)))
       @options[:command] = args[0] if commands_available.include?(args[0])
       opt_parser = OptionParser.new do |opts|
-        opts.banner = "Usage: msync update [-m <commit message>] [-c <directory> ] [--noop] [-n <namespace>] [-b <branch>] | hook [activate|deactivate] [-c <directory> ] [-n <namespace>] [-b <branch>]"
+        opts.banner = "Usage: msync update [-m <commit message>] [-c <directory> ] [--noop] [-n <namespace>] [-b <branch>] | hook activate|deactivate [-c <directory> ] [-n <namespace>] [-b <branch>]"
         opts.on('-m', '--message <msg>',
                 'Commit message to apply to updated modules') do |msg|
           @options[:message] = msg
