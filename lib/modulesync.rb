@@ -21,9 +21,7 @@ module ModuleSync
     if File.exists?(path)
       local_files = Find.find(path).collect { |file| file if !File.directory?(file) }.compact
     else
-      puts "No #{MODULE_FILES_DIR} directory exists. Check that you are working
-in your module configs directory or that you have passed in the
-correct directory with -c."
+      puts "#{path} does not exist. Check that you are working in your module configs directory or that you have passed in the correct directory with -c."
       exit
     end
   end
@@ -35,7 +33,7 @@ correct directory with -c."
   def self.managed_modules(path)
     managed_modules = Util.parse_config(path)
     if managed_modules.empty?
-      puts "No modules found. Check that you specified the write configs directory containing managed_modules.yml."
+      puts "No modules found at #{path}. Check that you specified the right configs directory containing managed_modules.yml."
       exit
     end
     managed_modules
