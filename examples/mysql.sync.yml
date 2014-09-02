@@ -1,9 +1,0 @@
----
-Gemfile:
-  optional:
-    - gem: pry
-    - gem: simplecov
-    - gem: mime-types
-      version: '<2.0'
-spec/spec_helper.rb:
-  unmanaged: true
