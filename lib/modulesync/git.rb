@@ -55,7 +55,7 @@ module ModuleSync
     # https://github.com/schacon/ruby-git/issues/130
     def self.untracked_unignored_files(repo)
       ignored = File.open("#{repo.dir.path}/.gitignore").read.split
-      repo.status.untracked.keep_if{|f,_| !ignored.any?{|i| f.match(/#{i}/)}}
+      repo.status.untracked.keep_if{|f,_| !ignored.any?{|i| File.fnmatch(i, f)}}
     end
 
     def self.update_noop(name, branch)
