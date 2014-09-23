@@ -14,6 +14,7 @@ module ModuleSync
         puts "Cloning repository fresh"
         remote = "#{ENDPOINT}:#{org}/#{name}.git"
         local = "#{PROJ_ROOT}/#{name}"
+        puts "Cloning from #{remote}"
         repo = ::Git.clone(remote, local)
 
       # Repo already cloned, check out master and override local changes
