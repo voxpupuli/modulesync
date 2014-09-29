@@ -4,7 +4,7 @@ module ModuleSync
   module Git
     include Constants
 
-    def self.pull(org, name)
+    def self.pull(git_user, git_provider_address, org, name)
       if ! Dir.exists?(PROJ_ROOT)
         Dir.mkdir(PROJ_ROOT)
       end
@@ -12,8 +12,9 @@ module ModuleSync
       # Repo needs to be cloned in the cwd
       if ! Dir.exists?("#{PROJ_ROOT}/#{name}") || ! Dir.exists?("#{PROJ_ROOT}/#{name}/.git")
         puts "Cloning repository fresh"
-        remote = "#{ENDPOINT}:#{org}/#{name}.git"
+        remote = "#{git_user}@#{git_provider_address}:#{org}/#{name}.git"
         local = "#{PROJ_ROOT}/#{name}"
+        puts "Cloning from #{remote}"
         repo = ::Git.clone(remote, local)
 
       # Repo already cloned, check out master and override local changes

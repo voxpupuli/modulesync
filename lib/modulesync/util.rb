@@ -7,6 +7,7 @@ module ModuleSync
       if File.exist?(config_file)
         YAML.load_file(config_file) || {}
       else
+        puts "No config file under #{config_file} found, using default values"
         {}
       end
     end

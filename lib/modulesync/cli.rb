@@ -10,6 +10,8 @@ module ModuleSync
       {
         :namespace            => 'puppetlabs',
         :branch               => 'master',
+        :git_user             => 'git',
+        :git_provider_address => 'github.com',
         :managed_modules_conf => 'managed_modules.yml',
         :configs              => '.',
       }
