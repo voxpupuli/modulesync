@@ -30,12 +30,13 @@ module ModuleSync
     local_files.map { |file| file.sub(/#{path}/, '') }
   end
 
-  def self.managed_modules(path)
+  def self.managed_modules(path, filter)
     managed_modules = Util.parse_config(path)
     if managed_modules.empty?
       puts "No modules found at #{path}. Check that you specified the right configs directory containing managed_modules.yml."
       exit
     end
+    managed_modules.select! { |m| m =~ Regexp.new(filter) } unless filter.nil?
     managed_modules
   end
 
@@ -50,7 +51,7 @@ module ModuleSync
       local_files = self.local_files(path)
       module_files = self.module_files(local_files, path)
 
-      managed_modules = self.managed_modules("#{options[:configs]}/managed_modules.yml")
+      managed_modules = self.managed_modules("#{options[:configs]}/managed_modules.yml", options[:filter])
 
       managed_modules.each do |puppet_module|
         puts "Syncing #{puppet_module}"
