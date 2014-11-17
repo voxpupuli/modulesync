@@ -127,7 +127,7 @@ pre-cloned modules from the dry-run or clones them fresh if the modules aren't
 found.
 
 ```
-msync update
+msync update -m "Commit message"
 ```
 
 #### Automating Updates
@@ -177,7 +177,7 @@ namespace if the modules are not pre-cloned. You need to specify a branch to
 push to if you are not pushing to master.
 
 ```
-msync update -n git@github.com:puppetlabs -b sync_branch
+msync update -n git@github.com:puppetlabs -b sync_branch -m "Commit message"
 ```
 
 #### Configuring ModuleSync defaults
@@ -198,7 +198,7 @@ Then you can run ModuleSync without extra arguments:
 
 ```
 msync update --noop
-msync update
+msync update -m "Commit message"
 ```
 
 #### Automating updates
