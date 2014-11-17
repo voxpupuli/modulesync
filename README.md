@@ -201,6 +201,14 @@ msync update --noop
 msync update -m "Commit message"
 ```
 
+#### Filtering Repositories
+
+If you only want to sync some of the repositories in your managed_modules.yml, use the -f flag to filter by a regex:
+
+```
+msync update -f augeas -m "Commit message"
+msync update -f puppet-a..o "Commit message"
+```
 #### Automating updates
 
 If you install a git hook, you need to tell it what remote and branch to push
