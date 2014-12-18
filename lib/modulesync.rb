@@ -82,7 +82,7 @@ module ModuleSync
         if options[:noop]
           Git.update_noop(puppet_module, options[:branch])
         else
-          Git.update(puppet_module, files_to_manage, options[:message], options[:branch], options[:bump], options[:tag], options[:tag_pattern])
+          Git.update(puppet_module, files_to_manage, options[:message], options[:branch], options[:bump], options[:changelog], options[:tag], options[:tag_pattern])
         end
       end
     elsif options[:command] == 'hook'
