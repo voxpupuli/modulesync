@@ -4,7 +4,7 @@ module ModuleSync
   module Git
     include Constants
 
-    def self.pull(git_user, git_provider_address, org, name)
+    def self.pull(git_user, git_provider_address, org, branch, name)
       if ! Dir.exists?(PROJ_ROOT)
         Dir.mkdir(PROJ_ROOT)
       end
@@ -16,21 +16,26 @@ module ModuleSync
         local = "#{PROJ_ROOT}/#{name}"
         puts "Cloning from #{remote}"
         repo = ::Git.clone(remote, local)
+        puts "Switching to branch #{branch}"
+        repo.checkout(branch)
 
       # Repo already cloned, check out master and override local changes
       else
-        puts "Overriding any local changes to repositories in #{PROJ_ROOT}"
+        puts "Overriding any local changes to repositories in #{PROJ_ROOT}/#{name}"
         repo = ::Git.open("#{PROJ_ROOT}/#{name}")
-        repo.branch('master').checkout
+        #puts "Switching to branch #{branch}"
+        repo.checkout(branch)
+        #puts "Resetting working tree to HEAD"
         repo.reset_hard
-        repo.pull
+        puts "Pulling updates from origin/#{branch}"
+        repo.pull('origin', branch)
       end
     end
 
     # Git add/rm, git commit, git push
     def self.update(name, files, message, branch)
       repo = ::Git.open("#{PROJ_ROOT}/#{name}")
-      repo.branch(branch).checkout
+      repo.checkout(branch)
       files.each do |file|
         if repo.status.deleted.include?(file)
           repo.remove(file)
@@ -39,8 +44,9 @@ module ModuleSync
         end
       end
       begin
+        puts "Pushing commit to origin/#{branch}"
         repo.commit(message)
-        repo.push
+        repo.push('origin', branch)
       rescue ::Git::GitExecuteError => git_error
         if git_error.message.include? "nothing to commit, working directory clean"
           puts "There were no files to update in #{name}. Not committing."
