@@ -53,9 +53,15 @@ module ModuleSync
 
       managed_modules = self.managed_modules("#{options[:configs]}/managed_modules.yml", options[:filter])
 
-      managed_modules.each do |puppet_module|
+      # managed_modules is either an array or a hash
+      managed_modules.each do |puppet_module, opts|
         puts "Syncing #{puppet_module}"
-        Git.pull(options[:git_user], options[:git_provider_address], options[:namespace], puppet_module)
+        if options[:git_base]
+          git_base = options[:git_base]
+        else
+          git_base = "#{options[:git_user]}@#{options[:git_provider_address]}:#{options[:namespace]}"
+        end
+        Git.pull(git_base, puppet_module, options[:branch], opts || {})
         module_configs = Util.parse_config("#{PROJ_ROOT}/#{puppet_module}/#{MODULE_CONF_FILE}")
         files_to_manage = module_files | defaults.keys | module_configs.keys
         files_to_delete = []

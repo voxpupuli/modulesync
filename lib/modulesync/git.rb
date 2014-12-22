@@ -4,7 +4,7 @@ module ModuleSync
   module Git
     include Constants
 
-    def self.pull(git_user, git_provider_address, org, name)
+    def self.pull(git_base, name, branch, opts)
       if ! Dir.exists?(PROJ_ROOT)
         Dir.mkdir(PROJ_ROOT)
       end
@@ -12,7 +12,7 @@ module ModuleSync
       # Repo needs to be cloned in the cwd
       if ! Dir.exists?("#{PROJ_ROOT}/#{name}") || ! Dir.exists?("#{PROJ_ROOT}/#{name}/.git")
         puts "Cloning repository fresh"
-        remote = "#{git_user}@#{git_provider_address}:#{org}/#{name}.git"
+        remote = opts[:remote] || "#{git_base}/#{name}.git"
         local = "#{PROJ_ROOT}/#{name}"
         puts "Cloning from #{remote}"
         repo = ::Git.clone(remote, local)
@@ -21,9 +21,9 @@ module ModuleSync
       else
         puts "Overriding any local changes to repositories in #{PROJ_ROOT}"
         repo = ::Git.open("#{PROJ_ROOT}/#{name}")
-        repo.branch('master').checkout
+        repo.branch(branch).checkout
         repo.reset_hard
-        repo.pull
+        repo.pull('origin', branch)
       end
     end
 
@@ -40,7 +40,7 @@ module ModuleSync
       end
       begin
         repo.commit(message)
-        repo.push
+        repo.push('origin', branch)
       rescue ::Git::GitExecuteError => git_error
         if git_error.message.include? "nothing to commit, working directory clean"
           puts "There were no files to update in #{name}. Not committing."
