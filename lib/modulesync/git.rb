@@ -48,7 +48,7 @@ module ModuleSync
         repo.commit(message)
         repo.push('origin', branch)
       rescue ::Git::GitExecuteError => git_error
-        if git_error.message.include? "nothing to commit, working directory clean"
+        if git_error.message.include? "nothing to commit (working directory clean)"
           puts "There were no files to update in #{name}. Not committing."
         else
           puts git_error
