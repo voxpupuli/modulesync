@@ -166,7 +166,7 @@ format should be the SSH or HTTP prefix of the full URL minus the module name
 itself.
 
 ```
-msync update -n git@github.com:puppetlabs --noop
+msync update -n puppetlabs --noop
 ```
 
 #### Damage mode
@@ -177,7 +177,7 @@ namespace if the modules are not pre-cloned. You need to specify a branch to
 push to if you are not pushing to master.
 
 ```
-msync update -n git@github.com:puppetlabs -b sync_branch -m "Commit message"
+msync update -n puppetlabs -b sync_branch -m "Commit message"
 ```
 
 #### Configuring ModuleSync defaults
@@ -217,7 +217,7 @@ different remote. The hook will also look in modulesync.yml for default
 arguments.
 
 ```
-msync hook activate -n git@github.com:puppetlabs -b sync_branch
+msync hook activate -n puppetlabs -b sync_branch
 ```
 
 The Templates
