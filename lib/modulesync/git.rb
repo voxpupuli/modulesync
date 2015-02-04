@@ -1,4 +1,5 @@
 require 'git'
+require 'puppet_blacksmith'
 
 module ModuleSync
   module Git
@@ -27,9 +28,26 @@ module ModuleSync
       end
     end
 
+    def self.bump(repo, m)
+      new = m.bump!
+      puts "Bumped to version #{new}"
+      repo.add('metadata.json')
+      repo.commit("Release version #{new}")
+      repo.push
+      new
+    end
+
+    def self.tag(repo, version, tag_pattern)
+      tag = tag_pattern % version
+      puts "Tagging with #{tag}"
+      repo.add_tag(tag)
+      repo.push('origin', tag)
+    end
+
     # Git add/rm, git commit, git push
-    def self.update(name, files, message, branch)
-      repo = ::Git.open("#{PROJ_ROOT}/#{name}")
+    def self.update(name, files, message, branch, bump=false, tag=false, tag_pattern=nil)
+      module_root = "#{PROJ_ROOT}/#{name}"
+      repo = ::Git.open(module_root)
       repo.branch(branch).checkout
       files.each do |file|
         if repo.status.deleted.include?(file)
@@ -41,6 +59,12 @@ module ModuleSync
       begin
         repo.commit(message)
         repo.push('origin', branch)
+        # Only bump/tag if pushing didn't fail (i.e. there were changes)
+        m = Blacksmith::Modulefile.new("#{module_root}/metadata.json")
+        if bump
+          new = self.bump(repo, m)
+          self.tag(repo, new, tag_pattern) if tag
+        end
       rescue ::Git::GitExecuteError => git_error
         if git_error.message.include? "nothing to commit, working directory clean"
           puts "There were no files to update in #{name}. Not committing."

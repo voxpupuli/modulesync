@@ -14,6 +14,7 @@ module ModuleSync
         :git_provider_address => 'github.com',
         :managed_modules_conf => 'managed_modules.yml',
         :configs              => '.',
+        :tag_pattern          => '%s',
       }
     end
 
@@ -35,7 +36,7 @@ module ModuleSync
       @options.merge!(Hash.transform_keys_to_symbols(Util.parse_config(MODULESYNC_CONF_FILE)))
       @options[:command] = args[0] if commands_available.include?(args[0])
       opt_parser = OptionParser.new do |opts|
-        opts.banner = "Usage: msync update [-m <commit message>] [-c <directory> ] [--noop] [-n <namespace>] [-b <branch>] [-f <filter>] | hook activate|deactivate [-c <directory> ] [-n <namespace>] [-b <branch>]"
+        opts.banner = "Usage: msync update [-m <commit message>] [-c <directory> ] [--noop] [--bump] [--tag] [--tag-pattern <tag_pattern>] [-n <namespace>] [-b <branch>] [-f <filter>] | hook activate|deactivate [-c <directory> ] [-n <namespace>] [-b <branch>]"
         opts.on('-m', '--message <msg>',
                 'Commit message to apply to updated modules') do |msg|
           @options[:message] = msg
@@ -59,6 +60,18 @@ module ModuleSync
         opts.on('--noop',
                 'No-op mode') do |msg|
           @options[:noop] = true
+        end
+        opts.on('--bump',
+                'Bump module version to the next minor') do |msg|
+          @options[:bump] = true
+        end
+        opts.on('--tag',
+                'Git tag with the current module version') do |msg|
+          @options[:tag] = true
+        end
+        opts.on('--tag-pattern',
+                'The pattern to use when tagging releases.') do |pattern|
+          @options[:tag_pattern] = pattern
         end
         @options[:help] = opts.help
       end.parse!
