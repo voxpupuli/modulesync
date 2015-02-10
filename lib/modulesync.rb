@@ -56,11 +56,7 @@ module ModuleSync
       # managed_modules is either an array or a hash
       managed_modules.each do |puppet_module, opts|
         puts "Syncing #{puppet_module}"
-        if options[:git_base]
-          git_base = options[:git_base]
-        else
-          git_base = "#{options[:git_user]}@#{options[:git_provider_address]}:#{options[:namespace]}"
-        end
+        git_base = "#{options[:git_base]}#{options[:namespace]}"
         Git.pull(git_base, puppet_module, options[:branch], opts || {})
         module_configs = Util.parse_config("#{PROJ_ROOT}/#{puppet_module}/#{MODULE_CONF_FILE}")
         files_to_manage = module_files | defaults.keys | module_configs.keys
@@ -80,9 +76,9 @@ module ModuleSync
         end
         files_to_manage -= files_to_delete
         if options[:noop]
-          Git.update_noop(puppet_module, options[:branch])
+          Git.update_noop(puppet_module, options)
         else
-          Git.update(puppet_module, files_to_manage, options[:message], options[:branch], options[:bump], options[:changelog], options[:tag], options[:tag_pattern])
+          Git.update(puppet_module, files_to_manage, options)
         end
       end
     elsif options[:command] == 'hook'
