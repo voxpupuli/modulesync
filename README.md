@@ -249,6 +249,22 @@ msync update -m "Commit message" --bump --tag --tag_pattern 'v%s'
 
 The default for the tag pattern is `%s`.
 
+#### Updating the CHANGELOG
+
+When bumping the version in `metadata.json`, modulesync can let you
+updating `CHANGELOG.md` in each modified repository.
+
+This is one by using the `--changelog` flag:
+
+```
+msync update -m "Commit message" --bump --changelog
+```
+
+This flag will cause the `CHANGELOG.md` file to be updated with the
+current date, bumped (minor) version, and commit message.
+
+If `CHANGELOG.md` is absent in the repository, nothing will happen.
+
 
 The Templates
 -------------
