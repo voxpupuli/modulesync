@@ -220,6 +220,36 @@ arguments.
 msync hook activate -n puppetlabs -b sync_branch
 ```
 
+### Updating metadata.json
+
+Modulesync can optionally bump the minor version in `metadata.json` for each
+modified modules if you add the `--bump` flag to the command line:
+
+```
+msync update -m "Commit message" --bump
+```
+
+#### Tagging repositories
+
+If you wish to tag the modified repositories with the newly bumped version,
+you can do so by using the `--tag` flag:
+
+```
+msync update -m "Commit message" --bump --tag
+```
+
+#### Setting the tag pattern
+
+You can also set the format of the tag to be used (`printf`-formatted)
+by setting the `tag_pattern` option:
+
+```
+msync update -m "Commit message" --bump --tag --tag_pattern 'v%s'
+```
+
+The default for the tag pattern is `%s`.
+
+
 The Templates
 -------------
 
