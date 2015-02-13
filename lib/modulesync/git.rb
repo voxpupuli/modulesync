@@ -4,6 +4,27 @@ module ModuleSync
   module Git
     include Constants
 
+    def self.remote_branch_exists?(repo, branch)
+      repo.branches.remote.collect { |b| b.name }.include?(branch)
+    end
+
+    def self.local_branch_exists?(repo, branch)
+      repo.branches.local.collect { |b| b.name }.include?(branch)
+    end
+
+    def self.switch_branch(repo, branch)
+      unless repo.branch.name == branch
+        if local_branch_exists?(repo, branch)
+          puts "Switching to branch #{branch}"
+          repo.checkout(branch)
+        else
+          puts "Creating local branch #{branch} from origin/#{branch}"
+          repo.checkout("origin/#{branch}")
+          repo.branch(branch).checkout
+        end
+      end
+    end
+
     def self.pull(git_base, name, branch, opts)
       if ! Dir.exists?(PROJ_ROOT)
         Dir.mkdir(PROJ_ROOT)
@@ -16,14 +37,21 @@ module ModuleSync
         local = "#{PROJ_ROOT}/#{name}"
         puts "Cloning from #{remote}"
         repo = ::Git.clone(remote, local)
-
+        switch_branch(repo, branch)
       # Repo already cloned, check out master and override local changes
       else
         puts "Overriding any local changes to repositories in #{PROJ_ROOT}"
         repo = ::Git.open("#{PROJ_ROOT}/#{name}")
-        repo.branch(branch).checkout
+        repo.fetch
         repo.reset_hard
-        repo.pull('origin', branch)
+        if remote_branch_exists?(repo, branch)
+          switch_branch(repo, branch)
+          repo.pull('origin', branch)
+        else # git checkout -b branch origin/master
+          repo.checkout('origin/master')
+          puts "Creating new branch #{branch}"
+          repo.branch(branch).checkout
+        end
       end
     end
 
