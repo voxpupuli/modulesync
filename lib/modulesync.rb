@@ -56,6 +56,15 @@ module ModuleSync
       # managed_modules is either an array or a hash
       managed_modules.each do |puppet_module, opts|
         puts "Syncing #{puppet_module}"
+        case options[:git_provider]
+        when 'gitlab'
+          path = puppet_module.split('/')
+          module_namespace = path[0]
+          module_name = path[1]
+        else
+          module_namespace = options[:namespace]
+          module_name = puppet_module
+        end
         if options[:git_base]
           git_base = options[:git_base]
         else
@@ -66,7 +75,10 @@ module ModuleSync
         files_to_manage = module_files | defaults.keys | module_configs.keys
         files_to_delete = []
         files_to_manage.each do |file|
-          file_configs = (defaults[file] || {}).merge(module_configs[file] || {})
+          file_configs = (defaults[file] || {}).merge(module_configs[file] || {}).merge(
+            'module_name'      => module_name,
+            'module_namespace' => module_namespace
+            )
           if file_configs['unmanaged']
             puts "Not managing #{file} in #{puppet_module}"
             files_to_delete << file

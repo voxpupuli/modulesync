@@ -1,3 +1,4 @@
 modules/
 *.gem
 Gemfile.lock
+modulesync.yml
