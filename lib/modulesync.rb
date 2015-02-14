@@ -1,3 +1,4 @@
+require 'pry'
 require 'fileutils'
 require 'modulesync/cli'
 require 'modulesync/constants'
