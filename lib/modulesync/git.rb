@@ -40,17 +40,20 @@ module ModuleSync
         switch_branch(repo, branch)
       # Repo already cloned, check out master and override local changes
       else
-        puts "Overriding any local changes to repositories in #{PROJ_ROOT}"
-        repo = ::Git.open("#{PROJ_ROOT}/#{name}")
-        repo.fetch
-        repo.reset_hard
-        if remote_branch_exists?(repo, branch)
-          switch_branch(repo, branch)
-          repo.pull('origin', branch)
-        else # git checkout -b branch origin/master
-          repo.checkout('origin/master')
-          puts "Creating new branch #{branch}"
-          repo.branch(branch).checkout
+        # Some versions of git can't properly handle managing a repo from outside the repo directory
+        Dir.chdir("#{PROJ_ROOT}/#{name}") do
+          puts "Overriding any local changes to repositories in #{PROJ_ROOT}"
+          repo = ::Git.open('.')
+          repo.fetch
+          repo.reset_hard
+          if remote_branch_exists?(repo, branch)
+              switch_branch(repo, branch)
+              repo.pull('origin', branch)
+          else # git checkout -b branch origin/master
+            repo.checkout('origin/master')
+            puts "Creating new branch #{branch}"
+            repo.branch(branch).checkout
+          end
         end
       end
     end
