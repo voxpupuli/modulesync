@@ -95,10 +95,16 @@ module ModuleSync
     end
 
     # Git add/rm, git commit, git push
-    def self.update(name, files, message, branch, bump=false, changelog=false, tag=false, tag_pattern=nil)
+    def self.update(name, files, options)
       module_root = "#{PROJ_ROOT}/#{name}"
+      message = options[:message]
+      if options[:remote_branch]
+        branch = "#{options[:branch]}:#{options[:remote_branch]}"
+      else
+        branch = options[:branch]
+      end
       repo = ::Git.open(module_root)
-      repo.branch(branch).checkout
+      repo.branch(options[:branch]).checkout
       files.each do |file|
         if repo.status.deleted.include?(file)
           repo.remove(file)
@@ -107,13 +113,26 @@ module ModuleSync
         end
       end
       begin
-        repo.commit(message)
-        repo.push('origin', branch)
+        opts_commit = {}
+        opts_push = {}
+        if options[:amend]
+          opts_commit = {:amend => true}
+          message = nil
+        end
+        if options[:force]
+          opts_push = {:force => true}
+        end
+        if options[:pre_commit_script]
+          script = "#{File.dirname(File.dirname(__FILE__))}/../contrib/#{options[:pre_commit_script]}"
+          %x[#{script} #{module_root}]
+        end
+        repo.commit(message, opts_commit)
+        repo.push('origin', branch, opts_push)
         # Only bump/tag if pushing didn't fail (i.e. there were changes)
         m = Blacksmith::Modulefile.new("#{module_root}/metadata.json")
-        if bump
-          new = self.bump(repo, m, message, module_root, changelog)
-          self.tag(repo, new, tag_pattern) if tag
+        if options[:bump]
+          new = self.bump(repo, m, message, module_root, options[:changelog])
+          self.tag(repo, new, options[:tag_pattern]) if options[:tag]
         end
       rescue ::Git::GitExecuteError => git_error
         if git_error.message.include? "nothing to commit, working directory clean"
@@ -138,11 +157,11 @@ module ModuleSync
       repo.status.untracked.keep_if{|f,_| !ignored.any?{|i| File.fnmatch(i, f)}}
     end
 
-    def self.update_noop(name, branch)
+    def self.update_noop(name, options)
       puts "Using no-op. Files in #{name} may be changed but will not be committed."
 
       repo = ::Git.open("#{PROJ_ROOT}/#{name}")
-      repo.branch(branch).checkout
+      repo.branch(options[:branch]).checkout
 
       puts "Files changed: "
       repo.diff('HEAD', '--').each do |diff|

@@ -10,8 +10,7 @@ module ModuleSync
       {
         :namespace            => 'puppetlabs',
         :branch               => 'master',
-        :git_user             => 'git',
-        :git_provider_address => 'github.com',
+        :git_base             => 'git@github.com:',
         :managed_modules_conf => 'managed_modules.yml',
         :configs              => '.',
         :tag_pattern          => '%s',
@@ -57,6 +56,14 @@ module ModuleSync
                 'A regular expression to filter repositories to update.') do |filter|
           @options[:filter] = filter
         end
+        opts.on('--amend',
+                'Amend previous commit') do |msg|
+          @options[:amend] = true
+        end
+        opts.on('--force',
+                'Force push amended commit') do |msg|
+          @options[:force] = true
+        end
         opts.on('--noop',
                 'No-op mode') do |msg|
           @options[:noop] = true
@@ -81,7 +88,7 @@ module ModuleSync
       end.parse!
 
       @options.fetch(:message) do
-        if @options[:command] == 'update' && ! @options[:noop]
+        if @options[:command] == 'update' && ! @options[:noop] && ! @options[:amend]
           fail("A commit message is required unless using noop.")
         end
       end

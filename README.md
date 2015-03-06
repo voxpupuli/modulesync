@@ -130,6 +130,18 @@ found.
 msync update -m "Commit message"
 ```
 
+If the user decide to use a different branch than master, s/he might want to amend the commit based on users feedbacks.
+
+```
+msync update --amend
+```
+
+If a push --force is needed.
+
+```
+msync update --amend --force
+```
+
 #### Automating Updates
 
 You can install a pre-push git hook to automatically clone, update, and push
@@ -199,6 +211,35 @@ Then you can run ModuleSync without extra arguments:
 ```
 msync update --noop
 msync update -m "Commit message"
+```
+
+Available parameters for modulesync.yml
+
+* git_base : The default URL to git clone from (Default: 'git@github.com:')
+* namespace : Namespace of the projects to manage (Default: 'puppetlabs')
+* branch : Branch to push to (Default: 'master')
+* remote_branch : Remote branch to push to (Default: Same value as branch)
+* pre_commit_script : A script to be run before commiting (ie. contrib/myfooscript.sh)
+
+##### Example
+
+###### Github
+
+```
+---
+namespace: MySuperOrganization
+branch: modulesyncbranch
+```
+
+###### Gerrit
+
+```
+---
+namespace: stackforge
+git_base:  ssh://jdoe@review.openstack.org:29418/
+branch: msync_foo
+remote_branch: refs/publish/master/msync_foo
+pre_commit_script: openstack-commit-msg-hook.sh
 ```
 
 #### Filtering Repositories
