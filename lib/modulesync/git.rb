@@ -18,9 +18,13 @@ module ModuleSync
         if local_branch_exists?(repo, branch)
           puts "Switching to branch #{branch}"
           repo.checkout(branch)
-        else
+        elsif remote_branch_exists?(repo, branch)
           puts "Creating local branch #{branch} from origin/#{branch}"
           repo.checkout("origin/#{branch}")
+          repo.branch(branch).checkout
+        else
+          repo.checkout('origin/master')
+          puts "Creating new branch #{branch}"
           repo.branch(branch).checkout
         end
       end
@@ -47,13 +51,9 @@ module ModuleSync
           repo = ::Git.open('.')
           repo.fetch
           repo.reset_hard
+          switch_branch(repo, branch)
           if remote_branch_exists?(repo, branch)
-              switch_branch(repo, branch)
-              repo.pull('origin', branch)
-          else # git checkout -b branch origin/master
-            repo.checkout('origin/master')
-            puts "Creating new branch #{branch}"
-            repo.branch(branch).checkout
+            repo.pull('origin', branch)
           end
         end
       end
