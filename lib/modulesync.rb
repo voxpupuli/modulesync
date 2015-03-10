@@ -63,6 +63,7 @@ module ModuleSync
         files_to_delete = []
         files_to_manage.each do |file|
           file_configs = (defaults[file] || {}).merge(module_configs[file] || {})
+          file_configs[:puppet_module] = puppet_module
           if file_configs['unmanaged']
             puts "Not managing #{file} in #{puppet_module}"
             files_to_delete << file
