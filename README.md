@@ -68,7 +68,7 @@ This allows us to, for example, have a set of "required" gems that are added
 to all Gemfiles, and a set of "optional" gems that a single module might add.
 
 The list of modules to manage is in managed\_modules.yml in the configuration
-directory. This lists just the GitHub names of the modules to be managed.
+directory. This lists just the names of the modules to be managed.
 
 ModuleSync can be called from the command line with parameters to change the
 branch you're working on or the remote to clone from and push to. You can also
@@ -101,20 +101,18 @@ github organization and pushes to the master branch.
 
 Make changes to a file in the moduleroot. For sanity's sake you should commit
 and push these changes, but in this mode the update will be rendered from the
-state of the files locally. Run `msync update` from the root of the
-configuration directory (not moduleroot), or use -c <relative path> to point
-it to the location of the configuration directory.
+state of the files locally.
 
 #### Dry-run
 
 Do a dry-run to see what files will be changed, added and removed. This clones
-the modules to `modules/<namespace>-<modulename>` in the current working, or if
-the modules are already cloned, does an effective `git fetch origin; git
-checkout master; git reset --hard origin/master` on the modules. Don't run
-modulesync if the current working directory contains a modules/ directory with
-changes you want to keep. The dry-run makes local changes there, but does not
-commit or push changes. It is still destructive in that it overwrites local
-changes.
+the modules to `modules/<namespace>-<modulename>` in the current working
+directory, or if the modules are already cloned, does an effective `git fetch
+origin; git checkout master; git reset --hard origin/master` on the modules.
+Don't run modulesync if the current working directory contains a modules/
+directory with changes you want to keep. The dry-run makes local changes there,
+but does not commit or push changes. It is still destructive in that it
+overwrites local changes.
 
 ```
 msync update --noop 
@@ -130,13 +128,14 @@ found.
 msync update -m "Commit message"
 ```
 
-If the user decide to use a different branch than master, s/he might want to amend the commit based on users feedbacks.
+Amend the commit if changes are needed.
 
 ```
 msync update --amend
 ```
 
-If a push --force is needed.
+For most workflows you will need to force-push an amended commit. Not required
+for gerrit.
 
 ```
 msync update --amend --force
@@ -167,15 +166,14 @@ you can use this on your own organization's modules. This functionality also
 applies if you want to work on a fork of the puppetlabs modules or work on a
 non-master branch of any organization's modules. ModuleSync does not support
 cloning from one remote and pushing to another, you are expected to fork
-manually. It does not yet support automating pull requests (coming soon).
+manually. It does not support automating pull requests.
 
 #### Dry-run
 
 If you dry-run before doing the live update, you need to specify what namespace
 to clone from because the live update will not re-clone if the modules are
-already cloned. The namespace should be your fork, not the upstream module. The
-format should be the SSH or HTTP prefix of the full URL minus the module name
-itself.
+already cloned. The namespace should be your fork, not the upstream module (if
+working on a fork).
 
 ```
 msync update -n puppetlabs --noop
@@ -231,6 +229,14 @@ namespace: MySuperOrganization
 branch: modulesyncbranch
 ```
 
+###### Gitlab
+
+```
+---
+git_base: 'user@gitlab.example.com:'
+namespace: MySuperOrganization
+branch: modulesyncbranch
+
 ###### Gerrit
 
 ```
@@ -261,7 +267,7 @@ arguments.
 msync hook activate -n puppetlabs -b sync_branch
 ```
 
-### Updating metadata.json
+#### Updating metadata.json
 
 Modulesync can optionally bump the minor version in `metadata.json` for each
 modified modules if you add the `--bump` flag to the command line:
