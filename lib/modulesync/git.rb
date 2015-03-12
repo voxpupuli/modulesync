@@ -117,7 +117,6 @@ module ModuleSync
         opts_push = {}
         if options[:amend]
           opts_commit = {:amend => true}
-          message = nil
         end
         if options[:force]
           opts_push = {:force => true}
