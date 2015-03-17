@@ -67,6 +67,9 @@ overridden or extended by adding a file called .sync.yml to the module itself.
 This allows us to, for example, have a set of "required" gems that are added
 to all Gemfiles, and a set of "optional" gems that a single module might add.
 
+Within the templates, values can be accessed in the `@configs` hash, which is
+merged from the values under the keys `:global` and the current file name.
+
 The list of modules to manage is in managed\_modules.yml in the configuration
 directory. This lists just the names of the modules to be managed.
 

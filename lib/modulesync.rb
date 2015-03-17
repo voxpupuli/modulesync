@@ -59,10 +59,12 @@ module ModuleSync
         git_base = "#{options[:git_base]}#{options[:namespace]}"
         Git.pull(git_base, puppet_module, options[:branch], opts || {})
         module_configs = Util.parse_config("#{PROJ_ROOT}/#{puppet_module}/#{MODULE_CONF_FILE}")
-        files_to_manage = module_files | defaults.keys | module_configs.keys
+        global_defaults = defaults[GLOBAL_DEFAULTS_KEY] || {}
+        module_defaults = module_configs[GLOBAL_DEFAULTS_KEY] || {}
+        files_to_manage = (module_files | defaults.keys | module_configs.keys) - [GLOBAL_DEFAULTS_KEY]
         files_to_delete = []
         files_to_manage.each do |file|
-          file_configs = (defaults[file] || {}).merge(module_configs[file] || {})
+          file_configs = global_defaults.merge(defaults[file] || {}).merge(module_defaults).merge(module_configs[file] || {})
           file_configs[:puppet_module] = puppet_module
           if file_configs['unmanaged']
             puts "Not managing #{file} in #{puppet_module}"

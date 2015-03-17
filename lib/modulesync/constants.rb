@@ -6,5 +6,6 @@ module ModuleSync
     MODULESYNC_CONF_FILE = 'modulesync.yml'
     PROJ_ROOT            = './modules'
     HOOK_FILE            = '.git/hooks/pre-push'
+    GLOBAL_DEFAULTS_KEY  = :global
   end
 end
