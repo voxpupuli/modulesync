@@ -118,7 +118,7 @@ but does not commit or push changes. It is still destructive in that it
 overwrites local changes.
 
 ```
-msync update --noop 
+msync update --noop
 ```
 
 #### Damage mode
@@ -239,6 +239,7 @@ branch: modulesyncbranch
 git_base: 'user@gitlab.example.com:'
 namespace: MySuperOrganization
 branch: modulesyncbranch
+```
 
 ###### Gerrit
 
