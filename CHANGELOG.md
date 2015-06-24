@@ -1,3 +1,19 @@
+##2015-06-24 - 0.4.0
+
+### Summary
+
+This release adds a --remote-branch flag and adds a global key for template
+config.
+
+#### Features
+
+- Expose --remote-branch
+- Add a global config key
+
+#### Bugfixes
+
+- Fix markdown syntax in README
+
 ##2015-03-12 - 0.3.0
 
 ### Summary
