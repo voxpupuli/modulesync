@@ -260,6 +260,15 @@ If you only want to sync some of the repositories in your managed_modules.yml, u
 msync update -f augeas -m "Commit message"
 msync update -f puppet-a..o "Commit message"
 ```
+
+#### Pushing to a different remote branch
+
+If you want to push the modified branch to a different remote branch, you can use the -r flag:
+
+```
+msync update -r master_new -m "Commit message"
+```
+
 #### Automating updates
 
 If you install a git hook, you need to tell it what remote and branch to push
