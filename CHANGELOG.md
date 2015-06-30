@@ -1,3 +1,13 @@
+##2015-06-30 - 0.5.0
+
+### Summary
+
+This release adds the ability to sync a non-bare local git repo.
+
+#### Features
+
+- Allow one to sync non-bare local git repository
+
 ##2015-06-24 - 0.4.0
 
 ### Summary
