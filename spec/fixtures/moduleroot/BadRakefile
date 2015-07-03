@@ -1,0 +1,9 @@
+require 'puppetlabs_spec_helper/rake_tasks'
+require 'puppet-lint/tasks/puppet-lint'
+
+PuppetLint.configuration.fail_on_warnings = true
+checks = @configs['default_disabled_lint_checks'] + ( @configs['extra_disabled_lint_checks'] || [] ) -%>
+<% checks.each do |check| -%>
+PuppetLint.configuration.send('<%= check %>')
+<% end -%>
+PuppetLint.configuration.ignore_paths = ["spec/**/*.pp", "pkg/**/*.pp"]
