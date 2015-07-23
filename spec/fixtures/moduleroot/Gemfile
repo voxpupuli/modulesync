@@ -1,0 +1,62 @@
+source ENV['GEM_SOURCE'] || "https://rubygems.org"
+
+def location_for(place, fake_version = nil)
+  if place =~ /^(git[:@][^#]*)#(.*)/
+    [fake_version, { :git => $1, :branch => $2, :require => false }].compact
+  elsif place =~ /^file:\/\/(.*)/
+    ['>= 0', { :path => File.expand_path($1), :require => false }]
+  else
+    [place, { :require => false }]
+  end
+end
+
+<% groups = {} -%>
+<% (@configs['required'].keys + ((@configs['optional'] || {}).keys)).uniq.each do |key| -%>
+<%   groups[key] = (@configs['required'][key] || []) + ((@configs['optional'] || {})[key] || []) -%>
+<% end -%>
+<% -%>
+<% groups.each do |group, gems| -%>
+group <%= group %> do
+<% maxlen = gems.map! do |gem| -%>
+<%            { -%>
+<%              'gem'     => gem['gem'], -%>
+<%              'version' => gem['version'], -%>
+<%              'git'     => gem['git'], -%>
+<%              'branch'  => gem['branch'], -%>
+<%              'length'  => gem['gem'].length + (("', '".length if gem['version']) || 0) + gem['version'].to_s.length -%>
+<%            } -%>
+<%          end.map do |gem| -%>
+<%            gem['length'] -%>
+<%          end.max -%>
+<% gems.each do |gem| -%>
+<% if gem['gem'] == 'beaker-rspec' -%>
+  if beaker_version = ENV['BEAKER_VERSION']
+    gem 'beaker', *location_for(beaker_version)
+  end
+  if beaker_rspec_version = ENV['BEAKER_RSPEC_VERSION']
+    gem 'beaker-rspec', *location_for(beaker_rspec_version)
+  else
+    gem 'beaker-rspec',  :require => false
+  end
+<% else -%>
+  gem '<%= gem['gem'] %>'<%= ", '#{gem['version']}'" if gem['version'] %>, <%= ' ' * (maxlen - gem['length']) %> :require => false<%= ", :git => '#{gem['git']}'" if gem['git'] %><%= ", :branch => '#{gem['branch']}'" if gem['branch'] %>
+<% end -%>
+<% end -%>
+end
+
+<% end -%>
+
+
+if facterversion = ENV['FACTER_GEM_VERSION']
+  gem 'facter', facterversion, :require => false
+else
+  gem 'facter', :require => false
+end
+
+if puppetversion = ENV['PUPPET_GEM_VERSION']
+  gem 'puppet', puppetversion, :require => false
+else
+  gem 'puppet', :require => false
+end
+
+# vim:ft=ruby

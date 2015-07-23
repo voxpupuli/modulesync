@@ -1,0 +1,12 @@
+---
+sudo: false
+language: ruby
+cache: bundler
+script: 'bundle exec rake test'
+before_script:
+  - git config --global user.email "test@example.com"
+  - git config --global user.name "Travis"
+rvm:
+  - 1.9.3
+  - 2.0
+  - 2.1
