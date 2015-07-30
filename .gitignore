@@ -1,3 +1,4 @@
+tmp/
 modules/
 *.gem
 Gemfile.lock
