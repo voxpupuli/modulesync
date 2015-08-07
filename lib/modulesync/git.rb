@@ -30,24 +30,24 @@ module ModuleSync
       end
     end
 
-    def self.pull(git_base, name, branch, opts)
-      if ! Dir.exists?(PROJ_ROOT)
-        Dir.mkdir(PROJ_ROOT)
+    def self.pull(git_base, name, branch, project_root, opts)
+      if ! Dir.exists?(project_root)
+        Dir.mkdir(project_root)
       end
 
       # Repo needs to be cloned in the cwd
-      if ! Dir.exists?("#{PROJ_ROOT}/#{name}") || ! Dir.exists?("#{PROJ_ROOT}/#{name}/.git")
+      if ! Dir.exists?("#{opts[:project_root]}/#{name}") || ! Dir.exists?("#{opts[:project_root]}/#{name}/.git")
         puts "Cloning repository fresh"
         remote = opts[:remote] || (git_base.start_with?('file://') ? "#{git_base}/#{name}" : "#{git_base}/#{name}.git")
-        local = "#{PROJ_ROOT}/#{name}"
+        local = "#{project_root}/#{name}"
         puts "Cloning from #{remote}"
         repo = ::Git.clone(remote, local)
         switch_branch(repo, branch)
       # Repo already cloned, check out master and override local changes
       else
         # Some versions of git can't properly handle managing a repo from outside the repo directory
-        Dir.chdir("#{PROJ_ROOT}/#{name}") do
-          puts "Overriding any local changes to repositories in #{PROJ_ROOT}"
+        Dir.chdir("#{project_root}/#{name}") do
+          puts "Overriding any local changes to repositories in #{project_root}"
           repo = ::Git.open('.')
           repo.fetch
           repo.reset_hard
@@ -96,7 +96,7 @@ module ModuleSync
 
     # Git add/rm, git commit, git push
     def self.update(name, files, options)
-      module_root = "#{PROJ_ROOT}/#{name}"
+      module_root = "#{options[:project_root]}/#{name}"
       message = options[:message]
       if options[:remote_branch]
         branch = "#{options[:branch]}:#{options[:remote_branch]}"
@@ -159,7 +159,7 @@ module ModuleSync
     def self.update_noop(name, options)
       puts "Using no-op. Files in #{name} may be changed but will not be committed."
 
-      repo = ::Git.open("#{PROJ_ROOT}/#{name}")
+      repo = ::Git.open("#{options[:project_root]}/#{name}")
       repo.branch(options[:branch]).checkout
 
       puts "Files changed: "

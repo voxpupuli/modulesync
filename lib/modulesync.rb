@@ -13,8 +13,8 @@ module ModuleSync
     "#{config_path}/#{MODULE_FILES_DIR}/#{file}"
   end
 
-  def self.module_file(puppet_module, file)
-    "#{PROJ_ROOT}/#{puppet_module}/#{file}"
+  def self.module_file(project_root, puppet_module, file)
+    "#{project_root}/#{puppet_module}/#{file}"
   end
 
   def self.local_files(path)
@@ -58,9 +58,9 @@ module ModuleSync
         puts "Syncing #{puppet_module}"
         unless options[:offline]
           git_base = "#{options[:git_base]}#{options[:namespace]}"
-          Git.pull(git_base, puppet_module, options[:branch], opts || {})
+          Git.pull(git_base, puppet_module, options[:branch], options[:project_root], opts || {})
         end
-        module_configs = Util.parse_config("#{PROJ_ROOT}/#{puppet_module}/#{MODULE_CONF_FILE}")
+        module_configs = Util.parse_config("#{options[:project_root]}/#{puppet_module}/#{MODULE_CONF_FILE}")
         global_defaults = defaults[GLOBAL_DEFAULTS_KEY] || {}
         module_defaults = module_configs[GLOBAL_DEFAULTS_KEY] || {}
         files_to_manage = (module_files | defaults.keys | module_configs.keys) - [GLOBAL_DEFAULTS_KEY]
@@ -72,11 +72,11 @@ module ModuleSync
             puts "Not managing #{file} in #{puppet_module}"
             files_to_delete << file
           elsif file_configs['delete']
-            Renderer.remove(module_file(puppet_module, file))
+            Renderer.remove(module_file(options['project_root'], puppet_module, file))
           else
             erb = Renderer.build(local_file(options[:configs], file))
             template = Renderer.render(erb, file_configs)
-            Renderer.sync(template, "#{PROJ_ROOT}/#{puppet_module}/#{file}")
+            Renderer.sync(template, "#{options[:project_root]}/#{puppet_module}/#{file}")
           end
         end
         files_to_manage -= files_to_delete

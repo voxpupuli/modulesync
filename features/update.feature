@@ -30,6 +30,35 @@ Feature: update
     Given I run `cat modules/puppet-test/test`
     Then the output should contain "aruba"
 
+  Scenario: Adding a new file into foobar project-root
+    Given a file named "managed_modules.yml" with:
+      """
+      ---
+        - puppet-test
+      """
+    And a file named "modulesync.yml" with:
+      """
+      ---
+        namespace: maestrodev
+        git_base: https://github.com/
+      """
+    And a file named "config_defaults.yml" with:
+      """
+      ---
+      test:
+        name: aruba
+      """
+    And a directory named "moduleroot"
+    And a file named "moduleroot/test" with:
+      """
+      <%= @configs['name'] %>
+      """
+    When I run `msync update --noop --project-root=foobar`
+    Then the exit status should be 0
+    And the output should match /Files added:\s+test/
+    Given I run `cat foobar/puppet-test/test`
+    Then the output should contain "aruba"
+
   Scenario: Modifying an existing file
     Given a file named "managed_modules.yml" with:
       """
