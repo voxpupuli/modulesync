@@ -103,6 +103,18 @@ Feature: update
       """
       require 'puppetlabs_spec_helper/module_helper'
       """
+    When I run `msync update --offline --noop`
+    Then the exit status should be 0
+    And the output should match:
+      """
+      Files added:\s+
+      spec/spec_helper.rb
+      """
+    When I run `msync update --offline`
+    Then the exit status should be 0
+    And the output should match:
+      """
+      """
 
   Scenario: Updating a module with a .sync.yml file
     Given a file named "managed_modules.yml" with:
