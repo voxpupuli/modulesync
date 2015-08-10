@@ -121,6 +121,17 @@ overwrites local changes.
 msync update --noop
 ```
 
+#### Offline support
+The --offline flag was added to allow a user to disable git support within
+msync. One reason for this is because the user wants to control git commands
+external to msync.  Note, when using this command, msync assumes you have
+create the folder structure and git repositories correctly. If not, msync will
+fail to update correctly.
+
+```
+msync update --offline
+```
+
 #### Damage mode
 
 Make changes for real and push them back to master. This operates on the

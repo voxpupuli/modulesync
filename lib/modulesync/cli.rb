@@ -35,7 +35,7 @@ module ModuleSync
       @options.merge!(Hash.transform_keys_to_symbols(Util.parse_config(MODULESYNC_CONF_FILE)))
       @options[:command] = args[0] if commands_available.include?(args[0])
       opt_parser = OptionParser.new do |opts|
-        opts.banner = "Usage: msync update [-m <commit message>] [-c <directory> ] [--noop] [--bump] [--changelog] [--tag] [--tag-pattern <tag_pattern>] [-n <namespace>] [-b <branch>] [-r <branch>] [-f <filter>] | hook activate|deactivate [-c <directory> ] [-n <namespace>] [-b <branch>]"
+        opts.banner = "Usage: msync update [-m <commit message>] [-c <directory> ] [--offline] [--noop] [--bump] [--changelog] [--tag] [--tag-pattern <tag_pattern>] [-n <namespace>] [-b <branch>] [-r <branch>] [-f <filter>] | hook activate|deactivate [-c <directory> ] [-n <namespace>] [-b <branch>]"
         opts.on('-m', '--message <msg>',
                 'Commit message to apply to updated modules') do |msg|
           @options[:message] = msg
@@ -72,6 +72,10 @@ module ModuleSync
                 'No-op mode') do |msg|
           @options[:noop] = true
         end
+        opts.on('--offline',
+                'Do not run git command. Helpful if you have existing repositories locally.') do |msg|
+          @options[:offline] = true
+        end
         opts.on('--bump',
                 'Bump module version to the next minor') do |msg|
           @options[:bump] = true
@@ -92,8 +96,8 @@ module ModuleSync
       end.parse!
 
       @options.fetch(:message) do
-        if @options[:command] == 'update' && ! @options[:noop] && ! @options[:amend]
-          fail("A commit message is required unless using noop.")
+        if @options[:command] == 'update' && ! @options[:noop] && ! @options[:amend] && ! @options[:offline]
+          fail("A commit message is required unless using noop or offline.")
         end
       end
 
