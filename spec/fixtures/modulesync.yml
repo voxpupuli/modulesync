@@ -1,0 +1,3 @@
+---
+  git_base: 'https://github.com/'
+  namespace: 'puppet-community'

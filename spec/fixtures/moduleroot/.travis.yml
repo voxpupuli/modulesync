@@ -1,0 +1,27 @@
+---
+sudo: false
+language: ruby
+bundler_args: --without system_tests
+script: <%= @configs['script'] %>
+matrix:
+  fast_finish: true
+  include:
+<% @configs['includes'].each do |include| -%>
+  - rvm: <%= include['rvm'] %>
+    env: <%= include['env'] %>
+<% end -%>
+<% if @configs['extras'] -%>
+<%   @configs['extras'].each do |extra| -%>
+  - rvm: <%= extra['rvm'] %>
+    env: <%= extra['env'] %>
+<%   end -%>
+<% end -%>
+<% if @configs['allow_failures'] -%>
+<%   @configs['allow_failures'].each do |allow_failures| -%>
+  allow_failures:
+    - rvm: <%= allow_failures['rvm'] %>
+      env: <%= allow_failures['env'] %>
+<%   end -%>
+<% end -%>
+notifications:
+  email: false

@@ -1,124 +1,82 @@
-require 'optparse'
-require 'modulesync/constants'
+require 'thor'
+require 'modulesync/hook'
 require 'modulesync/util'
+require 'modulesync/project'
+require 'modulesync/version'
+require 'find'
 
 module ModuleSync
-  class CLI
-    include Constants
+  module CLI
+    class Hook < Thor
+      class_option :project_root, :aliases => '-c', :desc => 'The directory that contains a list of managed modules, file templates, and default values for template variables.', :default => Dir.pwd
 
-    def defaults
-      {
-        :namespace            => 'puppetlabs',
-        :branch               => 'master',
-        :git_base             => 'git@github.com:',
-        :managed_modules_conf => 'managed_modules.yml',
-        :configs              => '.',
-        :tag_pattern          => '%s',
-        :project_root         => './modules',
-      }
-    end
-
-    def commands_available
-      [
-        'update',
-        'hook',
-      ]
-    end
-
-    def fail(message)
-      puts @options[:help]
-      puts message
-      exit
-    end
-
-    def parse_opts(args)
-      @options = defaults
-      @options.merge!(Hash.transform_keys_to_symbols(Util.parse_config(MODULESYNC_CONF_FILE)))
-      @options[:command] = args[0] if commands_available.include?(args[0])
-      opt_parser = OptionParser.new do |opts|
-        opts.banner = "Usage: msync update [-m <commit message>] [-c <directory> ] [--offline] [--noop] [--bump] [--changelog] [--tag] [--tag-pattern <tag_pattern>] [-p <project_root> [-n <namespace>] [-b <branch>] [-r <branch>] [-f <filter>] | hook activate|deactivate [-c <directory> ] [-n <namespace>] [-b <branch>]"
-        opts.on('-m', '--message <msg>',
-                'Commit message to apply to updated modules') do |msg|
-          @options[:message] = msg
-        end
-        opts.on('-n', '--namespace <url>',
-                'Remote github namespace (user or organization) to clone from and push to. Defaults to puppetlabs') do |namespace|
-          @options[:namespace] = namespace
-        end
-        opts.on('-c', '--configs <directory>',
-                'The local directory or remote repository to define the list of managed modules, the file templates, and the default values for template variables.') do |configs|
-          @options[:configs] = configs
-        end
-        opts.on('-b', '--branch <branch>',
-                'Branch name to make the changes in. Defaults to "master"') do |branch|
-          @options[:branch] = branch
-        end
-        opts.on('-p', '--project-root <path>',
-                'Path used by git to clone modules into. Defaults to "modules"') do |project_root|
-          @options[:project_root] = project_root
-        end
-        opts.on('-r', '--remote-branch <branch>',
-                'Remote branch name to push the changes to. Defaults to the branch name') do |branch|
-          @options[:remote_branch] = branch
-        end
-        opts.on('-f', '--filter <filter>',
-                'A regular expression to filter repositories to update.') do |filter|
-          @options[:filter] = filter
-        end
-        opts.on('--amend',
-                'Amend previous commit') do |msg|
-          @options[:amend] = true
-        end
-        opts.on('--force',
-                'Force push amended commit') do |msg|
-          @options[:force] = true
-        end
-        opts.on('--noop',
-                'No-op mode') do |msg|
-          @options[:noop] = true
-        end
-        opts.on('--offline',
-                'Do not run git command. Helpful if you have existing repositories locally.') do |msg|
-          @options[:offline] = true
-        end
-        opts.on('--bump',
-                'Bump module version to the next minor') do |msg|
-          @options[:bump] = true
-        end
-        opts.on('--changelog',
-                'Update CHANGELOG.md if version was bumped') do |msg|
-          @options[:changelog] = true
-        end
-        opts.on('--tag',
-                'Git tag with the current module version') do |msg|
-          @options[:tag] = true
-        end
-        opts.on('--tag-pattern',
-                'The pattern to use when tagging releases.') do |pattern|
-          @options[:tag_pattern] = pattern
-        end
-        @options[:help] = opts.help
-      end.parse!
-
-      @options.fetch(:message) do
-        if @options[:command] == 'update' && ! @options[:noop] && ! @options[:amend] && ! @options[:offline]
-          fail("A commit message is required unless using noop or offline.")
-        end
+      desc 'activate', 'activate a git hook'
+      def activate
+        project = Project.new(options[:project_root])
+        ModuleSync::Hook.new(project.hook_file, project.config['namespace'], project.config['branch']).activate
       end
 
-      @options.fetch(:command) do
-        fail("A command is required.")
+      desc 'deactivate', 'deactivate a git hook'
+      def deactivate
+        project = Project.new(options[:project_root])
+        ModuleSync::Hook.new(project.hook_file).deactivate
       end
-
-      if @options[:command] == 'hook' &&
-           (! args.include?('activate') && ! args.include?('deactivate'))
-        fail("You must activate or deactivate the hook.")
-      end
-
     end
 
-    def options
-      @options
+    class List < Thor
+      class_option :project_root, :aliases => '-c', :desc => 'The directory that contains a list of managed modules, file templates, and default values for template variables.', :default => Dir.pwd
+
+      desc 'modules', 'List the modules in managed_modules.yml'
+      def modules
+        project = ModuleSync::Project.new(options[:project_root])
+        puts project.module_list.is_a?(Hash) ? project.module_list.keys.join('\n') : project.module_list.join('\n')
+      end
+
+      desc 'files', 'List the files in the moduleroot'
+      def files
+        puts ModuleSync::ModuleRoot.new(File.join(options[:project_root], 'moduleroot')).source_files.join("\n")
+      end
+    end
+
+    class Base < Thor
+      class_option :project_root, :aliases => '-c', :desc => 'The directory that contains a list of managed modules, file templates, and default values for template variables.', :default => Dir.pwd
+
+      desc 'version', 'Print the version'
+      def version
+        puts ModuleSync::VERSION
+      end
+
+      desc 'update', 'Update the modules in managed_modules.yml'
+      option :message, :aliases => '-m', :desc => 'Commit message to apply to updated modules. Required unless running in noop mode.'
+      option :namespace, :aliases => '-n', :desc => 'Remote github namespace (user or organization) to clone from and push to. Defaults to puppetlabs.'
+      option :branch, :aliases => '-b', :desc => 'Branch name to make the changes in. Defaults to master.'
+      option :remote_branch, :aliases => '-r', :desc => 'Remote branch name to push the changes to. Defaults to the branch name.'
+      option :filter, :aliases => '-f', :desc => 'A regular expression to filter repositories to update.'
+      option :amend, :type => :boolean, :default => false, :desc => 'Amend previous commit'
+      option :force, :type => :boolean, :default => false, :desc => 'Force push amended commit'
+      option :noop, :type => :boolean, :default => false, :desc => 'No-op mode'
+      def update
+        config = {}
+
+        fail MalformattedArgumentError, 'No value provided for required options "--message"' unless options[:noop] || options[:message]
+
+        config['noop'] = options[:noop]
+        config['git_opts'] = { 'amend' => options[:amend], 'force' => options[:force] }
+
+        [:message, :namespace, :branch, :remote_branch, :filter].each do |opt|
+          config[opt.to_s] = options[opt] if options[opt]
+        end
+
+        project = Project.new(options[:project_root], config)
+
+        project.modules.each(&:update)
+      end
+
+      desc 'list', 'List managed modules, files, etc...'
+      subcommand 'list', ModuleSync::CLI::List
+
+      desc 'hook [activate|deactivate]', 'Activate or deactivate the git hook'
+      subcommand 'hook', ModuleSync::CLI::Hook
     end
   end
 end
