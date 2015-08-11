@@ -1,4 +1,4 @@
 tmp/
-modules/
+coverage/
 *.gem
 Gemfile.lock
