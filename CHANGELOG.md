@@ -1,3 +1,22 @@
+##2015-08-11 - 0.6.0
+
+### Summary
+
+This release adds two new flags to help modulesync better integrate with CI tools.
+
+#### Features
+
+- Add --project-root flag
+- Create --offline flag to disable git functionality
+
+#### Bugfixes
+
+- Fix :remote option for repo
+
+#### Maintenance
+
+- Added tests
+
 ##2015-06-30 - 0.5.0
 
 ### Summary
