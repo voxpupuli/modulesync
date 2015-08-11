@@ -169,19 +169,35 @@ Feature: update
       """
       require 'puppetlabs_spec_helper/module_helper'
       """
-    When I run `msync update --offline --noop`
-    Then the exit status should be 0
-    And the output should match:
+
+  Scenario: Updating offline
+    Given a file named "managed_modules.yml" with:
       """
-      Files added:
-      ============
-      spec/spec_helper.rb
+      ---
+        - puppet-test
+      """
+    And a file named "modulesync.yml" with:
+      """
+      ---
+        namespace: maestrodev
+        git_base: https://github.com/
+      """
+    And a file named "config_defaults.yml" with:
+      """
+      ---
+      spec/spec_helper.rb:
+        require:
+          - puppetlabs_spec_helper/module_helper
+      """
+    And a file named "moduleroot/spec/spec_helper.rb" with:
+      """
+      <% @configs['require'].each do |required| -%>
+        require '<%= required %>'
+      <% end %>
       """
     When I run `msync update --offline`
     Then the exit status should be 0
-    And the output should match:
-      """
-      """
+    And the output should not match /Files (changed|added|deleted):/
 
   Scenario: Pulling a module that already exists in the modules directory
     Given a file named "managed_modules.yml" with:

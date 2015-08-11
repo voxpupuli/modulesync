@@ -227,13 +227,21 @@ msync update -m "Commit message"
 
 Available parameters for modulesync.yml
 
-* git_base : The default URL to git clone from (Default: 'git@github.com:')
-* namespace : Namespace of the projects to manage (Default: 'puppetlabs')
-* branch : Branch to push to (Default: 'master')
-* remote_branch : Remote branch to push to (Default: Same value as branch)
-* hooks : A hash of scripts (pre_push or pre_commit) relative to the project root to be run before commiting or pushing the module. Hooks receive the qualified path to the root of the module as an argument.
+* `git_base`: The default URL to git clone from (Default: `git@github.com:`)
+* `namespace`: Namespace of the projects to manage (Default: `puppetlabs`)
+* `branch`: Branch to push to (Default: `master`)
+* `remote_branch`: Remote branch to push to (Default: Same value as branch)
+* `hooks`: A hash of scripts (`pre_push` or `pre_commit`) relative to the project root to be run before commiting or pushing the module. Hooks receive the qualified path to the root of the module as an argument.
+* `module_conf_file`: The name of the module's local sync file (Default: `.sync.yml`)
+* `hook_file`: The path to the hook file that should be written when you run the `msync hook activate` command
+* `project_root`: The root of the ModuleSync project directory. (Default: `.`)
+* `defaults_file`: The path to the file where configuration defaults are stored. (Default: `#{project_root}/config_defaults.yml`)
+* `modules_dir`: The path to the directory where the modules should be cloned. (Default: `#{project_root}/modules`)
+* `moduleroot_dir`: The path to the directory where the module templates are stored (Default: `#{project_root}/moduleroot`)
+* `managed_modules_file`: The path to the list of managed modules (Default: `#{project_root}/managed_modules.yml`)
+* `global_defaults_key`: The key under which global variables should be stored in the `defaults_file` and `module_conf_file`. (Default: `:global`)
 
-##### Example
+##### Examples
 
 ###### Github
 
@@ -293,51 +301,25 @@ arguments.
 msync hook activate -n puppetlabs -b sync_branch
 ```
 
-#### Updating metadata.json
+#### Using `pre_commit` or `pre_push` scripts
+ModuleSync can run a script on your module before it runs `git commit` or `git push`. The hook script can be any file relative to the `project_root`. This can be configured on a project-wide basis in `modulesync.yml` or on a module basis in `managed_modules.yml`:
 
-Modulesync can optionally bump the minor version in `metadata.json` for each
-modified modules if you add the `--bump` flag to the command line:
-
+##### In `managed_modules.yml`:
 ```
-msync update -m "Commit message" --bump
-```
-
-#### Tagging repositories
-
-If you wish to tag the modified repositories with the newly bumped version,
-you can do so by using the `--tag` flag:
-
-```
-msync update -m "Commit message" --bump --tag
+---
+  puppetlabs-stdlib:
+    hooks:
+      pre_push: hooks/pre_push_script.sh
+      pre_commit: hooks/pre_commit_script.sh
 ```
 
-#### Setting the tag pattern
-
-You can also set the format of the tag to be used (`printf`-formatted)
-by setting the `tag_pattern` option:
-
+##### In `modulesync.yml`:
 ```
-msync update -m "Commit message" --bump --tag --tag_pattern 'v%s'
+---
+  hooks:
+    pre_commit: hooks/openstack-commit-msg-hook.sh
+    pre_push: hooks/my-pre-push-script.sh
 ```
-
-The default for the tag pattern is `%s`.
-
-#### Updating the CHANGELOG
-
-When bumping the version in `metadata.json`, modulesync can let you
-updating `CHANGELOG.md` in each modified repository.
-
-This is one by using the `--changelog` flag:
-
-```
-msync update -m "Commit message" --bump --changelog
-```
-
-This flag will cause the `CHANGELOG.md` file to be updated with the
-current date, bumped (minor) version, and commit message.
-
-If `CHANGELOG.md` is absent in the repository, nothing will happen.
-
 
 The Templates
 -------------

@@ -55,6 +55,8 @@ module ModuleSync
       option :amend, :type => :boolean, :default => false, :desc => 'Amend previous commit'
       option :force, :type => :boolean, :default => false, :desc => 'Force push amended commit'
       option :noop, :type => :boolean, :default => false, :desc => 'No-op mode'
+      option :offline, :type => :boolean, :default => false, :desc => 'Do not run any Git commands. Allows the user to manage Git outside of ModuleSync.'
+
       def update
         config = {}
 
@@ -69,7 +71,11 @@ module ModuleSync
 
         project = Project.new(options[:project_root], config)
 
-        project.modules.each(&:update)
+        if options[:offline]
+          project.modules.each(&:sync)
+        else
+          project.modules.each(&:update)
+        end
       end
 
       desc 'list', 'List managed modules, files, etc...'
