@@ -231,7 +231,7 @@ Available parameters for modulesync.yml
 * namespace : Namespace of the projects to manage (Default: 'puppetlabs')
 * branch : Branch to push to (Default: 'master')
 * remote_branch : Remote branch to push to (Default: Same value as branch)
-* pre_commit_script : A script to be run before commiting (ie. contrib/myfooscript.sh)
+* hooks : A hash of scripts (pre_push or pre_commit) relative to the project root to be run before commiting or pushing the module. Hooks receive the qualified path to the root of the module as an argument.
 
 ##### Example
 
@@ -260,7 +260,9 @@ namespace: stackforge
 git_base:  ssh://jdoe@review.openstack.org:29418/
 branch: msync_foo
 remote_branch: refs/publish/master/msync_foo
-pre_commit_script: openstack-commit-msg-hook.sh
+hooks:
+  pre_commit: hooks/openstack-commit-msg-hook.sh
+  pre_push: hooks/my-pre-push-script.sh
 ```
 
 #### Filtering Repositories
