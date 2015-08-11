@@ -1,8 +1,8 @@
 #!/usr/bin/env ruby
 
 lib = File.expand_path('../../lib', __FILE__)
-$:.unshift(lib) unless $:.include?(lib)
+$LOAD_PATH.unshift(lib) unless $LOAD_PATH.include?(lib)
 
-require 'modulesync'
+require 'modulesync/cli'
 
-ModuleSync.run(ARGV)
+ModuleSync::CLI::Base.start(ARGV)
