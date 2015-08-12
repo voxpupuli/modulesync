@@ -36,7 +36,7 @@ module ModuleSync
       end
 
       # Repo needs to be cloned in the cwd
-      if ! Dir.exists?("#{opts[:project_root]}/#{name}") || ! Dir.exists?("#{opts[:project_root]}/#{name}/.git")
+      if ! Dir.exists?("#{project_root}/#{name}") || ! Dir.exists?("#{project_root}/#{name}/.git")
         puts "Cloning repository fresh"
         remote = opts[:remote] || (git_base.start_with?('file://') ? "#{git_base}/#{name}" : "#{git_base}/#{name}.git")
         local = "#{project_root}/#{name}"
