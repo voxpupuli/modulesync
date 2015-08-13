@@ -1,3 +1,13 @@
+##2015-08-13 - 0.6.1
+
+### Summary
+
+This is a bugfix release to fix an issue caused by the --project-root flag.
+
+#### Bugfixes
+
+- Fix bug in git pull function (#55)
+
 ##2015-08-11 - 0.6.0
 
 ### Summary
