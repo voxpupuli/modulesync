@@ -1,0 +1,15 @@
+inherit_from: .rubocop_todo.yml
+
+AllCops:
+  Exclude:
+    - 'vendor/**/*'
+    - 'tmp/**/*'
+    - 'pkg/**/*'
+
+# we still support ruby 1.8
+Style/HashSyntax:
+  Enabled: false
+
+# dealbreaker:
+Style/TrailingComma:
+  Enabled: false

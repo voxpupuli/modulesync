@@ -14,15 +14,15 @@ module ModuleSync
         :managed_modules_conf => 'managed_modules.yml',
         :configs              => '.',
         :tag_pattern          => '%s',
-        :project_root         => './modules',
+        :project_root         => './modules'
       }
     end
 
     def commands_available
-      [
-        'update',
-        'hook',
-      ]
+      %w(
+        update
+        hook
+      )
     end
 
     def fail(message)
@@ -36,7 +36,7 @@ module ModuleSync
       @options.merge!(Hash.transform_keys_to_symbols(Util.parse_config(MODULESYNC_CONF_FILE)))
       @options[:command] = args[0] if commands_available.include?(args[0])
       opt_parser = OptionParser.new do |opts|
-        opts.banner = "Usage: msync update [-m <commit message>] [-c <directory> ] [--offline] [--noop] [--bump] [--changelog] [--tag] [--tag-pattern <tag_pattern>] [-p <project_root> [-n <namespace>] [-b <branch>] [-r <branch>] [-f <filter>] | hook activate|deactivate [-c <directory> ] [-n <namespace>] [-b <branch>]"
+        opts.banner = 'Usage: msync update [-m <commit message>] [-c <directory> ] [--offline] [--noop] [--bump] [--changelog] [--tag] [--tag-pattern <tag_pattern>] [-p <project_root> [-n <namespace>] [-b <branch>] [-r <branch>] [-f <filter>] | hook activate|deactivate [-c <directory> ] [-n <namespace>] [-b <branch>]'
         opts.on('-m', '--message <msg>',
                 'Commit message to apply to updated modules') do |msg|
           @options[:message] = msg
@@ -66,31 +66,31 @@ module ModuleSync
           @options[:filter] = filter
         end
         opts.on('--amend',
-                'Amend previous commit') do |msg|
+                'Amend previous commit') do |_msg|
           @options[:amend] = true
         end
         opts.on('--force',
-                'Force push amended commit') do |msg|
+                'Force push amended commit') do |_msg|
           @options[:force] = true
         end
         opts.on('--noop',
-                'No-op mode') do |msg|
+                'No-op mode') do |_msg|
           @options[:noop] = true
         end
         opts.on('--offline',
-                'Do not run git command. Helpful if you have existing repositories locally.') do |msg|
+                'Do not run git command. Helpful if you have existing repositories locally.') do |_msg|
           @options[:offline] = true
         end
         opts.on('--bump',
-                'Bump module version to the next minor') do |msg|
+                'Bump module version to the next minor') do |_msg|
           @options[:bump] = true
         end
         opts.on('--changelog',
-                'Update CHANGELOG.md if version was bumped') do |msg|
+                'Update CHANGELOG.md if version was bumped') do |_msg|
           @options[:changelog] = true
         end
         opts.on('--tag',
-                'Git tag with the current module version') do |msg|
+                'Git tag with the current module version') do |_msg|
           @options[:tag] = true
         end
         opts.on('--tag-pattern',
@@ -102,23 +102,20 @@ module ModuleSync
 
       @options.fetch(:message) do
         if @options[:command] == 'update' && ! @options[:noop] && ! @options[:amend] && ! @options[:offline]
-          fail("A commit message is required unless using noop or offline.")
+          fail('A commit message is required unless using noop or offline.')
         end
       end
 
       @options.fetch(:command) do
-        fail("A command is required.")
+        fail('A command is required.')
       end
 
       if @options[:command] == 'hook' &&
-           (! args.include?('activate') && ! args.include?('deactivate'))
-        fail("You must activate or deactivate the hook.")
+         (!args.include?('activate') && !args.include?('deactivate'))
+        fail('You must activate or deactivate the hook.')
       end
-
     end
 
-    def options
-      @options
-    end
+    attr_reader :options
   end
 end
