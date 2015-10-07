@@ -6,11 +6,11 @@ module ModuleSync
     include Constants
 
     def self.remote_branch_exists?(repo, branch)
-      repo.branches.remote.collect { |b| b.name }.include?(branch)
+      repo.branches.remote.collect(&:name).include?(branch)
     end
 
     def self.local_branch_exists?(repo, branch)
-      repo.branches.local.collect { |b| b.name }.include?(branch)
+      repo.branches.local.collect(&:name).include?(branch)
     end
 
     def self.switch_branch(repo, branch)
@@ -31,13 +31,11 @@ module ModuleSync
     end
 
     def self.pull(git_base, name, branch, project_root, opts)
-      if ! Dir.exists?(project_root)
-        Dir.mkdir(project_root)
-      end
+      Dir.mkdir(project_root) unless Dir.exist?(project_root)
 
       # Repo needs to be cloned in the cwd
-      if ! Dir.exists?("#{project_root}/#{name}") || ! Dir.exists?("#{project_root}/#{name}/.git")
-        puts "Cloning repository fresh"
+      if !Dir.exist?("#{project_root}/#{name}") || !Dir.exist?("#{project_root}/#{name}/.git")
+        puts 'Cloning repository fresh'
         remote = opts[:remote] || (git_base.start_with?('file://') ? "#{git_base}/#{name}" : "#{git_base}/#{name}.git")
         local = "#{project_root}/#{name}"
         puts "Cloning from #{remote}"
@@ -52,20 +50,18 @@ module ModuleSync
           repo.fetch
           repo.reset_hard
           switch_branch(repo, branch)
-          if remote_branch_exists?(repo, branch)
-            repo.pull('origin', branch)
-          end
+          repo.pull('origin', branch) if remote_branch_exists?(repo, branch)
         end
       end
     end
 
     def self.update_changelog(repo, version, message, module_root)
       changelog = "#{module_root}/CHANGELOG.md"
-      if File.exists?(changelog)
+      if File.exist?(changelog)
         puts "Updating #{changelog} for version #{version}"
         changes = File.readlines(changelog)
         File.open(changelog, 'w') do |f|
-          date = Time.now.strftime("%Y-%m-%d")
+          date = Time.now.strftime('%Y-%m-%d')
           f.puts "## #{date} - Release #{version}\n\n"
           f.puts "#{message}\n\n"
           # Add old lines again
@@ -73,15 +69,15 @@ module ModuleSync
         end
         repo.add('CHANGELOG.md')
       else
-        puts "No CHANGELOG.md file found, not updating."
+        puts 'No CHANGELOG.md file found, not updating.'
       end
     end
 
-    def self.bump(repo, m, message, module_root, changelog=false)
+    def self.bump(repo, m, message, module_root, changelog = false)
       new = m.bump!
       puts "Bumped to version #{new}"
       repo.add('metadata.json')
-      self.update_changelog(repo, new, message, module_root) if changelog
+      update_changelog(repo, new, message, module_root) if changelog
       repo.commit("Release version #{new}")
       repo.push
       new
@@ -115,26 +111,22 @@ module ModuleSync
       begin
         opts_commit = {}
         opts_push = {}
-        if options[:amend]
-          opts_commit = {:amend => true}
-        end
-        if options[:force]
-          opts_push = {:force => true}
-        end
+        opts_commit = { :amend => true } if options[:amend]
+        opts_push = { :force => true } if options[:force]
         if options[:pre_commit_script]
           script = "#{File.dirname(File.dirname(__FILE__))}/../contrib/#{options[:pre_commit_script]}"
-          %x[#{script} #{module_root}]
+          `#{script} #{module_root}`
         end
         repo.commit(message, opts_commit)
         repo.push('origin', branch, opts_push)
         # Only bump/tag if pushing didn't fail (i.e. there were changes)
         m = Blacksmith::Modulefile.new("#{module_root}/metadata.json")
         if options[:bump]
-          new = self.bump(repo, m, message, module_root, options[:changelog])
-          self.tag(repo, new, options[:tag_pattern]) if options[:tag]
+          new = bump(repo, m, message, module_root, options[:changelog])
+          tag(repo, new, options[:tag_pattern]) if options[:tag]
         end
       rescue ::Git::GitExecuteError => git_error
-        if git_error.message.include? "nothing to commit, working directory clean"
+        if git_error.message.include? 'nothing to commit, working directory clean'
           puts "There were no files to update in #{name}. Not committing."
         else
           puts git_error
@@ -148,12 +140,12 @@ module ModuleSync
     # https://github.com/schacon/ruby-git/issues/130
     def self.untracked_unignored_files(repo)
       ignore_path = "#{repo.dir.path}/.gitignore"
-      if File.exists?(ignore_path)
+      if File.exist?(ignore_path)
         ignored = File.open(ignore_path).read.split
       else
         ignored = []
       end
-      repo.status.untracked.keep_if{|f,_| !ignored.any?{|i| File.fnmatch(i, f)}}
+      repo.status.untracked.keep_if { |f, _| !ignored.any? { |i| File.fnmatch(i, f) } }
     end
 
     def self.update_noop(name, options)
@@ -162,13 +154,13 @@ module ModuleSync
       repo = ::Git.open("#{options[:project_root]}/#{name}")
       repo.branch(options[:branch]).checkout
 
-      puts "Files changed: "
+      puts 'Files changed: '
       repo.diff('HEAD', '--').each do |diff|
         puts diff.patch
       end
 
-      puts "Files added: "
-      untracked_unignored_files(repo).each do |file,_|
+      puts 'Files added: '
+      untracked_unignored_files(repo).each do |file, _|
         puts file
       end
 

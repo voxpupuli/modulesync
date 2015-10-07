@@ -18,8 +18,8 @@ module ModuleSync
   end
 
   def self.local_files(path)
-    if File.exists?(path)
-      local_files = Find.find(path).collect { |file| file if !File.directory?(file) }.compact
+    if File.exist?(path)
+      local_files = Find.find(path).collect { |file| file unless File.directory?(file) }.compact
     else
       puts "#{path} does not exist. Check that you are working in your module configs directory or that you have passed in the correct directory with -c."
       exit
@@ -43,7 +43,7 @@ module ModuleSync
   def self.run(args)
     cli = CLI.new
     cli.parse_opts(args)
-    options  = cli.options
+    options = cli.options
     if options[:command] == 'update'
       defaults = Util.parse_config("#{options[:configs]}/#{CONF_FILE}")
 
@@ -82,7 +82,7 @@ module ModuleSync
         files_to_manage -= files_to_delete
         if options[:noop]
           Git.update_noop(puppet_module, options)
-        elsif not options[:offline]
+        elsif !options[:offline]
           Git.update(puppet_module, files_to_manage, options)
         end
       end
@@ -90,5 +90,4 @@ module ModuleSync
       Hook.hook(args[1], options)
     end
   end
-
 end

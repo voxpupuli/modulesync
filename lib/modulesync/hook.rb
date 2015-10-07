@@ -22,7 +22,7 @@ EOF
 
     def self.deactivate(repo)
       hook_path = "#{repo}/#{HOOK_FILE}"
-      File.delete(hook_path) if File.exists?(hook_path)
+      File.delete(hook_path) if File.exist?(hook_path)
     end
 
     def self.hook(command, args)

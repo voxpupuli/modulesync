@@ -3,9 +3,8 @@ require 'find'
 
 module ModuleSync
   module Renderer
-
     class ForgeModuleFile
-      def initialize(configs= {})
+      def initialize(configs = {})
         @configs = configs
       end
     end
@@ -18,24 +17,19 @@ module ModuleSync
     end
 
     def self.remove(file)
-      if File.exists?(file)
-        File.delete(file)
-      end
+      File.delete(file) if File.exist?(file)
     end
 
-    def self.render(template, configs = {})
-      ForgeModuleFile.new(configs).render()
+    def self.render(_template, configs = {})
+      ForgeModuleFile.new(configs).render
     end
 
     def self.sync(template, to_file)
       path = to_file.rpartition('/').first
-      if(! path.empty?)
-        FileUtils.mkdir_p(path)
-      end
+      FileUtils.mkdir_p(path) unless path.empty?
       File.open(to_file, 'w') do |file|
         file.write(template)
       end
     end
-
   end
 end
