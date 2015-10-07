@@ -2,6 +2,10 @@ require 'yaml'
 
 module ModuleSync
   module Util
+    def self.symbolize_keys(hash)
+      hash.inject({}) { |memo, (k, v)| memo[k.to_sym] = v; memo }
+    end
+
     def self.parse_config(config_file)
       if File.exist?(config_file)
         YAML.load_file(config_file) || {}
@@ -10,14 +14,5 @@ module ModuleSync
         {}
       end
     end
-  end
-end
-
-class Hash
-  # take keys of hash and transform those to a symbols
-  def self.transform_keys_to_symbols(value)
-    return value unless value.is_a?(Hash)
-    hash = value.inject({}) { |memo, (k, v)| memo[k.to_sym] = Hash.transform_keys_to_symbols(v); memo }
-    hash
   end
 end
