@@ -26,11 +26,15 @@ Feature: update
       """
     When I run `msync update --noop`
     Then the exit status should be 0
-    And the output should match /Files added:\s+test/
+    And the output should match:
+      """
+      Files added:\s+
+      test
+      """
     Given I run `cat modules/puppet-test/test`
     Then the output should contain "aruba"
 
-  Scenario: Adding a new file into foobar project-root
+  Scenario: Adding a file that ERB can't parse
     Given a file named "managed_modules.yml" with:
       """
       ---
@@ -51,13 +55,12 @@ Feature: update
     And a directory named "moduleroot"
     And a file named "moduleroot/test" with:
       """
-      <%= @configs['name'] %>
+      <% @configs.each do |c| -%>
+        <%= c['name'] %>
+      <% end %>
       """
-    When I run `msync update --noop --project-root=foobar`
-    Then the exit status should be 0
-    And the output should match /Files added:\s+test/
-    Given I run `cat foobar/puppet-test/test`
-    Then the output should contain "aruba"
+    When I run `msync update --noop`
+    Then the exit status should be 1
 
   Scenario: Modifying an existing file
     Given a file named "managed_modules.yml" with:
@@ -132,18 +135,169 @@ Feature: update
       """
       require 'puppetlabs_spec_helper/module_helper'
       """
-    When I run `msync update --offline --noop`
+
+  Scenario: Updating offline
+    Given a file named "managed_modules.yml" with:
+      """
+      ---
+        - puppet-test
+      """
+    And a file named "modulesync.yml" with:
+      """
+      ---
+        namespace: maestrodev
+        git_base: https://github.com/
+      """
+    And a file named "config_defaults.yml" with:
+      """
+      ---
+      spec/spec_helper.rb:
+        require:
+          - puppetlabs_spec_helper/module_helper
+      """
+    And a file named "moduleroot/spec/spec_helper.rb" with:
+      """
+      <% @configs['require'].each do |required| -%>
+        require '<%= required %>'
+      <% end %>
+      """
+    When I run `msync update --offline`
+    Then the exit status should be 0
+    And the output should not match /Files (changed|added|deleted):/
+
+  Scenario: Pulling a module that already exists in the modules directory
+    Given a file named "managed_modules.yml" with:
+      """
+      ---
+        - puppetlabs-stdlib
+      """
+    And a file named "modulesync.yml" with:
+      """
+      ---
+        git_base: https://github.com/
+      """
+    And a file named "config_defaults.yml" with:
+      """
+      ---
+      spec/spec_helper.rb:
+        require:
+          - puppetlabs_spec_helper/module_helper
+      """
+    And a file named "moduleroot/spec/spec_helper.rb" with:
+      """
+      <% @configs['require'].each do |required| -%>
+        require '<%= required %>'
+      <% end %>
+      """
+    Given I run `git init modules/puppetlabs-stdlib`
+    Given a file named "modules/puppetlabs-stdlib/.git/config" with:
+      """
+      [core]
+          repositoryformatversion = 0
+          filemode = true
+          bare = false
+          logallrefupdates = true
+          ignorecase = true
+          precomposeunicode = true
+      [remote "origin"]
+          url = https://github.com/puppetlabs/puppetlabs-stdlib.git
+          fetch = +refs/heads/*:refs/remotes/origin/*
+      """
+    When I run `msync update --noop`
+    #Then the exit status should be 0
+    And the output should match:
+      """
+      Not managing spec/spec_helper.rb in puppetlabs-stdlib
+      """
+
+  Scenario: When running update with no changes
+    Given a file named "managed_modules.yml" with:
+      """
+      ---
+        - puppet-test
+      """
+    And a file named "modulesync.yml" with:
+      """
+      ---
+        namespace: maestrodev
+        git_base: https://github.com/
+      """
+    And a directory named "moduleroot"
+    When I run `msync update --noop`
+    Then the exit status should be 0
+    And the output should not match /Files changed\s+/
+    And the output should not match /Files added\s+/
+    And the output should not match /Files deleted\s+/
+
+  Scenario: When specifying configurations in managed_modules.yml
+    Given a file named "managed_modules.yml" with:
+      """
+      ---
+        puppet-test:
+          module_name: test
+      """
+    And a file named "modulesync.yml" with:
+      """
+      ---
+        namespace: maestrodev
+        git_base: https://github.com/
+      """
+    And a file named "config_defaults.yml" with:
+      """
+      ---
+      test:
+        name: aruba
+      """
+    And a directory named "moduleroot"
+    And a file named "moduleroot/test" with:
+      """
+      <%= @configs['name'] %>
+      """
+    When I run `msync update --noop`
     Then the exit status should be 0
     And the output should match:
       """
       Files added:\s+
-      spec/spec_helper.rb
+      test
       """
-    When I run `msync update --offline`
+    Given I run `cat modules/puppet-test/test`
+    Then the output should contain "aruba"
+
+  Scenario: When specifying configurations in managed_modules.yml and using a filter
+    Given a file named "managed_modules.yml" with:
+      """
+      ---
+        puppet-blacksmith:
+        puppet-test:
+          module_name: test
+      """
+    And a file named "modulesync.yml" with:
+      """
+      ---
+        namespace: maestrodev
+        git_base: https://github.com/
+      """
+    And a file named "config_defaults.yml" with:
+      """
+      ---
+      test:
+        name: aruba
+      """
+    And a directory named "moduleroot"
+    And a file named "moduleroot/test" with:
+      """
+      <%= @configs['name'] %>
+      """
+    When I run `msync update --noop -f puppet-test`
     Then the exit status should be 0
     And the output should match:
       """
+      Files added:\s+
+      test
       """
+    Given I run `cat modules/puppet-test/test`
+    Then the output should contain "aruba"
+    And a directory named "modules/puppet-blacksmith" should not exist
 
   Scenario: Updating a module with a .sync.yml file
     Given a file named "managed_modules.yml" with:
