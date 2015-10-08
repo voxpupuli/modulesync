@@ -22,6 +22,7 @@ Gem::Specification.new do |spec|
   spec.add_development_dependency 'aruba'
   spec.add_development_dependency 'rubocop'
 
+  spec.add_runtime_dependency 'thor'
   spec.add_runtime_dependency 'git', '~>1.2'
   spec.add_runtime_dependency 'puppet-blacksmith', '~>3.0'
 end

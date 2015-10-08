@@ -9,6 +9,16 @@ require 'modulesync/util'
 module ModuleSync
   include Constants
 
+  def self.config_defaults
+    {
+      :project_root         => 'modules/',
+      :git_base             => 'git@github.com:',
+      :managed_modules_conf => 'managed_modules.yml',
+      :configs              => '.',
+      :tag_pattern          => '%s',
+    }
+  end
+
   def self.local_file(config_path, file)
     "#{config_path}/#{MODULE_FILES_DIR}/#{file}"
   end
@@ -40,10 +50,9 @@ module ModuleSync
     managed_modules
   end
 
-  def self.run(args)
-    cli = CLI.new
-    cli.parse_opts(args)
-    options = cli.options
+  def self.run(options)
+    options = config_defaults.merge(options)
+
     if options[:command] == 'update'
       defaults = Util.parse_config("#{options[:configs]}/#{CONF_FILE}")
 
@@ -87,7 +96,7 @@ module ModuleSync
         end
       end
     elsif options[:command] == 'hook'
-      Hook.hook(args[1], options)
+      Hook.hook(options[:hook], options)
     end
   end
 end
