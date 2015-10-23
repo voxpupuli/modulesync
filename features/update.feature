@@ -353,3 +353,39 @@ Feature: update
       """
       Not managing spec/spec_helper.rb in puppetlabs-stdlib
       """
+  Scenario: Module with custom namespace
+    Given a file named "managed_modules.yml" with:
+      """
+      ---
+        - puppet-test
+        - electrical/puppet-lib-file_concat
+      """
+    And a file named "modulesync.yml" with:
+      """
+      ---
+        namespace: maestrodev
+        git_base: https://github.com/
+      """
+    And a file named "config_defaults.yml" with:
+      """
+      ---
+      test:
+        name: aruba
+      """
+    And a directory named "moduleroot"
+    And a file named "moduleroot/test" with:
+      """
+      <%= @configs['name'] %>
+      """
+    When I run `msync update --noop`
+    Then the exit status should be 0
+    And the output should match:
+      """
+      Files added:\s+
+      test
+      """
+    Given I run `cat modules/puppet-test/.git/config`
+    Then the output should contain "url = https://github.com/maestrodev/puppet-test.git"
+    Given I run `cat modules/puppet-lib-file_concat/.git/config`
+    Then the output should contain "url = https://github.com/electrical/puppet-lib-file_concat.git"
+
