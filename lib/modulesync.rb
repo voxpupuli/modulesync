@@ -51,11 +51,8 @@ module ModuleSync
   end
 
   def self.module_name(module_name, default_namespace)
-    if module_name.include?('/')
-      namespace, module_name = module_name.split('/')
-    else
-      return [default_namespace, module_name]
-    end
+    return [default_namespace, module_name] unless module_name.include?('/')
+    ns, mod = module_name.split('/')
   end
 
   def self.run(options)
