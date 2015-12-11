@@ -55,54 +55,60 @@ module ModuleSync
     ns, mod = module_name.split('/')
   end
 
-  def self.run(options)
+  def self.hook(options)
+    hook = Hook.new(HOOK_FILE, options)
+
+    case options[:hook]
+    when 'activate'
+      hook.activate
+    when 'deactivate'
+      hook.deactivate
+    end
+  end
+
+  def self.update(options)
     options = config_defaults.merge(options)
+    defaults = Util.parse_config("#{options[:configs]}/#{CONF_FILE}")
 
-    if options[:command] == 'update'
-      defaults = Util.parse_config("#{options[:configs]}/#{CONF_FILE}")
+    path = "#{options[:configs]}/#{MODULE_FILES_DIR}"
+    local_files = self.local_files(path)
+    module_files = self.module_files(local_files, path)
 
-      path = "#{options[:configs]}/#{MODULE_FILES_DIR}"
-      local_files = self.local_files(path)
-      module_files = self.module_files(local_files, path)
+    managed_modules = self.managed_modules("#{options[:configs]}/managed_modules.yml", options[:filter])
 
-      managed_modules = self.managed_modules("#{options[:configs]}/managed_modules.yml", options[:filter])
-
-      # managed_modules is either an array or a hash
-      managed_modules.each do |puppet_module, opts|
-        puts "Syncing #{puppet_module}"
-        namespace, module_name = self.module_name(puppet_module, options[:namespace])
-        unless options[:offline]
-          git_base = "#{options[:git_base]}#{namespace}"
-          Git.pull(git_base, module_name, options[:branch], options[:project_root], opts || {})
-        end
-        module_configs = Util.parse_config("#{options[:project_root]}/#{module_name}/#{MODULE_CONF_FILE}")
-        global_defaults = defaults[GLOBAL_DEFAULTS_KEY] || {}
-        module_defaults = module_configs[GLOBAL_DEFAULTS_KEY] || {}
-        files_to_manage = (module_files | defaults.keys | module_configs.keys) - [GLOBAL_DEFAULTS_KEY]
-        files_to_delete = []
-        files_to_manage.each do |file|
-          file_configs = global_defaults.merge(defaults[file] || {}).merge(module_defaults).merge(module_configs[file] || {})
-          file_configs[:puppet_module] = module_name
-          if file_configs['unmanaged']
-            puts "Not managing #{file} in #{module_name}"
-            files_to_delete << file
-          elsif file_configs['delete']
-            Renderer.remove(module_file(options['project_root'], module_name, file))
-          else
-            erb = Renderer.build(local_file(options[:configs], file))
-            template = Renderer.render(erb, file_configs)
-            Renderer.sync(template, "#{options[:project_root]}/#{module_name}/#{file}")
-          end
-        end
-        files_to_manage -= files_to_delete
-        if options[:noop]
-          Git.update_noop(module_name, options)
-        elsif !options[:offline]
-          Git.update(module_name, files_to_manage, options)
+    # managed_modules is either an array or a hash
+    managed_modules.each do |puppet_module, opts|
+      puts "Syncing #{puppet_module}"
+      namespace, module_name = self.module_name(puppet_module, options[:namespace])
+      unless options[:offline]
+        git_base = "#{options[:git_base]}#{namespace}"
+        Git.pull(git_base, module_name, options[:branch], options[:project_root], opts || {})
+      end
+      module_configs = Util.parse_config("#{options[:project_root]}/#{module_name}/#{MODULE_CONF_FILE}")
+      global_defaults = defaults[GLOBAL_DEFAULTS_KEY] || {}
+      module_defaults = module_configs[GLOBAL_DEFAULTS_KEY] || {}
+      files_to_manage = (module_files | defaults.keys | module_configs.keys) - [GLOBAL_DEFAULTS_KEY]
+      files_to_delete = []
+      files_to_manage.each do |file|
+        file_configs = global_defaults.merge(defaults[file] || {}).merge(module_defaults).merge(module_configs[file] || {})
+        file_configs[:puppet_module] = module_name
+        if file_configs['unmanaged']
+          puts "Not managing #{file} in #{module_name}"
+          files_to_delete << file
+        elsif file_configs['delete']
+          Renderer.remove(module_file(options['project_root'], module_name, file))
+        else
+          erb = Renderer.build(local_file(options[:configs], file))
+          template = Renderer.render(erb, file_configs)
+          Renderer.sync(template, "#{options[:project_root]}/#{module_name}/#{file}")
         end
       end
-    elsif options[:command] == 'hook'
-      Hook.hook(options[:hook], options)
+      files_to_manage -= files_to_delete
+      if options[:noop]
+        Git.update_noop(module_name, options)
+      elsif !options[:offline]
+        Git.update(module_name, files_to_manage, options)
+      end
     end
   end
 end
