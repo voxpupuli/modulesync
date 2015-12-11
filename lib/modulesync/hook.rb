@@ -4,7 +4,7 @@ module ModuleSync
   class Hook
     attr_reader :hook_file, :namespace, :branch, :args
 
-    def initialize(hook_file, options = [])
+    def initialize(hook_file, options = {})
       @hook_file = hook_file
       @namespace = options['namespace']
       @branch = options['branch']

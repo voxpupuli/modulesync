@@ -25,12 +25,12 @@ Feature: update
       <%= @configs['name'] %>
       """
     When I run `msync update --noop`
-    Then the exit status should be 0
-    And the output should match:
+    Then the output should match:
       """
       Files added:\s+
       test
       """
+    And the exit status should be 0
     Given I run `cat modules/puppet-test/test`
     Then the output should contain "aruba"
 
@@ -86,12 +86,12 @@ Feature: update
       source '<%= @configs['gem_source'] %>'
       """
     When I run `msync update --noop`
-    Then the exit status should be 0
-    And the output should match:
+    Then the output should match:
       """
       Files changed:\s+
       +diff --git a/Gemfile b/Gemfile
       """
+    And the exit status should be 0
     Given I run `cat modules/puppet-test/Gemfile`
     Then the output should contain:
       """
@@ -124,12 +124,12 @@ Feature: update
       <% end %>
       """
     When I run `msync update --noop`
-    Then the exit status should be 0
-    And the output should match:
+    Then the output should match:
       """
       Files added:\s+
       spec/spec_helper.rb
       """
+    And the exit status should be 0
     Given I run `cat modules/puppet-test/spec/spec_helper.rb`
     Then the output should contain:
       """
@@ -162,8 +162,8 @@ Feature: update
       <% end %>
       """
     When I run `msync update --offline`
-    Then the exit status should be 0
-    And the output should not match /Files (changed|added|deleted):/
+    Then the output should not match /Files (changed|added|deleted):/
+    And the exit status should be 0
 
   Scenario: Pulling a module that already exists in the modules directory
     Given a file named "managed_modules.yml" with:
@@ -224,10 +224,10 @@ Feature: update
       """
     And a directory named "moduleroot"
     When I run `msync update --noop`
-    Then the exit status should be 0
-    And the output should not match /Files changed\s+/
+    Then the output should not match /Files changed\s+/
     And the output should not match /Files added\s+/
     And the output should not match /Files deleted\s+/
+    And the exit status should be 0
 
   Scenario: When specifying configurations in managed_modules.yml
     Given a file named "managed_modules.yml" with:
@@ -254,12 +254,12 @@ Feature: update
       <%= @configs['name'] %>
       """
     When I run `msync update --noop`
-    Then the exit status should be 0
-    And the output should match:
+    Then the output should match:
       """
       Files added:\s+
       test
       """
+    And the exit status should be 0
     Given I run `cat modules/puppet-test/test`
     Then the output should contain "aruba"
 
@@ -289,12 +289,12 @@ Feature: update
       <%= @configs['name'] %>
       """
     When I run `msync update --noop -f puppet-test`
-    Then the exit status should be 0
-    And the output should match:
+    Then the output should match:
       """
       Files added:\s+
       test
       """
+    And the exit status should be 0
     Given I run `cat modules/puppet-test/test`
     Then the output should contain "aruba"
     And a directory named "modules/puppet-blacksmith" should not exist
@@ -348,11 +348,12 @@ Feature: update
         email: false
       """
     When I run `msync update --noop`
-    Then the exit status should be 0
-    And the output should match:
+    Then the output should match:
       """
       Not managing spec/spec_helper.rb in puppetlabs-stdlib
       """
+    And the exit status should be 0
+
   Scenario: Module with custom namespace
     Given a file named "managed_modules.yml" with:
       """
@@ -378,14 +379,13 @@ Feature: update
       <%= @configs['name'] %>
       """
     When I run `msync update --noop`
-    Then the exit status should be 0
-    And the output should match:
+    Then the output should match:
       """
       Files added:\s+
       test
       """
+    And the exit status should be 0
     Given I run `cat modules/puppet-test/.git/config`
     Then the output should contain "url = https://github.com/maestrodev/puppet-test.git"
     Given I run `cat modules/puppet-lib-file_concat/.git/config`
     Then the output should contain "url = https://github.com/electrical/puppet-lib-file_concat.git"
-
