@@ -33,6 +33,7 @@ module ModuleSync
       class_option :branch, :aliases => '-b', :desc => 'Branch name to make the changes in. Defaults to master.'
 
       desc 'update', 'Update the modules in managed_modules.yml'
+      option :modules_dir, :aliases => '-w', :desc => 'The directory where the modules should be cloned and synced. Defaults to ./modules'
       option :message, :aliases => '-m', :desc => 'Commit message to apply to updated modules. Required unless running in noop mode.'
       option :remote_branch, :aliases => '-r', :desc => 'Remote branch name to push the changes to. Defaults to the branch name.'
       option :amend, :type => :boolean, :desc => 'Amend previous commit'

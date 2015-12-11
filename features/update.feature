@@ -389,3 +389,70 @@ Feature: update
     Then the output should contain "url = https://github.com/maestrodev/puppet-test.git"
     Given I run `cat modules/puppet-lib-file_concat/.git/config`
     Then the output should contain "url = https://github.com/electrical/puppet-lib-file_concat.git"
+
+  Scenario: Providing a custom modules directory in the configuration file
+    Given a file named "managed_modules.yml" with:
+      """
+      ---
+        - puppet-test
+      """
+    And a file named "modulesync.yml" with:
+      """
+      ---
+        modules_dir: foo
+        namespace: maestrodev
+        git_base: https://github.com/
+      """
+    And a file named "config_defaults.yml" with:
+      """
+      ---
+      test:
+        name: aruba
+      """
+    And a directory named "moduleroot"
+    And a file named "moduleroot/test" with:
+      """
+      <%= @configs['name'] %>
+      """
+    When I run `msync update --noop`
+    Then the output should match:
+      """
+      Files added:\s+
+      test
+      """
+    And the exit status should be 0
+    Given I run `cat foo/puppet-test/.git/config`
+    Then the output should contain "url = https://github.com/maestrodev/puppet-test.git"
+
+  Scenario: Providing a custom modules directory at the command line
+    Given a file named "managed_modules.yml" with:
+      """
+      ---
+        - puppet-test
+      """
+    And a file named "modulesync.yml" with:
+      """
+      ---
+        namespace: maestrodev
+        git_base: https://github.com/
+      """
+    And a file named "config_defaults.yml" with:
+      """
+      ---
+      test:
+        name: aruba
+      """
+    And a directory named "moduleroot"
+    And a file named "moduleroot/test" with:
+      """
+      <%= @configs['name'] %>
+      """
+    When I run `msync update --noop --modules-dir foo`
+    Then the output should match:
+      """
+      Files added:\s+
+      test
+      """
+    And the exit status should be 0
+    Given I run `cat foo/puppet-test/.git/config`
+    Then the output should contain "url = https://github.com/maestrodev/puppet-test.git"
