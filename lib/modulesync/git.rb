@@ -3,8 +3,6 @@ require 'puppet_blacksmith'
 
 module ModuleSync
   module Git
-    include Constants
-
     def self.remote_branch_exists?(repo, branch)
       repo.branches.remote.collect(&:name).include?(branch)
     end
@@ -30,22 +28,22 @@ module ModuleSync
       end
     end
 
-    def self.pull(git_base, name, branch, project_root, opts)
-      Dir.mkdir(project_root) unless Dir.exist?(project_root)
+    def self.pull(git_base, name, branch, modules_dir, opts)
+      Dir.mkdir(modules_dir) unless Dir.exist?(modules_dir)
 
       # Repo needs to be cloned in the cwd
-      if !Dir.exist?("#{project_root}/#{name}") || !Dir.exist?("#{project_root}/#{name}/.git")
+      if !Dir.exist?("#{modules_dir}/#{name}") || !Dir.exist?("#{modules_dir}/#{name}/.git")
         puts 'Cloning repository fresh'
         remote = opts[:remote] || (git_base.start_with?('file://') ? "#{git_base}/#{name}" : "#{git_base}/#{name}.git")
-        local = "#{project_root}/#{name}"
+        local = "#{modules_dir}/#{name}"
         puts "Cloning from #{remote}"
         repo = ::Git.clone(remote, local)
         switch_branch(repo, branch)
       # Repo already cloned, check out master and override local changes
       else
         # Some versions of git can't properly handle managing a repo from outside the repo directory
-        Dir.chdir("#{project_root}/#{name}") do
-          puts "Overriding any local changes to repositories in #{project_root}"
+        Dir.chdir("#{modules_dir}/#{name}") do
+          puts "Overriding any local changes to repositories in #{modules_dir}"
           repo = ::Git.open('.')
           repo.fetch
           repo.reset_hard
@@ -92,7 +90,7 @@ module ModuleSync
 
     # Git add/rm, git commit, git push
     def self.update(name, files, options)
-      module_root = "#{options[:project_root]}/#{name}"
+      module_root = "#{options[:modules_dir]}/#{name}"
       message = options[:message]
       if options[:remote_branch]
         branch = "#{options[:branch]}:#{options[:remote_branch]}"
@@ -151,7 +149,7 @@ module ModuleSync
     def self.update_noop(name, options)
       puts "Using no-op. Files in #{name} may be changed but will not be committed."
 
-      repo = ::Git.open("#{options[:project_root]}/#{name}")
+      repo = ::Git.open("#{options[:modules_dir]}/#{name}")
       repo.branch(options[:branch]).checkout
 
       puts 'Files changed: '
