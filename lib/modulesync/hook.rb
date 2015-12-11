@@ -1,36 +1,40 @@
-module ModuleSync
-  module Hook
-    include Constants
+require 'modulesync'
 
-    def self.activate(args)
-      repo = args[:configs]
-      hook_args = ''
-      hook_args <<= " -n #{args[:namespace]}" if args[:namespace]
-      hook_args <<= " -b #{args[:branch]}" if args[:branch]
-      hook = <<EOF
+module ModuleSync
+  class Hook
+    attr_reader :hook_file, :namespace, :branch, :args
+
+    def initialize(hook_file, options = [])
+      @hook_file = hook_file
+      @namespace = options['namespace']
+      @branch = options['branch']
+      @args = options['hook_args']
+    end
+
+    def content(arguments)
+      <<-EOF
 #!/usr/bin/env bash
 
 current_branch=\`git symbolic-ref HEAD | sed -e 's,.*/\(.*\),\1,'\`
 git_dir=\`git rev-parse --show-toplevel\`
 message=\`git log -1 --format=%B\`
-msync -m "\$message"#{hook_args}
+msync -m "\$message" #{arguments}
 EOF
-      File.open("#{repo}/#{HOOK_FILE}", 'w') do |file|
-        file.write(hook)
+    end
+
+    def activate
+      hook_args = []
+      hook_args << "-n #{namespace}" if namespace
+      hook_args << "-b #{branch}" if branch
+      hook_args << args if args
+
+      File.open(hook_file, 'w') do |file|
+        file.write(content(hook_args.join(' ')))
       end
     end
 
-    def self.deactivate(repo)
-      hook_path = "#{repo}/#{HOOK_FILE}"
-      File.delete(hook_path) if File.exist?(hook_path)
-    end
-
-    def self.hook(command, args)
-      if (command == 'activate')
-        activate(args)
-      else
-        deactivate(args[:configs])
-      end
+    def deactivate
+      File.delete(hook_file) if File.exist?(hook_file)
     end
   end
 end
