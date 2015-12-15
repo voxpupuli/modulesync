@@ -1,4 +1,5 @@
 require 'fileutils'
+require 'pathname'
 require 'modulesync/cli'
 require 'modulesync/constants'
 require 'modulesync/git'
@@ -66,6 +67,17 @@ module ModuleSync
     end
   end
 
+  def self.module_configs(global_defaults, defaults, module_defaults, module_configs)
+    global_defaults.merge(defaults || {}).merge(module_defaults).merge(module_configs || {})
+  end
+
+  def self.unmanaged?(file, configs)
+    Pathname.new(file).ascend do |v|
+      path = v.to_s
+      return true if configs[path] && configs[path]['unmanaged']
+    end
+  end
+
   def self.update(options)
     options = config_defaults.merge(options)
     defaults = Util.parse_config("#{options[:configs]}/#{CONF_FILE}")
@@ -88,13 +100,14 @@ module ModuleSync
       global_defaults = defaults[GLOBAL_DEFAULTS_KEY] || {}
       module_defaults = module_configs[GLOBAL_DEFAULTS_KEY] || {}
       files_to_manage = (module_files | defaults.keys | module_configs.keys) - [GLOBAL_DEFAULTS_KEY]
-      files_to_delete = []
+      unmanaged_files = []
+      configs = module_configs(global_defaults, defaults, module_defaults, module_configs)
       files_to_manage.each do |file|
-        file_configs = global_defaults.merge(defaults[file] || {}).merge(module_defaults).merge(module_configs[file] || {})
+        file_configs = configs[file] || {}
         file_configs[:puppet_module] = module_name
-        if file_configs['unmanaged']
+        if unmanaged?(file, configs)
           puts "Not managing #{file} in #{module_name}"
-          files_to_delete << file
+          unmanaged_files << file
         elsif file_configs['delete']
           Renderer.remove(module_file(options['project_root'], module_name, file))
         else
@@ -103,7 +116,7 @@ module ModuleSync
           Renderer.sync(template, "#{options[:project_root]}/#{module_name}/#{file}")
         end
       end
-      files_to_manage -= files_to_delete
+      files_to_manage -= unmanaged_files
       if options[:noop]
         Git.update_noop(module_name, options)
       elsif !options[:offline]

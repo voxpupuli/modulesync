@@ -98,6 +98,86 @@ Feature: update
       source 'https://somehost.com'
       """
 
+  Scenario: Setting an existing file to unmanaged
+    Given a file named "managed_modules.yml" with:
+      """
+      ---
+        - puppet-test
+      """
+    And a file named "modulesync.yml" with:
+      """
+      ---
+        namespace: maestrodev
+        git_base: https://github.com/
+      """
+    And a file named "config_defaults.yml" with:
+      """
+      ---
+      Gemfile:
+        unmanaged: true
+      """
+    And a directory named "moduleroot"
+    And a file named "moduleroot/Gemfile" with:
+      """
+      source '<%= @configs['gem_source'] %>'
+      """
+    When I run `msync update --noop`
+    Then the output should not match:
+      """
+      Files changed:\s+
+      +diff --git a/Gemfile b/Gemfile
+      """
+    And the output should match:
+      """
+      Not managing Gemfile in puppet-test
+      """
+    And the exit status should be 0
+    Given I run `cat modules/puppet-test/Gemfile`
+    Then the output should contain:
+      """
+      source 'https://rubygems.org'
+      """
+
+  Scenario: Setting a directory to unmanaged
+    Given a file named "managed_modules.yml" with:
+      """
+      ---
+        - puppetlabs-apache
+      """
+    And a file named "modulesync.yml" with:
+      """
+      ---
+        namespace: puppetlabs
+        git_base: https://github.com/
+      """
+    And a file named "config_defaults.yml" with:
+      """
+      ---
+      spec:
+        unmanaged: true
+      """
+    And a directory named "moduleroot"
+    And a file named "moduleroot/spec/spec_helper.rb" with:
+      """
+      some spec_helper fud
+      """
+    And a directory named "modules/puppetlabs-apache/spec"
+    And a file named "modules/puppetlabs-apache/spec_helper.rb" with:
+      """
+      This is a fake spec_helper!
+      """
+    When I run `msync update --offline`
+    Then the output should contain:
+      """
+      Not managing spec/spec_helper.rb in puppetlabs-apache
+      """
+    And the exit status should be 0
+    Given I run `cat modules/puppetlabs-apache/spec/spec_helper.rb`
+    Then the output should not contain:
+      """
+      some spec_helper fud
+      """
+
   Scenario: Adding a new file in a new subdirectory
     Given a file named "managed_modules.yml" with:
       """
@@ -388,4 +468,3 @@ Feature: update
     Then the output should contain "url = https://github.com/maestrodev/puppet-test.git"
     Given I run `cat modules/puppet-lib-file_concat/.git/config`
     Then the output should contain "url = https://github.com/electrical/puppet-lib-file_concat.git"
-
