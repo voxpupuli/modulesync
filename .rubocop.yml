@@ -11,5 +11,5 @@ Style/HashSyntax:
   Enabled: false
 
 # dealbreaker:
-Style/TrailingComma:
+Style/TrailingCommaInLiteral:
   Enabled: false

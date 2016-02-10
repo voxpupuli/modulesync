@@ -49,7 +49,7 @@ module ModuleSync
         config = { :command => 'update' }.merge(options)
         config.merge!(Util.parse_config(MODULESYNC_CONF_FILE))
         config = Util.symbolize_keys(config)
-        fail Thor::Error, 'No value provided for required option "--message"' unless config[:noop] || config[:message] || config[:offline]
+        raise Thor::Error, 'No value provided for required option "--message"' unless config[:noop] || config[:message] || config[:offline]
         config[:git_opts] = { 'amend' => config[:amend], 'force' => config[:force] }
         ModuleSync.update(config)
       end
