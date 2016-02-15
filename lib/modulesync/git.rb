@@ -94,11 +94,11 @@ module ModuleSync
     def self.update(name, files, options)
       module_root = "#{options[:project_root]}/#{name}"
       message = options[:message]
-      if options[:remote_branch]
-        branch = "#{options[:branch]}:#{options[:remote_branch]}"
-      else
-        branch = options[:branch]
-      end
+      branch = if options[:remote_branch]
+                 "#{options[:branch]}:#{options[:remote_branch]}"
+               else
+                 options[:branch]
+               end
       repo = ::Git.open(module_root)
       repo.branch(options[:branch]).checkout
       files.each do |file|
@@ -140,11 +140,11 @@ module ModuleSync
     # https://github.com/schacon/ruby-git/issues/130
     def self.untracked_unignored_files(repo)
       ignore_path = "#{repo.dir.path}/.gitignore"
-      if File.exist?(ignore_path)
-        ignored = File.open(ignore_path).read.split
-      else
-        ignored = []
-      end
+      ignored = if File.exist?(ignore_path)
+                  File.open(ignore_path).read.split
+                else
+                  []
+                end
       repo.status.untracked.keep_if { |f, _| !ignored.any? { |i| File.fnmatch(i, f) } }
     end
 
