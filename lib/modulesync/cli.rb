@@ -42,7 +42,7 @@ module ModuleSync
       option :offline, :type => :boolean, :desc => 'Do not run any Git commands. Allows the user to manage Git outside of ModuleSync.', :default => false
       option :bump, :type => :boolean, :desc => 'Bump module version to the next minor', :default => false
       option :changelog, :type => :boolean, :desc => 'Update CHANGELOG.md if version was bumped', :default => false
-      option :tag, :type => :boolean, :desc => 'Git tag with the current module version', :defalut => false
+      option :tag, :type => :boolean, :desc => 'Git tag with the current module version', :default => false
       option :tag_pattern, :desc => 'The pattern to use when tagging releases.'
 
       def update
