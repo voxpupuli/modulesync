@@ -110,9 +110,15 @@ module ModuleSync
         elsif file_configs['delete']
           Renderer.remove(module_file(options['project_root'], module_name, file))
         else
-          erb = Renderer.build(local_file(options[:configs], file))
-          template = Renderer.render(erb, file_configs)
-          Renderer.sync(template, "#{options[:project_root]}/#{module_name}/#{file}")
+          filename = local_file(options[:configs], file)
+          begin
+            erb = Renderer.build(filename)
+            template = Renderer.render(erb, file_configs)
+            Renderer.sync(template, "#{options[:project_root]}/#{module_name}/#{file}")
+          rescue
+            STDERR.puts "Error while rendering #{filename}"
+            raise
+          end
         end
       end
       files_to_manage -= unmanaged_files
