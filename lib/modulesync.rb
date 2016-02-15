@@ -13,7 +13,6 @@ module ModuleSync
   def self.config_defaults
     {
       :project_root         => 'modules/',
-      :git_base             => 'git@github.com:',
       :managed_modules_conf => 'managed_modules.yml',
       :configs              => '.',
       :tag_pattern          => '%s',
