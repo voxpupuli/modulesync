@@ -15,7 +15,7 @@ module ModuleSync
       :project_root         => 'modules/',
       :managed_modules_conf => 'managed_modules.yml',
       :configs              => '.',
-      :tag_pattern          => '%s',
+      :tag_pattern          => '%s'
     }
   end
 
