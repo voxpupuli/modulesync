@@ -15,7 +15,7 @@ module ModuleSync
       :project_root         => 'modules/',
       :managed_modules_conf => 'managed_modules.yml',
       :configs              => '.',
-      :tag_pattern          => '%s',
+      :tag_pattern          => '%s'
     }
   end
 
@@ -66,15 +66,16 @@ module ModuleSync
     end
   end
 
-  def self.module_configs(global_defaults, defaults, module_defaults, module_configs)
-    global_defaults.merge(defaults || {}).merge(module_defaults).merge(module_configs || {})
+  def self.module_configs(filename, global_defaults, defaults, module_defaults, module_configs)
+    global_defaults.merge(defaults[filename] || {}).merge(module_defaults).merge(module_configs[filename] || {})
   end
 
-  def self.unmanaged?(file, configs)
-    Pathname.new(file).ascend do |v|
-      path = v.to_s
-      return true if configs[path] && configs[path]['unmanaged']
+  def self.unmanaged?(filename, global_defaults, defaults, module_defaults, module_configs)
+    Pathname.new(filename).ascend do |v|
+      configs = module_configs(v.to_s, global_defaults, defaults, module_defaults, module_configs)
+      return true if configs['unmanaged']
     end
+    false
   end
 
   def self.update(options)
@@ -100,21 +101,20 @@ module ModuleSync
       module_defaults = module_configs[GLOBAL_DEFAULTS_KEY] || {}
       files_to_manage = (module_files | defaults.keys | module_configs.keys) - [GLOBAL_DEFAULTS_KEY]
       unmanaged_files = []
-      configs = module_configs(global_defaults, defaults, module_defaults, module_configs)
-      files_to_manage.each do |file|
-        file_configs = configs[file] || {}
-        file_configs[:puppet_module] = module_name
-        if unmanaged?(file, configs)
-          puts "Not managing #{file} in #{module_name}"
-          unmanaged_files << file
-        elsif file_configs['delete']
-          Renderer.remove(module_file(options['project_root'], module_name, file))
+      files_to_manage.each do |filename|
+        configs = module_configs(filename, global_defaults, defaults, module_defaults, module_configs)
+        configs[:puppet_module] = module_name
+        if unmanaged?(filename, global_defaults, defaults, module_defaults, module_configs)
+          puts "Not managing #{filename} in #{module_name}"
+          unmanaged_files << filename
+        elsif configs['delete']
+          Renderer.remove(module_file(options['project_root'], module_name, filename))
         else
-          filename = local_file(options[:configs], file)
+          templatename = local_file(options[:configs], filename)
           begin
-            erb = Renderer.build(filename)
-            template = Renderer.render(erb, file_configs)
-            Renderer.sync(template, "#{options[:project_root]}/#{module_name}/#{file}")
+            erb = Renderer.build(templatename)
+            template = Renderer.render(erb, configs)
+            Renderer.sync(template, "#{options[:project_root]}/#{module_name}/#{filename}")
           rescue
             STDERR.puts "Error while rendering #{filename}"
             raise
