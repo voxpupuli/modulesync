@@ -468,3 +468,38 @@ Feature: update
     Then the output should contain "url = https://github.com/maestrodev/puppet-test.git"
     Given I run `cat modules/puppet-lib-file_concat/.git/config`
     Then the output should contain "url = https://github.com/electrical/puppet-lib-file_concat.git"
+
+  Scenario: Modifying an existing file with values expoxed by the module
+    Given a file named "managed_modules.yml" with:
+      """
+      ---
+        - puppet-test
+      """
+    And a file named "modulesync.yml" with:
+      """
+      ---
+        namespace: maestrodev
+        git_base: https://github.com/
+      """
+    And a file named "config_defaults.yml" with:
+      """
+      ---
+      README.md:
+      """
+    And a directory named "moduleroot"
+    And a file named "moduleroot/README.md" with:
+      """
+      echo '<%= @configs[:git_base] + @configs[:namespace] %>'
+      """
+    When I run `msync update --noop`
+    Then the exit status should be 0
+    And the output should match:
+      """
+      Files changed:\s+
+      +diff --git a/README.md b/README.md
+      """
+    Given I run `cat modules/puppet-test/README.md`
+    Then the output should contain:
+      """
+      echo 'https://github.com/maestrodev'
+      """
