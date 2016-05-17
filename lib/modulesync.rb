@@ -93,8 +93,9 @@ module ModuleSync
       puts "Syncing #{puppet_module}"
       namespace, module_name = self.module_name(puppet_module, options[:namespace])
       unless options[:offline]
-        git_base = "#{options[:git_base]}#{namespace}"
-        Git.pull(git_base, module_name, options[:branch], options[:project_root], opts || {})
+        git_base = "#{options[:git_base]}"
+        git_uri = "#{git_base}#{namespace}"
+        Git.pull(git_uri, module_name, options[:branch], options[:project_root], opts || {})
       end
       module_configs = Util.parse_config("#{options[:project_root]}/#{module_name}/#{MODULE_CONF_FILE}")
       global_defaults = defaults[GLOBAL_DEFAULTS_KEY] || {}
@@ -104,6 +105,8 @@ module ModuleSync
       files_to_manage.each do |filename|
         configs = module_configs(filename, global_defaults, defaults, module_defaults, module_configs)
         configs[:puppet_module] = module_name
+        configs[:git_base] = git_base
+        configs[:namespace] = namespace
         if unmanaged?(filename, global_defaults, defaults, module_defaults, module_configs)
           puts "Not managing #{filename} in #{module_name}"
           unmanaged_files << filename
