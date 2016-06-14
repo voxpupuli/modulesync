@@ -337,6 +337,16 @@ current date, bumped (minor) version, and commit message.
 If `CHANGELOG.md` is absent in the repository, nothing will happen.
 
 
+#### Defining templates
+
+As commented, files within moduleroot directory can be flat files or ERB templates. These files have direct access to @configs hash, which gets values from config_defaults.yml file and from the module being processed:
+
+```
+<%= @configs[:git_base] %>
+<%= @configs[:namespace] %>
+<%= @configs[:puppet_module] %>
+```
+
 The Templates
 -------------
 
