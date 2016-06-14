@@ -249,7 +249,7 @@ Feature: update
     Given a file named "managed_modules.yml" with:
       """
       ---
-        - puppetlabs-stdlib
+        - puppet-test
       """
     And a file named "modulesync.yml" with:
       """
@@ -269,8 +269,8 @@ Feature: update
         require '<%= required %>'
       <% end %>
       """
-    Given I run `git init modules/puppetlabs-stdlib`
-    Given a file named "modules/puppetlabs-stdlib/.git/config" with:
+    Given I run `git init modules/puppet-test`
+    Given a file named "modules/puppet-test/.git/config" with:
       """
       [core]
           repositoryformatversion = 0
@@ -280,14 +280,15 @@ Feature: update
           ignorecase = true
           precomposeunicode = true
       [remote "origin"]
-          url = https://github.com/puppetlabs/puppetlabs-stdlib.git
+          url = https://github.com/maestrodev/puppet-test.git
           fetch = +refs/heads/*:refs/remotes/origin/*
       """
     When I run `msync update --noop`
-    #Then the exit status should be 0
+    Then the exit status should be 0
     And the output should match:
       """
-      Not managing spec/spec_helper.rb in puppetlabs-stdlib
+      Files added:\s+
+      spec/spec_helper.rb
       """
 
   Scenario: When running update with no changes
@@ -383,7 +384,7 @@ Feature: update
     Given a file named "managed_modules.yml" with:
       """
       ---
-        - puppetlabs-stdlib
+        - puppet-test
       """
     And a file named "modulesync.yml" with:
       """
@@ -403,36 +404,33 @@ Feature: update
         require '<%= required %>'
       <% end %>
       """
-    And a file named "moduleroot/.travis.yml" with:
+    Given I run `git init modules/puppet-test`
+    Given a file named "modules/puppet-test/.git/config" with:
+      """
+      [core]
+          repositoryformatversion = 0
+          filemode = true
+          bare = false
+          logallrefupdates = true
+          ignorecase = true
+          precomposeunicode = true
+      [remote "origin"]
+          url = https://github.com/maestrodev/puppet-test.git
+          fetch = +refs/heads/*:refs/remotes/origin/*
+      """
+    Given a file named "modules/puppet-test/.sync.yml" with:
       """
       ---
-      sudo: false
-      language: ruby
-      cache: bundler
-      bundler_args: --without system_tests
-      script: "bundle exec rake validate && bundle exec rake lint && bundle exec rake spec SPEC_OPTS='--color --format documentation'"
-      matrix:
-        fast_finish: true
-        include:
-        - rvm: 1.8.7
-          env: PUPPET_GEM_VERSION="~> 3.0"
-        - rvm: 1.9.3
-          env: PUPPET_GEM_VERSION="~> 3.0"
-        - rvm: 2.1.5
-          env: PUPPET_GEM_VERSION="~> 3.0"
-        - rvm: 2.1.5
-          env: PUPPET_GEM_VERSION="~> 3.0" FUTURE_PARSER="yes"
-        - rvm: 2.1.6
-          env: PUPPET_GEM_VERSION="~> 4.0" STRICT_VARIABLES="yes"
-      notifications:
-        email: false
+      spec/spec_helper.rb:
+        unmanaged: true
       """
     When I run `msync update --noop`
     Then the exit status should be 0
     And the output should match:
       """
-      Not managing spec/spec_helper.rb in puppetlabs-stdlib
+      Not managing spec/spec_helper.rb in puppet-test
       """
+
   Scenario: Module with custom namespace
     Given a file named "managed_modules.yml" with:
       """
