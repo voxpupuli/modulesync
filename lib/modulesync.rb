@@ -93,7 +93,7 @@ module ModuleSync
       puts "Syncing #{puppet_module}"
       namespace, module_name = self.module_name(puppet_module, options[:namespace])
       unless options[:offline]
-        git_base = "#{options[:git_base]}"
+        git_base = options[:git_base]
         git_uri = "#{git_base}#{namespace}"
         Git.pull(git_uri, module_name, options[:branch], options[:project_root], opts || {})
       end
