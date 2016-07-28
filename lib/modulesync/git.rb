@@ -126,7 +126,7 @@ module ModuleSync
           tag(repo, new, options[:tag_pattern]) if options[:tag]
         end
       rescue ::Git::GitExecuteError => git_error
-        if git_error.message =~ /working directory clean/
+        if git_error.message =~ /working (directory|tree) clean/
           puts "There were no files to update in #{name}. Not committing."
         else
           puts git_error
