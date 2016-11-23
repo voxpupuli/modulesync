@@ -14,19 +14,19 @@ module ModuleSync
     end
 
     def self.switch_branch(repo, branch)
-      unless repo.branch.name == branch
-        if local_branch_exists?(repo, branch)
-          puts "Switching to branch #{branch}"
-          repo.checkout(branch)
-        elsif remote_branch_exists?(repo, branch)
-          puts "Creating local branch #{branch} from origin/#{branch}"
-          repo.checkout("origin/#{branch}")
-          repo.branch(branch).checkout
-        else
-          repo.checkout('origin/master')
-          puts "Creating new branch #{branch}"
-          repo.branch(branch).checkout
-        end
+      return if repo.branch.name == branch
+
+      if local_branch_exists?(repo, branch)
+        puts "Switching to branch #{branch}"
+        repo.checkout(branch)
+      elsif remote_branch_exists?(repo, branch)
+        puts "Creating local branch #{branch} from origin/#{branch}"
+        repo.checkout("origin/#{branch}")
+        repo.branch(branch).checkout
+      else
+        repo.checkout('origin/master')
+        puts "Creating new branch #{branch}"
+        repo.branch(branch).checkout
       end
     end
 

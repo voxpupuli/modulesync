@@ -30,7 +30,8 @@ module ModuleSync
       class_option :project_root, :aliases => '-c', :desc => 'Path used by git to clone modules into. Defaults to "modules"', :default => 'modules'
       class_option :git_base, :desc => 'Specify the base part of a git URL to pull from', :default => 'git@github.com:'
       class_option :namespace, :aliases => '-n', :desc => 'Remote github namespace (user or organization) to clone from and push to. Defaults to puppetlabs', :default => 'puppetlabs'
-      class_option :filter, :aliases => '-f', :desc => 'A regular expression to filter repositories to update.'
+      class_option :filter, :aliases => '-f', :desc => 'A regular expression to select repositories to update.'
+      class_option :negative_filter, :aliases => '-x', :desc => 'A regular expression to skip repositories.'
       class_option :branch, :aliases => '-b', :desc => 'Branch name to make the changes in. Defaults to master.', :default => 'master'
 
       desc 'update', 'Update the modules in managed_modules.yml'
