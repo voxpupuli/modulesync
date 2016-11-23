@@ -265,12 +265,21 @@ pre_commit_script: openstack-commit-msg-hook.sh
 
 #### Filtering Repositories
 
-If you only want to sync some of the repositories in your managed_modules.yml, use the -f flag to filter by a regex:
+If you only want to sync some of the repositories in your managed_modules.yml, use the `-f` flag to filter by a regex:
 
 ```
-msync update -f augeas -m "Commit message"
+msync update -f augeas -m "Commit message"    # acts only on the augeas module
 msync update -f puppet-a..o "Commit message"
 ```
+
+If you want to skip syncing some of the repositories in your managed_modules.yml, use the `-x` flag to filter by a regex:
+
+```
+msync update -x augeas -m "Commit message"    # acts on all modules except the augeas module
+msync update -x puppet-a..o "Commit message"
+```
+
+If no `-f` is specified, all repository are processed, if no `-x` is specified no repository is skipped. If a repository matches both `-f` and `-x` it is skipped.
 
 #### Pushing to a different remote branch
 

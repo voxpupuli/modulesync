@@ -380,6 +380,42 @@ Feature: update
     Then the output should contain "aruba"
     And a directory named "modules/puppet-blacksmith" should not exist
 
+  Scenario: When specifying configurations in managed_modules.yml and using a negative filter
+    Given a file named "managed_modules.yml" with:
+      """
+      ---
+        puppet-blacksmith:
+        puppet-test:
+          module_name: test
+      """
+    And a file named "modulesync.yml" with:
+      """
+      ---
+        namespace: maestrodev
+        git_base: https://github.com/
+      """
+    And a file named "config_defaults.yml" with:
+      """
+      ---
+      test:
+        name: aruba
+      """
+    And a directory named "moduleroot"
+    And a file named "moduleroot/test" with:
+      """
+      <%= @configs['name'] %>
+      """
+    When I run `msync update --noop -x puppet-blacksmith`
+    Then the exit status should be 0
+    And the output should match:
+      """
+      Files added:\s+
+      test
+      """
+    Given I run `cat modules/puppet-test/test`
+    Then the output should contain "aruba"
+    And a directory named "modules/puppet-blacksmith" should not exist
+
   Scenario: Updating a module with a .sync.yml file
     Given a file named "managed_modules.yml" with:
       """
