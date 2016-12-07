@@ -72,13 +72,13 @@ module ModuleSync
     module_name = settings.additional_settings[:puppet_module]
     configs = settings.build_file_configs(filename)
     if configs['delete']
-      Renderer.remove(module_file(options['project_root'], module_name, filename))
+      Renderer.remove(module_file(options[:project_root], module_name, filename))
     else
       templatename = local_file(options[:configs], filename)
       begin
         erb = Renderer.build(templatename)
         template = Renderer.render(erb, configs)
-        Renderer.sync(template, "#{options[:project_root]}/#{module_name}/#{filename}")
+        Renderer.sync(template, module_file(options[:project_root], module_name, filename))
       rescue
         STDERR.puts "Error while rendering #{filename}"
         raise

@@ -154,12 +154,12 @@ module ModuleSync
       repo = ::Git.open("#{options[:project_root]}/#{name}")
       repo.branch(options[:branch]).checkout
 
-      puts 'Files changed: '
+      puts 'Files changed:'
       repo.diff('HEAD', '--').each do |diff|
         puts diff.patch
       end
 
-      puts 'Files added: '
+      puts 'Files added:'
       untracked_unignored_files(repo).each do |file, _|
         puts file
       end

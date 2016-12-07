@@ -28,7 +28,7 @@ Feature: update
     Then the exit status should be 0
     And the output should match:
       """
-      Files added:\s+
+      Files added:
       test
       """
     Given I run `cat modules/puppet-test/test`
@@ -89,7 +89,7 @@ Feature: update
     Then the exit status should be 0
     And the output should match:
       """
-      Files changed:\s+
+      Files changed:
       +diff --git a/Gemfile b/Gemfile
       """
     Given I run `cat modules/puppet-test/Gemfile`
@@ -124,7 +124,7 @@ Feature: update
     When I run `msync update --noop`
     Then the output should not match:
       """
-      Files changed:\s+
+      Files changed:
       +diff --git a/Gemfile b/Gemfile
       """
     And the output should match:
@@ -137,6 +137,38 @@ Feature: update
       """
       source 'https://rubygems.org'
       """
+
+  Scenario: Setting an existing file to deleted
+    Given a file named "managed_modules.yml" with:
+      """
+      ---
+        - puppet-test
+      """
+    And a file named "modulesync.yml" with:
+      """
+      ---
+        namespace: maestrodev
+        git_base: https://github.com/
+      """
+    And a file named "config_defaults.yml" with:
+      """
+      ---
+      Gemfile:
+        delete: true
+      """
+    And a directory named "moduleroot"
+    And a file named "moduleroot/Gemfile" with:
+      """
+      source '<%= @configs['gem_source'] %>'
+      """
+    When I run `msync update --noop`
+    Then the output should match:
+      """
+      Files changed:
+      diff --git a/Gemfile b/Gemfile
+      deleted file mode 100644
+      """
+    And the exit status should be 0
 
   Scenario: Setting a directory to unmanaged
     Given a file named "managed_modules.yml" with:
@@ -207,7 +239,7 @@ Feature: update
     Then the exit status should be 0
     And the output should match:
       """
-      Files added:\s+
+      Files added:
       spec/spec_helper.rb
       """
     Given I run `cat modules/puppet-test/spec/spec_helper.rb`
@@ -287,7 +319,7 @@ Feature: update
     Then the exit status should be 0
     And the output should match:
       """
-      Files added:\s+
+      Files added:
       spec/spec_helper.rb
       """
 
@@ -306,9 +338,7 @@ Feature: update
     And a directory named "moduleroot"
     When I run `msync update --noop`
     Then the exit status should be 0
-    And the output should not match /Files changed\s+/
-    And the output should not match /Files added\s+/
-    And the output should not match /Files deleted\s+/
+    And the output should not match /diff/
 
   Scenario: When specifying configurations in managed_modules.yml
     Given a file named "managed_modules.yml" with:
@@ -338,7 +368,7 @@ Feature: update
     Then the exit status should be 0
     And the output should match:
       """
-      Files added:\s+
+      Files added:
       test
       """
     Given I run `cat modules/puppet-test/test`
@@ -373,7 +403,7 @@ Feature: update
     Then the exit status should be 0
     And the output should match:
       """
-      Files added:\s+
+      Files added:
       test
       """
     Given I run `cat modules/puppet-test/test`
@@ -409,7 +439,7 @@ Feature: update
     Then the exit status should be 0
     And the output should match:
       """
-      Files added:\s+
+      Files added:
       test
       """
     Given I run `cat modules/puppet-test/test`
@@ -495,7 +525,7 @@ Feature: update
     Then the exit status should be 0
     And the output should match:
       """
-      Files added:\s+
+      Files added:
       test
       """
     Given I run `cat modules/puppet-test/.git/config`
@@ -529,7 +559,7 @@ Feature: update
     Then the exit status should be 0
     And the output should match:
       """
-      Files changed:\s+
+      Files changed:
       +diff --git a/README.md b/README.md
       """
     Given I run `cat modules/puppet-test/README.md`
