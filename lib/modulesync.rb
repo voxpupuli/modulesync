@@ -78,7 +78,7 @@ module ModuleSync
       begin
         erb = Renderer.build(templatename)
         template = Renderer.render(erb, configs)
-        Renderer.sync(template, "#{options[:project_root]}/#{module_name}/#{filename}")
+        Renderer.sync(template, module_file(options[:project_root], module_name, filename))
       rescue
         STDERR.puts "Error while rendering #{filename}"
         raise
