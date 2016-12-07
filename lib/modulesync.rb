@@ -72,7 +72,7 @@ module ModuleSync
     module_name = settings.additional_settings[:puppet_module]
     configs = settings.build_file_configs(filename)
     if configs['delete']
-      Renderer.remove(module_file(options['project_root'], module_name, filename))
+      Renderer.remove(module_file(options[:project_root], module_name, filename))
     else
       templatename = local_file(options[:configs], filename)
       begin

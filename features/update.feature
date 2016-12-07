@@ -138,6 +138,38 @@ Feature: update
       source 'https://rubygems.org'
       """
 
+  Scenario: Setting an existing file to deleted
+    Given a file named "managed_modules.yml" with:
+      """
+      ---
+        - puppet-test
+      """
+    And a file named "modulesync.yml" with:
+      """
+      ---
+        namespace: maestrodev
+        git_base: https://github.com/
+      """
+    And a file named "config_defaults.yml" with:
+      """
+      ---
+      Gemfile:
+        delete: true
+      """
+    And a directory named "moduleroot"
+    And a file named "moduleroot/Gemfile" with:
+      """
+      source '<%= @configs['gem_source'] %>'
+      """
+    When I run `msync update --noop`
+    Then the output should match:
+      """
+      Files changed:
+      diff --git a/Gemfile b/Gemfile
+      deleted file mode 100644
+      """
+    And the exit status should be 0
+
   Scenario: Setting a directory to unmanaged
     Given a file named "managed_modules.yml" with:
       """
