@@ -103,7 +103,9 @@ module ModuleSync
       repo.branch(options[:branch]).checkout
       files.each do |file|
         if repo.status.deleted.include?(file)
-          repo.remove(file)
+          if File.exist?(file)
+            repo.remove(file)
+          end
         else
           repo.add(file)
         end
