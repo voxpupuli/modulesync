@@ -170,6 +170,28 @@ Feature: update
       """
     And the exit status should be 0
 
+  Scenario: Setting a non-existent file to deleted
+    Given a file named "managed_modules.yml" with:
+      """
+      ---
+        - puppet-test
+      """
+    And a file named "modulesync.yml" with:
+      """
+      ---
+        namespace: maestrodev
+        git_base: https://github.com/
+      """
+    And a file named "config_defaults.yml" with:
+      """
+      ---
+      doesntexist_file:
+        delete: true
+      """
+    And a directory named "moduleroot"
+    When I run `msync update -m 'deletes a file that doesnt exist!' -f puppet-test`
+    And the exit status should be 0
+
   Scenario: Setting a directory to unmanaged
     Given a file named "managed_modules.yml" with:
       """
