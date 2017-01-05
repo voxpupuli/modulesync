@@ -210,13 +210,13 @@ Feature: update
       spec:
         unmanaged: true
       """
-    And a directory named "moduleroot"
+    And a directory named "moduleroot/spec"
     And a file named "moduleroot/spec/spec_helper.rb" with:
       """
       some spec_helper fud
       """
     And a directory named "modules/puppetlabs-apache/spec"
-    And a file named "modules/puppetlabs-apache/spec_helper.rb" with:
+    And a file named "modules/puppetlabs-apache/spec/spec_helper.rb" with:
       """
       This is a fake spec_helper!
       """
@@ -227,10 +227,11 @@ Feature: update
       """
     And the exit status should be 0
     Given I run `cat modules/puppetlabs-apache/spec/spec_helper.rb`
-    Then the output should not contain:
+    Then the output should contain:
       """
-      some spec_helper fud
+      This is a fake spec_helper!
       """
+    And the exit status should be 0
 
   Scenario: Adding a new file in a new subdirectory
     Given a file named "managed_modules.yml" with:
