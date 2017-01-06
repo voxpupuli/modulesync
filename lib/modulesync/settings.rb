@@ -27,14 +27,14 @@ module ModuleSync
     # given a list of existing files in the repo, return everything that we might want to act on
     def managed_files(file_list)
       (file_list | defaults.keys | module_configs.keys).select do |f|
-        managed?(f) && (f != ModuleSync::GLOBAL_DEFAULTS_KEY)
+        (f != ModuleSync::GLOBAL_DEFAULTS_KEY) && managed?(f)
       end
     end
 
     # returns a list of files that should not be touched
     def unmanaged_files(file_list)
       (file_list | defaults.keys | module_configs.keys).select do |f|
-        !managed?(f) && (f != ModuleSync::GLOBAL_DEFAULTS_KEY)
+        (f != ModuleSync::GLOBAL_DEFAULTS_KEY) && !managed?(f)
       end
     end
   end
