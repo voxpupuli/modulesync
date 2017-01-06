@@ -7,6 +7,7 @@ describe ModuleSync::Settings do
       {},
       {},
       { 'Rakefile' => { 'unmanaged' => true },
+        :global => { 'global' => 'value' },
         'Gemfile' => { 'key' => 'value' }, },
       {}
     )
