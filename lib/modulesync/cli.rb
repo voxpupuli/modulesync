@@ -38,6 +38,7 @@ module ModuleSync
       option :message, :aliases => '-m', :desc => 'Commit message to apply to updated modules. Required unless running in noop mode.'
       option :configs, :aliases => '-c', :desc => 'The local directory or remote repository to define the list of managed modules, the file templates, and the default values for template variables.'
       option :remote_branch, :aliases => '-r', :desc => 'Remote branch name to push the changes to. Defaults to the branch name.'
+      option :skip_broken, :type => :boolean, :aliases => '-s', :desc => 'Process remaining modules if an error is found', :default => false
       option :amend, :type => :boolean, :desc => 'Amend previous commit', :default => false
       option :force, :type => :boolean, :desc => 'Force push amended commit', :default => false
       option :noop, :type => :boolean, :desc => 'No-op mode', :default => false
