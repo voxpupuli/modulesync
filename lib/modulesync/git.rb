@@ -104,7 +104,7 @@ module ModuleSync
       files.each do |file|
         if repo.status.deleted.include?(file)
           repo.remove(file)
-        elsif File.exist?(file)
+        elsif File.exist?("#{module_root}/#{file}")
           repo.add(file)
         end
       end
