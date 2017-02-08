@@ -13,3 +13,13 @@ rvm:
   - 2.2
   - 2.3.3
   - 2.4.0
+deploy:
+  provider: rubygems
+  api_key:
+    secure: "NGKJHr9ba/Jmy/n9QrTVnFyMFdkjkv2A3JvKvtJHSa1T795Atak2A/cyA0LF5sBib8NDEgw49Om53g5ZvdTxGKkw5OJuPouwvJ9gFQkv+gDf43tjdAa7oMSLixKVp+dxLvpUC+pBjEPR3gM2qs2mBwax/YWCIreI1HXfXOzrRHA="
+  gem: modulesync
+  on:
+    rvm: 2.4
+    tags: true
+    all_branches: true
+    repo: voxpupuli/modulesync
