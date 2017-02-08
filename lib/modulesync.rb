@@ -86,6 +86,36 @@ module ModuleSync
     end
   end
 
+  def self.manage_module(puppet_module, module_files, module_options, defaults, options)
+    puts "Syncing #{puppet_module}"
+    namespace, module_name = self.module_name(puppet_module, options[:namespace])
+    unless options[:offline]
+      git_base = options[:git_base]
+      git_uri = "#{git_base}#{namespace}"
+      Git.pull(git_uri, module_name, options[:branch], options[:project_root], module_options || {})
+    end
+    module_configs = Util.parse_config("#{options[:project_root]}/#{module_name}/#{MODULE_CONF_FILE}")
+    settings = Settings.new(defaults[GLOBAL_DEFAULTS_KEY] || {},
+                            defaults,
+                            module_configs[GLOBAL_DEFAULTS_KEY] || {},
+                            module_configs,
+                            :puppet_module => module_name,
+                            :git_base => git_base,
+                            :namespace => namespace)
+    settings.unmanaged_files(module_files).each do |filename|
+      puts "Not managing #{filename} in #{module_name}"
+    end
+
+    files_to_manage = settings.managed_files(module_files)
+    files_to_manage.each { |filename| manage_file(filename, settings, options) }
+
+    if options[:noop]
+      Git.update_noop(module_name, options)
+    elsif !options[:offline]
+      Git.update(module_name, files_to_manage, options)
+    end
+  end
+
   def self.update(options)
     options = config_defaults.merge(options)
     defaults = Util.parse_config("#{options[:configs]}/#{CONF_FILE}")
@@ -98,32 +128,12 @@ module ModuleSync
 
     # managed_modules is either an array or a hash
     managed_modules.each do |puppet_module, module_options|
-      puts "Syncing #{puppet_module}"
-      namespace, module_name = self.module_name(puppet_module, options[:namespace])
-      unless options[:offline]
-        git_base = options[:git_base]
-        git_uri = "#{git_base}#{namespace}"
-        Git.pull(git_uri, module_name, options[:branch], options[:project_root], module_options || {})
-      end
-      module_configs = Util.parse_config("#{options[:project_root]}/#{module_name}/#{MODULE_CONF_FILE}")
-      settings = Settings.new(defaults[GLOBAL_DEFAULTS_KEY] || {},
-                              defaults,
-                              module_configs[GLOBAL_DEFAULTS_KEY] || {},
-                              module_configs,
-                              :puppet_module => module_name,
-                              :git_base => git_base,
-                              :namespace => namespace)
-      settings.unmanaged_files(module_files).each do |filename|
-        puts "Not managing #{filename} in #{module_name}"
-      end
-
-      files_to_manage = settings.managed_files(module_files)
-      files_to_manage.each { |filename| manage_file(filename, settings, options) }
-
-      if options[:noop]
-        Git.update_noop(module_name, options)
-      elsif !options[:offline]
-        Git.update(module_name, files_to_manage, options)
+      begin
+        manage_module(puppet_module, module_files, module_options, defaults, options)
+      rescue
+        STDERR.puts "Error while updating #{puppet_module}"
+        raise unless options[:skip_broken]
+        puts "Skipping #{puppet_module} as update process failed"
       end
     end
   end
