@@ -1,8 +1,11 @@
 require 'erb'
 require 'find'
+require 'modulesync/constants'
 
 module ModuleSync
   module Renderer
+    include Constants
+
     class ForgeModuleFile
       def initialize(configs = {})
         @configs = configs
@@ -28,6 +31,7 @@ module ModuleSync
       path = to_file.rpartition('/').first
       FileUtils.mkdir_p(path) unless path.empty?
       File.open(to_file, 'w') do |file|
+        template = "#{HEADER}\n#{template}"
         file.write(template)
       end
     end
