@@ -656,3 +656,40 @@ Feature: update
       """
       echo 'https://github.com/maestrodev'
       """
+
+  Scenario: Running the same update twice and pushing to a remote branch
+    Given a mocked home directory
+    And I run `git config --global user.name Test`
+    And I run `git config --global user.email test@example.com`
+    And a directory named "sources"
+    And I run `git clone https://github.com/maestrodev/puppet-test sources/puppet-test`
+    And a file named "managed_modules.yml" with:
+      """
+      ---
+        - puppet-test
+      """
+    And a file named "modulesync.yml" with:
+      """
+      ---
+        namespace: sources
+
+      """
+    And I run `bash -c 'echo "  git_base: file://$PWD/" >> modulesync.yml'`
+    And a file named "config_defaults.yml" with:
+      """
+      ---
+      Gemfile:
+        gem_source: https://somehost.com
+      """
+    And a directory named "moduleroot"
+    And a file named "moduleroot/Gemfile" with:
+      """
+      source '<%= @configs['gem_source'] %>'
+      """
+    When I run `msync update -m "Update Gemfile" -r test`
+    Then the exit status should be 0
+    Given I remove the directory "modules"
+    When I run `msync update -m "Update Gemfile" -r test`
+    Then the exit status should be 0
+    Then the output should not contain "error"
+    Then the output should not contain "rejected"
