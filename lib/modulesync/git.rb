@@ -13,6 +13,11 @@ module ModuleSync
       repo.branches.local.collect(&:name).include?(branch)
     end
 
+    def self.remote_branch_differ?(repo, local_branch, remote_branch)
+      !remote_branch_exists?(repo, remote_branch) ||
+        repo.diff("#{local_branch}..origin/#{remote_branch}").any?
+    end
+
     def self.switch_branch(repo, branch)
       return if repo.branch.name == branch
 
@@ -94,11 +99,6 @@ module ModuleSync
     def self.update(name, files, options)
       module_root = "#{options[:project_root]}/#{name}"
       message = options[:message]
-      branch = if options[:remote_branch]
-                 "#{options[:branch]}:#{options[:remote_branch]}"
-               else
-                 options[:branch]
-               end
       repo = ::Git.open(module_root)
       repo.branch(options[:branch]).checkout
       files.each do |file|
@@ -118,7 +118,13 @@ module ModuleSync
           `#{script} #{module_root}`
         end
         repo.commit(message, opts_commit)
-        repo.push('origin', branch, opts_push)
+        if options[:remote_branch]
+          if remote_branch_differ?(repo, options[:branch], options[:remote_branch])
+            repo.push('origin', "#{options[:branch]}:#{options[:remote_branch]}", opts_push)
+          end
+        else
+          repo.push('origin', options[:branch], opts_push)
+        end
         # Only bump/tag if pushing didn't fail (i.e. there were changes)
         m = Blacksmith::Modulefile.new("#{module_root}/metadata.json")
         if options[:bump]
