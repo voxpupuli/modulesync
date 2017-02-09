@@ -127,23 +127,8 @@ Feature: update
       """
 
   Scenario: Modifying an existing file and committing the change
-    Given a mocked home directory
-    And I run `git config --global user.name Test`
-    And I run `git config --global user.email test@example.com`
-    And a directory named "sources"
-    And I run `git clone https://github.com/maestrodev/puppet-test sources/puppet-test`
-    And a file named "managed_modules.yml" with:
-      """
-      ---
-        - puppet-test
-      """
-    And a file named "modulesync.yml" with:
-      """
-      ---
-        namespace: sources
-
-      """
-    And I run `bash -c 'echo "  git_base: file://$PWD/" >> modulesync.yml'`
+    Given a mocked git configuration
+    And a remote module repository
     And a file named "config_defaults.yml" with:
       """
       ---
@@ -658,23 +643,8 @@ Feature: update
       """
 
   Scenario: Running the same update twice and pushing to a remote branch
-    Given a mocked home directory
-    And I run `git config --global user.name Test`
-    And I run `git config --global user.email test@example.com`
-    And a directory named "sources"
-    And I run `git clone https://github.com/maestrodev/puppet-test sources/puppet-test`
-    And a file named "managed_modules.yml" with:
-      """
-      ---
-        - puppet-test
-      """
-    And a file named "modulesync.yml" with:
-      """
-      ---
-        namespace: sources
-
-      """
-    And I run `bash -c 'echo "  git_base: file://$PWD/" >> modulesync.yml'`
+    Given a mocked git configuration
+    And a remote module repository
     And a file named "config_defaults.yml" with:
       """
       ---
