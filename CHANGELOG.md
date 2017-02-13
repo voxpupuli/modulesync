@@ -1,3 +1,7 @@
+##2017-02-13 - 0.7.1
+
+Fixes an issue releasing 0.7.0, no functional changes.
+
 ##2017-02-13 - 0.7.0
 
 ### Summary
