@@ -16,7 +16,7 @@ rvm:
 deploy:
   provider: rubygems
   api_key:
-    secure: "NGKJHr9ba/Jmy/n9QrTVnFyMFdkjkv2A3JvKvtJHSa1T795Atak2A/cyA0LF5sBib8NDEgw49Om53g5ZvdTxGKkw5OJuPouwvJ9gFQkv+gDf43tjdAa7oMSLixKVp+dxLvpUC+pBjEPR3gM2qs2mBwax/YWCIreI1HXfXOzrRHA="
+    secure: "Tbf1EbLEobIIox+fftJZADZsfQQ6kl0urcMNetK7NJzFo/negD/WyJIUj3kro/B7buyYADEjTui/JR4o8EPbugfM3ie5vYOd5k3AesSzbdr4BSwGe/cGbGOB7/PZuGfFLkb94/FiCU2mIwibkbh1rHWGlBoPj7ntL0+5ZtdvsM4="
   gem: modulesync
   on:
     rvm: 2.4.0
