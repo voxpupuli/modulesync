@@ -1,3 +1,31 @@
+##2017-02-13 - 0.7.0
+
+### Summary
+
+This is the first release from Vox Pupuli, which has taken over maintenance of
+modulesync.
+
+#### Features
+- New `msync update` arguments:
+    - `--git-base` to override `git_base`, e.g. for read-only git clones
+    - `-s` to skip the current module and continue on error
+    - `-x` for a negative filter (blacklist) of modules not to update
+- Add `-a` argument to `msync hook` to pass additional arguments
+- Add `:git_base` and `:namespace` data to `@configs` hash
+- Allow `managed_modules.yml` to list modules with a different namespace
+- Entire directories can be listed with `unmanaged: true`
+
+#### Refactoring
+- Replace CLI optionparser with thor
+
+#### Bugfixes
+- Fix git 1.8.0 compatibility, detecting when no files are changed
+- Fix `delete: true` feature, now deletes files correctly
+- Fix handling of `:global` config entries, not interpreted as a path
+- Fix push without force to remote branch when no files have changed (#102)
+- Output template name when ERB rendering fails
+- Remove extraneous whitespace in `--noop` output
+
 ##2015-08-13 - 0.6.1
 
 ### Summary

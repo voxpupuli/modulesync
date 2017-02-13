@@ -4,13 +4,13 @@ $LOAD_PATH.unshift(lib) unless $LOAD_PATH.include?(lib)
 
 Gem::Specification.new do |spec|
   spec.name          = 'modulesync'
-  spec.version       = '0.6.1'
-  spec.authors       = ['Colleen Murphy']
-  spec.email         = ['colleen@puppetlabs.com']
+  spec.version       = '0.7.0'
+  spec.authors       = ['Vox Pupuli']
+  spec.email         = ['voxpupuli@groups.io']
   spec.summary       = 'Puppet Module Synchronizer'
   spec.description   = 'Utility to synchronize common files across puppet modules in Github.'
-  spec.homepage      = 'http://github.com/puppetlabs/modulesync'
-  spec.license       = 'Apache 2'
+  spec.homepage      = 'http://github.com/voxpupuli/modulesync'
+  spec.license       = 'Apache-2.0'
 
   spec.files         = `git ls-files -z`.split("\x0")
   spec.executables   = spec.files.grep(%r{^bin/}) { |f| File.basename(f) }
