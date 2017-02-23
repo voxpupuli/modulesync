@@ -7,6 +7,7 @@ require 'modulesync/hook'
 require 'modulesync/renderer'
 require 'modulesync/settings'
 require 'modulesync/util'
+require 'monkey_patches'
 
 module ModuleSync
   include Constants

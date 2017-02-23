@@ -6,6 +6,7 @@ AllCops:
     - 'vendor/**/*'
     - 'tmp/**/*'
     - 'pkg/**/*'
+    - 'lib/monkey_patches.rb'
 
 Style/HashSyntax:
   Enabled: false
