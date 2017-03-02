@@ -1,12 +1,13 @@
 inherit_from: .rubocop_todo.yml
 
 AllCops:
+  TargetRubyVersion: 2.0
   Exclude:
     - 'vendor/**/*'
     - 'tmp/**/*'
     - 'pkg/**/*'
+    - 'lib/monkey_patches.rb'
 
-# we still support ruby 1.8
 Style/HashSyntax:
   Enabled: false
 

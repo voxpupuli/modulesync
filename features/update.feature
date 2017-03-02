@@ -62,6 +62,34 @@ Feature: update
     When I run `msync update --noop`
     Then the exit status should be 1
 
+  Scenario: Using skip_broken option with invalid files
+    Given a file named "managed_modules.yml" with:
+      """
+      ---
+        - puppet-test
+      """
+    And a file named "modulesync.yml" with:
+      """
+      ---
+        namespace: maestrodev
+        git_base: https://github.com/
+      """
+    And a file named "config_defaults.yml" with:
+      """
+      ---
+      test:
+        name: aruba
+      """
+    And a directory named "moduleroot"
+    And a file named "moduleroot/test" with:
+      """
+      <% @configs.each do |c| -%>
+        <%= c['name'] %>
+      <% end %>
+      """
+    When I run `msync update --noop -s`
+    Then the exit status should be 0
+
   Scenario: Modifying an existing file
     Given a file named "managed_modules.yml" with:
       """
@@ -94,6 +122,29 @@ Feature: update
       """
     Given I run `cat modules/puppet-test/Gemfile`
     Then the output should contain:
+      """
+      source 'https://somehost.com'
+      """
+
+  Scenario: Modifying an existing file and committing the change
+    Given a mocked git configuration
+    And a remote module repository
+    And a file named "config_defaults.yml" with:
+      """
+      ---
+      Gemfile:
+        gem_source: https://somehost.com
+      """
+    And a directory named "moduleroot"
+    And a file named "moduleroot/Gemfile" with:
+      """
+      source '<%= @configs['gem_source'] %>'
+      """
+    When I run `msync update -m "Update Gemfile" -r test`
+    Then the exit status should be 0
+    Given I cd to "sources/puppet-test"
+    And I run `git checkout test`
+    Then the file "Gemfile" should contain:
       """
       source 'https://somehost.com'
       """
@@ -210,13 +261,13 @@ Feature: update
       spec:
         unmanaged: true
       """
-    And a directory named "moduleroot"
+    And a directory named "moduleroot/spec"
     And a file named "moduleroot/spec/spec_helper.rb" with:
       """
       some spec_helper fud
       """
     And a directory named "modules/puppetlabs-apache/spec"
-    And a file named "modules/puppetlabs-apache/spec_helper.rb" with:
+    And a file named "modules/puppetlabs-apache/spec/spec_helper.rb" with:
       """
       This is a fake spec_helper!
       """
@@ -227,10 +278,11 @@ Feature: update
       """
     And the exit status should be 0
     Given I run `cat modules/puppetlabs-apache/spec/spec_helper.rb`
-    Then the output should not contain:
+    Then the output should contain:
       """
-      some spec_helper fud
+      This is a fake spec_helper!
       """
+    And the exit status should be 0
 
   Scenario: Adding a new file in a new subdirectory
     Given a file named "managed_modules.yml" with:
@@ -694,3 +746,25 @@ Feature: update
       """
       echo 'https://github.com/maestrodev'
       """
+
+  Scenario: Running the same update twice and pushing to a remote branch
+    Given a mocked git configuration
+    And a remote module repository
+    And a file named "config_defaults.yml" with:
+      """
+      ---
+      Gemfile:
+        gem_source: https://somehost.com
+      """
+    And a directory named "moduleroot"
+    And a file named "moduleroot/Gemfile" with:
+      """
+      source '<%= @configs['gem_source'] %>'
+      """
+    When I run `msync update -m "Update Gemfile" -r test`
+    Then the exit status should be 0
+    Given I remove the directory "modules"
+    When I run `msync update -m "Update Gemfile" -r test`
+    Then the exit status should be 0
+    Then the output should not contain "error"
+    Then the output should not contain "rejected"
