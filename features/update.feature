@@ -642,6 +642,111 @@ Feature: update
       echo 'https://github.com/maestrodev'
       """
 
+  Scenario: Using .erb extension template
+    Given a file named "managed_modules.yml" with:
+      """
+      ---
+        - puppet-test
+      """
+    And a file named "modulesync.yml" with:
+      """
+      ---
+        namespace: maestrodev
+        git_base: https://github.com/
+      """
+    And a file named "config_defaults.yml" with:
+      """
+      ---
+      README.md.erb:
+      """
+    And a directory named "moduleroot"
+    And a file named "moduleroot/README.md.erb" with:
+      """
+      echo '<%= @configs[:git_base] + @configs[:namespace] %>'
+      """
+    When I run `msync update --noop`
+    Then the exit status should be 0
+    And the output should match:
+      """
+      Files changed:
+      +diff --git a/README.md b/README.md
+      """
+    Given I run `cat modules/puppet-test/README.md`
+    Then the output should contain:
+      """
+      echo 'https://github.com/maestrodev'
+      """
+
+  Scenario: Using .erb extension template but settings ommit .erb
+    Given a file named "managed_modules.yml" with:
+      """
+      ---
+        - puppet-test
+      """
+    And a file named "modulesync.yml" with:
+      """
+      ---
+        namespace: maestrodev
+        git_base: https://github.com/
+      """
+    And a file named "config_defaults.yml" with:
+      """
+      ---
+      README.md:
+      """
+    And a directory named "moduleroot"
+    And a file named "moduleroot/README.md.erb" with:
+      """
+      echo '<%= @configs[:git_base] + @configs[:namespace] %>'
+      """
+    When I run `msync update --noop`
+    Then the exit status should be 0
+    And the output should match:
+      """
+      Files changed:
+      +diff --git a/README.md b/README.md
+      """
+    Given I run `cat modules/puppet-test/README.md`
+    Then the output should contain:
+      """
+      echo 'https://github.com/maestrodev'
+      """
+
+  Scenario: Using non-.erb extension template but settings use .erb
+    Given a file named "managed_modules.yml" with:
+      """
+      ---
+        - puppet-test
+      """
+    And a file named "modulesync.yml" with:
+      """
+      ---
+        namespace: maestrodev
+        git_base: https://github.com/
+      """
+    And a file named "config_defaults.yml" with:
+      """
+      ---
+      README.md.erb:
+      """
+    And a directory named "moduleroot"
+    And a file named "moduleroot/README.md" with:
+      """
+      echo '<%= @configs[:git_base] + @configs[:namespace] %>'
+      """
+    When I run `msync update --noop`
+    Then the exit status should be 0
+    And the output should match:
+      """
+      Files changed:
+      +diff --git a/README.md b/README.md
+      """
+    Given I run `cat modules/puppet-test/README.md`
+    Then the output should contain:
+      """
+      echo 'https://github.com/maestrodev'
+      """
+
   Scenario: Running the same update twice and pushing to a remote branch
     Given a mocked git configuration
     And a remote module repository

@@ -12,8 +12,16 @@ module ModuleSync
       @additional_settings = additional_settings
     end
 
+    def lookup_config(hash, filename)
+      hash[filename] || {}
+    end
+
     def build_file_configs(filename)
-      global_defaults.merge(defaults[filename] || {}).merge(module_defaults).merge(module_configs[filename] || {}).merge(additional_settings)
+      file_def = lookup_config(defaults, filename)
+      file_md  = lookup_config(module_defaults, filename)
+      file_mc  = lookup_config(module_configs, filename)
+
+      global_defaults.merge(file_def).merge(file_md).merge(file_mc).merge(additional_settings)
     end
 
     def managed?(filename)
