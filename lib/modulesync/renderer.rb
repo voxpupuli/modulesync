@@ -18,7 +18,7 @@ module ModuleSync
                       end
       erb_obj = ERB.new(File.read(template_file), nil, '-')
       erb_obj.filename = from_erb_template
-      erb_obj.def_method(ForgeModuleFile, 'render()')
+      erb_obj.def_method(ForgeModuleFile, 'render()', template_file)
       erb_obj
     end
 
