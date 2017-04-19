@@ -19,7 +19,7 @@ describe ModuleSync::Settings do
   it { expect(subject.managed?('Gemfile')).to eq true }
   it { expect(subject.managed?('Gemfile/foo')).to eq true }
   it { expect(subject.managed_files([])).to eq ['Gemfile'] }
-  it { expect(subject.managed_files(%w(Rakefile Gemfile other_file))).to eq %w(Gemfile other_file) }
+  it { expect(subject.managed_files(%w[Rakefile Gemfile other_file])).to eq %w[Gemfile other_file] }
   it { expect(subject.unmanaged_files([])).to eq ['Rakefile'] }
-  it { expect(subject.unmanaged_files(%w(Rakefile Gemfile other_file))).to eq ['Rakefile'] }
+  it { expect(subject.unmanaged_files(%w[Rakefile Gemfile other_file])).to eq ['Rakefile'] }
 end
