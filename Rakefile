@@ -18,4 +18,4 @@ Cucumber::Rake::Task.new do |t|
   t.cucumber_opts << '--format pretty'
 end
 
-task :test => [:clean, :spec, :cucumber, :rubocop]
+task :test => %i[clean spec cucumber rubocop]
