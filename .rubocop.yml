@@ -14,3 +14,7 @@ Style/HashSyntax:
 # dealbreaker:
 Style/TrailingCommaInLiteral:
   Enabled: false
+
+# would require external library
+Style/IndentHeredoc:
+  Enabled: false

@@ -49,7 +49,7 @@ module ModuleSync
       exit
     end
     managed_modules.select! { |m| m =~ Regexp.new(filter) } unless filter.nil?
-    managed_modules.select! { |m| m !~ Regexp.new(negative_filter) } unless negative_filter.nil?
+    managed_modules.reject! { |m| m =~ Regexp.new(negative_filter) } unless negative_filter.nil?
     managed_modules
   end
 
@@ -89,7 +89,7 @@ module ModuleSync
 
   def self.manage_module(puppet_module, module_files, module_options, defaults, options)
     puts "Syncing #{puppet_module}"
-    namespace, module_name = self.module_name(puppet_module, options[:namespace])
+    namespace, module_name = module_name(puppet_module, options[:namespace])
     unless options[:offline]
       git_base = options[:git_base]
       git_uri = "#{git_base}#{namespace}"

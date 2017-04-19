@@ -13,7 +13,7 @@ module ModuleSync
     end
 
     def lookup_config(hash, filename)
-      hash[filename] || {}
+      hash[filename.chomp('.erb')] || hash[filename] || {}
     end
 
     def build_file_configs(filename)

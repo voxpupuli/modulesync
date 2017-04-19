@@ -607,7 +607,7 @@ Feature: update
     Given I run `cat modules/puppet-lib-file_concat/.git/config`
     Then the output should contain "url = https://github.com/electrical/puppet-lib-file_concat.git"
 
-  Scenario: Modifying an existing file with values expoxed by the module
+  Scenario: Modifying an existing file with values exposed by the module
     Given a file named "managed_modules.yml" with:
       """
       ---
@@ -623,11 +623,12 @@ Feature: update
       """
       ---
       README.md:
+        key: value
       """
     And a directory named "moduleroot"
     And a file named "moduleroot/README.md" with:
       """
-      echo '<%= @configs[:git_base] + @configs[:namespace] %>'
+      echo '<%= @configs[:git_base] + @configs[:namespace] %>/<%= @configs['key'] %>'
       """
     When I run `msync update --noop`
     Then the exit status should be 0
@@ -639,7 +640,7 @@ Feature: update
     Given I run `cat modules/puppet-test/README.md`
     Then the output should contain:
       """
-      echo 'https://github.com/maestrodev'
+      echo 'https://github.com/maestrodev/value'
       """
 
   Scenario: Using .erb extension template
@@ -658,11 +659,12 @@ Feature: update
       """
       ---
       README.md.erb:
+        key: value
       """
     And a directory named "moduleroot"
     And a file named "moduleroot/README.md.erb" with:
       """
-      echo '<%= @configs[:git_base] + @configs[:namespace] %>'
+      echo '<%= @configs[:git_base] + @configs[:namespace] %>/<%= @configs['key'] %>'
       """
     When I run `msync update --noop`
     Then the exit status should be 0
@@ -674,10 +676,10 @@ Feature: update
     Given I run `cat modules/puppet-test/README.md`
     Then the output should contain:
       """
-      echo 'https://github.com/maestrodev'
+      echo 'https://github.com/maestrodev/value'
       """
 
-  Scenario: Using .erb extension template but settings ommit .erb
+  Scenario: Using .erb extension template but settings omit .erb
     Given a file named "managed_modules.yml" with:
       """
       ---
@@ -693,11 +695,12 @@ Feature: update
       """
       ---
       README.md:
+        key: value
       """
     And a directory named "moduleroot"
     And a file named "moduleroot/README.md.erb" with:
       """
-      echo '<%= @configs[:git_base] + @configs[:namespace] %>'
+      echo '<%= @configs[:git_base] + @configs[:namespace] %>/<%= @configs['key'] %>'
       """
     When I run `msync update --noop`
     Then the exit status should be 0
@@ -709,7 +712,7 @@ Feature: update
     Given I run `cat modules/puppet-test/README.md`
     Then the output should contain:
       """
-      echo 'https://github.com/maestrodev'
+      echo 'https://github.com/maestrodev/value'
       """
 
   Scenario: Using non-.erb extension template but settings use .erb
@@ -728,11 +731,12 @@ Feature: update
       """
       ---
       README.md.erb:
+        key: value
       """
     And a directory named "moduleroot"
     And a file named "moduleroot/README.md" with:
       """
-      echo '<%= @configs[:git_base] + @configs[:namespace] %>'
+      echo '<%= @configs[:git_base] + @configs[:namespace] %>/<%= @configs['key'] %>'
       """
     When I run `msync update --noop`
     Then the exit status should be 0
@@ -744,7 +748,7 @@ Feature: update
     Given I run `cat modules/puppet-test/README.md`
     Then the output should contain:
       """
-      echo 'https://github.com/maestrodev'
+      echo 'https://github.com/maestrodev/value'
       """
 
   Scenario: Running the same update twice and pushing to a remote branch
