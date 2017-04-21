@@ -31,7 +31,8 @@ module ModuleSync
 
   def self.local_files(path)
     if File.exist?(path)
-      local_files = Find.find(path).collect { |file| file unless File.directory?(file) }.compact
+      # only select *.erb files, and strip the extension. This way all the code will only have to handle bare paths, except when reading the actual ERB text
+      local_files = Find.find(path).find_all { |p| p =~ /.erb$/ && !File.directory?(p) }.collect { |p| p.chomp('.erb') }.to_a
     else
       puts "#{path} does not exist. Check that you are working in your module configs directory or that you have passed in the correct directory with -c."
       exit

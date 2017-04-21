@@ -27,7 +27,7 @@ Puppet Labs module engineers manage the zoo of Puppet modules on GitHub, and
 has now been restructured and generalized to be used within other
 organizations. Puppet modules within an organization tend to have a number of
 meta-files that are identical or very similar between modules, such as the
-Gemfile, .travis.yml, .gitignore, or spec\_helper.rb. If a file needs to
+`Gemfile`, `.travis.yml`, `.gitignore`, or `spec\_helper.rb`. If a file needs to
 change in one module, it likely needs to change in the same way in every other
 module that the organization manages.
 
@@ -60,22 +60,24 @@ of this configuration directory. [The configuration for the Puppet Labs
 modules](https://github.com/puppetlabs/modulesync\_configs), can be used as an
 example for your own configuration. The configuration directory contains a
 directory called moduleroot which mirrors the structure of a module. The files
-in the moduleroot could be flat files or ERB templates. The templates are
-rendered using values from a file called config\_defaults.yml in the root (not
+in the moduleroot are ERB templates, and MUST be named after the target file,
+with `.erb.` appended. The templates are
+rendered using values from a file called `config\_defaults.yml` in the root (not
 moduleroot) of the configuration directory. The default values can be
-overridden or extended by adding a file called .sync.yml to the module itself.
+overridden or extended by adding a file called `.sync.yml` to the module itself.
 This allows us to, for example, have a set of "required" gems that are added
 to all Gemfiles, and a set of "optional" gems that a single module might add.
 
 Within the templates, values can be accessed in the `@configs` hash, which is
-merged from the values under the keys `:global` and the current file name.
+merged from the values under the keys `:global` and the target file name (no
+`.erb` suffix).
 
-The list of modules to manage is in managed\_modules.yml in the configuration
+The list of modules to manage is in `managed\_modules.yml` in the configuration
 directory. This lists just the names of the modules to be managed.
 
 ModuleSync can be called from the command line with parameters to change the
 branch you're working on or the remote to clone from and push to. You can also
-define these parameters in a file named modulesync.yml in the configuration
+define these parameters in a file named `modulesync.yml` in the configuration
 directory.
 
 Installing
@@ -122,6 +124,7 @@ msync update --noop
 ```
 
 #### Offline support
+
 The --offline flag was added to allow a user to disable git support within
 msync. One reason for this is because the user wants to control git commands
 external to msync.  Note, when using this command, msync assumes you have
@@ -359,6 +362,5 @@ As commented, files within moduleroot directory can be flat files or ERB templat
 The Templates
 -------------
 
-See the [modulesync\_configs](https://github.com/puppetlabs/modulesync_configs)
-repository for an explanation of the templates that Puppet Labs uses on its
-modules.
+See [Puppet's modulesync\_configs](https://github.com/puppetlabs/modulesync_configs) and [Vox Pupuli's modulesync\_configs](https://github.com/voxpupuli/modulesync_configs)
+repositories for different templates currently in use.

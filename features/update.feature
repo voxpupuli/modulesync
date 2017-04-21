@@ -20,7 +20,149 @@ Feature: update
         name: aruba
       """
     And a directory named "moduleroot"
+    And a file named "moduleroot/test.erb" with:
+      """
+      <%= @configs['name'] %>
+      """
+    When I run `msync update --noop`
+    Then the exit status should be 0
+    And the output should match:
+      """
+      Files added:
+      test
+      """
+    Given I run `cat modules/puppet-test/test`
+    Then the output should contain "aruba"
+
+  Scenario: Adding a new file, without the .erb suffix
+    Given a file named "managed_modules.yml" with:
+      """
+      ---
+        - puppet-test
+      """
+    And a file named "modulesync.yml" with:
+      """
+      ---
+        namespace: maestrodev
+        git_base: https://github.com/
+      """
+    And a file named "config_defaults.yml" with:
+      """
+      ---
+      test:
+        name: aruba
+      """
+    And a directory named "moduleroot"
     And a file named "moduleroot/test" with:
+      """
+      <%= @configs['name'] %>
+      """
+    When I run `msync update --noop`
+    Then the exit status should be 0
+    And the output should match:
+      """
+      Warning: using './moduleroot//test' as template without '.erb' suffix
+      """
+    And the output should match:
+      """
+      Files added:
+      test
+      """
+    Given I run `cat modules/puppet-test/test`
+    Then the output should contain "aruba"
+
+  Scenario: Adding a new file using global values
+    Given a file named "managed_modules.yml" with:
+      """
+      ---
+        - puppet-test
+      """
+    And a file named "modulesync.yml" with:
+      """
+      ---
+        namespace: maestrodev
+        git_base: https://github.com/
+      """
+    And a file named "config_defaults.yml" with:
+      """
+      ---
+      :global:
+        name: aruba
+      """
+    And a directory named "moduleroot"
+    And a file named "moduleroot/test.erb" with:
+      """
+      <%= @configs['name'] %>
+      """
+    When I run `msync update --noop`
+    Then the exit status should be 0
+    And the output should match:
+      """
+      Files added:
+      test
+      """
+    Given I run `cat modules/puppet-test/test`
+    Then the output should contain "aruba"
+
+  Scenario: Adding a new file overriding global values
+    Given a file named "managed_modules.yml" with:
+      """
+      ---
+        - puppet-test
+      """
+    And a file named "modulesync.yml" with:
+      """
+      ---
+        namespace: maestrodev
+        git_base: https://github.com/
+      """
+    And a file named "config_defaults.yml" with:
+      """
+      ---
+      :global:
+        name: global
+
+      test:
+        name: aruba
+      """
+    And a directory named "moduleroot"
+    And a file named "moduleroot/test.erb" with:
+      """
+      <%= @configs['name'] %>
+      """
+    When I run `msync update --noop`
+    Then the exit status should be 0
+    And the output should match:
+      """
+      Files added:
+      test
+      """
+    Given I run `cat modules/puppet-test/test`
+    Then the output should contain "aruba"
+
+  Scenario: Adding a new file ignoring global values
+    Given a file named "managed_modules.yml" with:
+      """
+      ---
+        - puppet-test
+      """
+    And a file named "modulesync.yml" with:
+      """
+      ---
+        namespace: maestrodev
+        git_base: https://github.com/
+      """
+    And a file named "config_defaults.yml" with:
+      """
+      ---
+      :global:
+        key: global
+
+      test:
+        name: aruba
+      """
+    And a directory named "moduleroot"
+    And a file named "moduleroot/test.erb" with:
       """
       <%= @configs['name'] %>
       """
@@ -53,7 +195,7 @@ Feature: update
         name: aruba
       """
     And a directory named "moduleroot"
-    And a file named "moduleroot/test" with:
+    And a file named "moduleroot/test.erb" with:
       """
       <% @configs.each do |c| -%>
         <%= c['name'] %>
@@ -81,7 +223,7 @@ Feature: update
         name: aruba
       """
     And a directory named "moduleroot"
-    And a file named "moduleroot/test" with:
+    And a file named "moduleroot/test.erb" with:
       """
       <% @configs.each do |c| -%>
         <%= c['name'] %>
@@ -109,7 +251,7 @@ Feature: update
         gem_source: https://somehost.com
       """
     And a directory named "moduleroot"
-    And a file named "moduleroot/Gemfile" with:
+    And a file named "moduleroot/Gemfile.erb" with:
       """
       source '<%= @configs['gem_source'] %>'
       """
@@ -136,7 +278,7 @@ Feature: update
         gem_source: https://somehost.com
       """
     And a directory named "moduleroot"
-    And a file named "moduleroot/Gemfile" with:
+    And a file named "moduleroot/Gemfile.erb" with:
       """
       source '<%= @configs['gem_source'] %>'
       """
@@ -168,7 +310,7 @@ Feature: update
         unmanaged: true
       """
     And a directory named "moduleroot"
-    And a file named "moduleroot/Gemfile" with:
+    And a file named "moduleroot/Gemfile.erb" with:
       """
       source '<%= @configs['gem_source'] %>'
       """
@@ -208,7 +350,7 @@ Feature: update
         delete: true
       """
     And a directory named "moduleroot"
-    And a file named "moduleroot/Gemfile" with:
+    And a file named "moduleroot/Gemfile.erb" with:
       """
       source '<%= @configs['gem_source'] %>'
       """
@@ -262,7 +404,7 @@ Feature: update
         unmanaged: true
       """
     And a directory named "moduleroot/spec"
-    And a file named "moduleroot/spec/spec_helper.rb" with:
+    And a file named "moduleroot/spec/spec_helper.rb.erb" with:
       """
       some spec_helper fud
       """
@@ -303,7 +445,7 @@ Feature: update
         require:
           - puppetlabs_spec_helper/module_helper
       """
-    And a file named "moduleroot/spec/spec_helper.rb" with:
+    And a file named "moduleroot/spec/spec_helper.rb.erb" with:
       """
       <% @configs['require'].each do |required| -%>
         require '<%= required %>'
@@ -341,7 +483,7 @@ Feature: update
         require:
           - puppetlabs_spec_helper/module_helper
       """
-    And a file named "moduleroot/spec/spec_helper.rb" with:
+    And a file named "moduleroot/spec/spec_helper.rb.erb" with:
       """
       <% @configs['require'].each do |required| -%>
         require '<%= required %>'
@@ -369,7 +511,7 @@ Feature: update
         require:
           - puppetlabs_spec_helper/module_helper
       """
-    And a file named "moduleroot/spec/spec_helper.rb" with:
+    And a file named "moduleroot/spec/spec_helper.rb.erb" with:
       """
       <% @configs['require'].each do |required| -%>
         require '<%= required %>'
@@ -434,7 +576,7 @@ Feature: update
         name: aruba
       """
     And a directory named "moduleroot"
-    And a file named "moduleroot/test" with:
+    And a file named "moduleroot/test.erb" with:
       """
       <%= @configs['name'] %>
       """
@@ -469,7 +611,7 @@ Feature: update
         name: aruba
       """
     And a directory named "moduleroot"
-    And a file named "moduleroot/test" with:
+    And a file named "moduleroot/test.erb" with:
       """
       <%= @configs['name'] %>
       """
@@ -505,7 +647,7 @@ Feature: update
         name: aruba
       """
     And a directory named "moduleroot"
-    And a file named "moduleroot/test" with:
+    And a file named "moduleroot/test.erb" with:
       """
       <%= @configs['name'] %>
       """
@@ -538,7 +680,7 @@ Feature: update
         require:
           - puppetlabs_spec_helper/module_helper
       """
-    And a file named "moduleroot/spec/spec_helper.rb" with:
+    And a file named "moduleroot/spec/spec_helper.rb.erb" with:
       """
       <% @configs['require'].each do |required| -%>
         require '<%= required %>'
@@ -591,7 +733,7 @@ Feature: update
         name: aruba
       """
     And a directory named "moduleroot"
-    And a file named "moduleroot/test" with:
+    And a file named "moduleroot/test.erb" with:
       """
       <%= @configs['name'] %>
       """
@@ -607,77 +749,7 @@ Feature: update
     Given I run `cat modules/puppet-lib-file_concat/.git/config`
     Then the output should contain "url = https://github.com/electrical/puppet-lib-file_concat.git"
 
-  Scenario: Modifying an existing file with values expoxed by the module
-    Given a file named "managed_modules.yml" with:
-      """
-      ---
-        - puppet-test
-      """
-    And a file named "modulesync.yml" with:
-      """
-      ---
-        namespace: maestrodev
-        git_base: https://github.com/
-      """
-    And a file named "config_defaults.yml" with:
-      """
-      ---
-      README.md:
-      """
-    And a directory named "moduleroot"
-    And a file named "moduleroot/README.md" with:
-      """
-      echo '<%= @configs[:git_base] + @configs[:namespace] %>'
-      """
-    When I run `msync update --noop`
-    Then the exit status should be 0
-    And the output should match:
-      """
-      Files changed:
-      +diff --git a/README.md b/README.md
-      """
-    Given I run `cat modules/puppet-test/README.md`
-    Then the output should contain:
-      """
-      echo 'https://github.com/maestrodev'
-      """
-
-  Scenario: Using .erb extension template
-    Given a file named "managed_modules.yml" with:
-      """
-      ---
-        - puppet-test
-      """
-    And a file named "modulesync.yml" with:
-      """
-      ---
-        namespace: maestrodev
-        git_base: https://github.com/
-      """
-    And a file named "config_defaults.yml" with:
-      """
-      ---
-      README.md.erb:
-      """
-    And a directory named "moduleroot"
-    And a file named "moduleroot/README.md.erb" with:
-      """
-      echo '<%= @configs[:git_base] + @configs[:namespace] %>'
-      """
-    When I run `msync update --noop`
-    Then the exit status should be 0
-    And the output should match:
-      """
-      Files changed:
-      +diff --git a/README.md b/README.md
-      """
-    Given I run `cat modules/puppet-test/README.md`
-    Then the output should contain:
-      """
-      echo 'https://github.com/maestrodev'
-      """
-
-  Scenario: Using .erb extension template but settings ommit .erb
+  Scenario: Modifying an existing file with values exposed by the module
     Given a file named "managed_modules.yml" with:
       """
       ---
@@ -696,41 +768,6 @@ Feature: update
       """
     And a directory named "moduleroot"
     And a file named "moduleroot/README.md.erb" with:
-      """
-      echo '<%= @configs[:git_base] + @configs[:namespace] %>'
-      """
-    When I run `msync update --noop`
-    Then the exit status should be 0
-    And the output should match:
-      """
-      Files changed:
-      +diff --git a/README.md b/README.md
-      """
-    Given I run `cat modules/puppet-test/README.md`
-    Then the output should contain:
-      """
-      echo 'https://github.com/maestrodev'
-      """
-
-  Scenario: Using non-.erb extension template but settings use .erb
-    Given a file named "managed_modules.yml" with:
-      """
-      ---
-        - puppet-test
-      """
-    And a file named "modulesync.yml" with:
-      """
-      ---
-        namespace: maestrodev
-        git_base: https://github.com/
-      """
-    And a file named "config_defaults.yml" with:
-      """
-      ---
-      README.md.erb:
-      """
-    And a directory named "moduleroot"
-    And a file named "moduleroot/README.md" with:
       """
       echo '<%= @configs[:git_base] + @configs[:namespace] %>'
       """
@@ -757,7 +794,7 @@ Feature: update
         gem_source: https://somehost.com
       """
     And a directory named "moduleroot"
-    And a file named "moduleroot/Gemfile" with:
+    And a file named "moduleroot/Gemfile.erb" with:
       """
       source '<%= @configs['gem_source'] %>'
       """
