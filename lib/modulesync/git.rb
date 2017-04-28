@@ -147,7 +147,7 @@ module ModuleSync
     def self.untracked_unignored_files(repo)
       ignore_path = "#{repo.dir.path}/.gitignore"
       ignored = File.exist?(ignore_path) ? File.open(ignore_path).read.split : []
-      repo.status.untracked.keep_if { |f, _| !ignored.any? { |i| File.fnmatch(i, f) } }
+      repo.status.untracked.keep_if { |f, _| ignored.none? { |i| File.fnmatch(i, f) } }
     end
 
     def self.update_noop(name, options)
