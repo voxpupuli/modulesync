@@ -9,16 +9,16 @@ module ModuleSync
       end
     end
 
-    def self.build(from_erb_template)
-      from_erb_template = from_erb_template.chomp('.erb')
-      template_file = if File.exist?("#{from_erb_template}.erb")
-                        "#{from_erb_template}.erb"
+    def self.build(target_name)
+      template_file = if !File.exist?("#{target_name}.erb") && File.exist?(target_name)
+                        STDERR.puts "Warning: using '#{target_name}' as template without '.erb' suffix"
+                        target_name
                       else
-                        from_erb_template
+                        "#{target_name}.erb"
                       end
       erb_obj = ERB.new(File.read(template_file), nil, '-')
-      erb_obj.filename = from_erb_template
-      erb_obj.def_method(ForgeModuleFile, 'render()')
+      erb_obj.filename = template_file
+      erb_obj.def_method(ForgeModuleFile, 'render()', template_file)
       erb_obj
     end
 
@@ -30,10 +30,10 @@ module ModuleSync
       ForgeModuleFile.new(configs).render
     end
 
-    def self.sync(template, to_file)
-      path = to_file.rpartition('/').first
+    def self.sync(template, target_name)
+      path = target_name.rpartition('/').first
       FileUtils.mkdir_p(path) unless path.empty?
-      File.open(to_file.chomp('.erb'), 'w') do |file|
+      File.open(target_name, 'w') do |file|
         file.write(template)
       end
     end

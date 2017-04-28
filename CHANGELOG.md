@@ -1,5 +1,17 @@
 # Changelog
 
+## ??? - 0.8.0
+
+Prefer `.erb` suffixes on template files, and do not use the `.erb` suffix in configuration keys. To convert your moduleroot directory, run
+
+```
+find moduleroot/ -type f -exec git mv {} {}.erb \;
+```
+
+in your configs repository. Configuration keys in `config_defaults.yml`, and `.sync.yml` need to be handled by hand.
+
+ATTENTION: If you were using `.erb`-suffixed keys in your `config_defaults.yml` file, this will break your config.
+
 ## 2017-02-13 - 0.7.2
 
 Fixes an issue releasing 0.7.1, no functional changes.
