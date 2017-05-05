@@ -234,7 +234,8 @@ Available parameters for modulesync.yml
 * namespace : Namespace of the projects to manage (Default: 'puppetlabs')
 * branch : Branch to push to (Default: 'master')
 * remote_branch : Remote branch to push to (Default: Same value as branch)
-* pre_commit_script : A script to be run before commiting (ie. contrib/myfooscript.sh)
+* message : Commit message to apply to updated modules.
+* pre_commit_script : A script to be run before commiting (e.g. 'contrib/myfooscript.sh')
 
 ##### Example
 

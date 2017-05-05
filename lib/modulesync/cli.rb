@@ -5,9 +5,18 @@ require 'modulesync/util'
 
 module ModuleSync
   class CLI
+    def self.defaults
+      @defaults ||= Util.symbolize_keys(Util.parse_config(Constants::MODULESYNC_CONF_FILE))
+    end
+
     class Hook < Thor
-      class_option :project_root, :aliases => '-c', :desc => 'Path used by git to clone modules into. Defaults to "modules"', :default => 'modules'
-      class_option :hook_args, :aliases => '-a', :desc => 'Arguments to pass to msync in the git hook'
+      class_option :project_root,
+                   :aliases => '-c',
+                   :desc => 'Path used by git to clone modules into. Defaults to "modules"',
+                   :default => CLI.defaults[:project_root] || 'modules'
+      class_option :hook_args,
+                   :aliases => '-a',
+                   :desc => 'Arguments to pass to msync in the git hook'
 
       desc 'activate', 'Activate the git hook.'
       def activate
@@ -25,32 +34,81 @@ module ModuleSync
     end
 
     class Base < Thor
-      include Constants
-
-      class_option :project_root, :aliases => '-c', :desc => 'Path used by git to clone modules into. Defaults to "modules"', :default => 'modules'
-      class_option :git_base, :desc => 'Specify the base part of a git URL to pull from', :default => 'git@github.com:'
-      class_option :namespace, :aliases => '-n', :desc => 'Remote github namespace (user or organization) to clone from and push to. Defaults to puppetlabs', :default => 'puppetlabs'
-      class_option :filter, :aliases => '-f', :desc => 'A regular expression to select repositories to update.'
-      class_option :negative_filter, :aliases => '-x', :desc => 'A regular expression to skip repositories.'
-      class_option :branch, :aliases => '-b', :desc => 'Branch name to make the changes in. Defaults to master.', :default => 'master'
+      class_option :project_root,
+                   :aliases => '-c',
+                   :desc => 'Path used by git to clone modules into. Defaults to "modules"',
+                   :default => CLI.defaults[:project_root] || 'modules'
+      class_option :git_base,
+                   :desc => 'Specify the base part of a git URL to pull from',
+                   :default => CLI.defaults[:git_base] || 'git@github.com:'
+      class_option :namespace,
+                   :aliases => '-n',
+                   :desc => 'Remote github namespace (user or organization) to clone from and push to. Defaults to puppetlabs',
+                   :default => CLI.defaults[:namespace] || 'puppetlabs'
+      class_option :filter,
+                   :aliases => '-f',
+                   :desc => 'A regular expression to select repositories to update.'
+      class_option :negative_filter,
+                   :aliases => '-x',
+                   :desc => 'A regular expression to skip repositories.'
+      class_option :branch,
+                   :aliases => '-b',
+                   :desc => 'Branch name to make the changes in. Defaults to master.',
+                   :default => CLI.defaults[:branch] || 'master'
 
       desc 'update', 'Update the modules in managed_modules.yml'
-      option :message, :aliases => '-m', :desc => 'Commit message to apply to updated modules. Required unless running in noop mode.'
-      option :configs, :aliases => '-c', :desc => 'The local directory or remote repository to define the list of managed modules, the file templates, and the default values for template variables.'
-      option :remote_branch, :aliases => '-r', :desc => 'Remote branch name to push the changes to. Defaults to the branch name.'
-      option :skip_broken, :type => :boolean, :aliases => '-s', :desc => 'Process remaining modules if an error is found', :default => false
-      option :amend, :type => :boolean, :desc => 'Amend previous commit', :default => false
-      option :force, :type => :boolean, :desc => 'Force push amended commit', :default => false
-      option :noop, :type => :boolean, :desc => 'No-op mode', :default => false
-      option :offline, :type => :boolean, :desc => 'Do not run any Git commands. Allows the user to manage Git outside of ModuleSync.', :default => false
-      option :bump, :type => :boolean, :desc => 'Bump module version to the next minor', :default => false
-      option :changelog, :type => :boolean, :desc => 'Update CHANGELOG.md if version was bumped', :default => false
-      option :tag, :type => :boolean, :desc => 'Git tag with the current module version', :default => false
-      option :tag_pattern, :desc => 'The pattern to use when tagging releases.'
+      option :message,
+             :aliases => '-m',
+             :desc => 'Commit message to apply to updated modules. Required unless running in noop mode.',
+             :default => CLI.defaults[:message]
+      option :configs,
+             :aliases => '-c',
+             :desc => 'The local directory or remote repository to define the list of managed modules, the file templates, and the default values for template variables.'
+      option :remote_branch,
+             :aliases => '-r',
+             :desc => 'Remote branch name to push the changes to. Defaults to the branch name.',
+             :default => CLI.defaults[:remote_branch]
+      option :skip_broken,
+             :type => :boolean,
+             :aliases => '-s',
+             :desc => 'Process remaining modules if an error is found',
+             :default => false
+      option :amend,
+             :type => :boolean,
+             :desc => 'Amend previous commit',
+             :default => false
+      option :force,
+             :type => :boolean,
+             :desc => 'Force push amended commit',
+             :default => false
+      option :noop,
+             :type => :boolean,
+             :desc => 'No-op mode',
+             :default => false
+      option :offline,
+             :type => :boolean,
+             :desc => 'Do not run any Git commands. Allows the user to manage Git outside of ModuleSync.',
+             :default => false
+      option :bump,
+             :type => :boolean,
+             :desc => 'Bump module version to the next minor',
+             :default => false
+      option :changelog,
+             :type => :boolean,
+             :desc => 'Update CHANGELOG.md if version was bumped',
+             :default => false
+      option :tag,
+             :type => :boolean,
+             :desc => 'Git tag with the current module version',
+             :default => false
+      option :tag_pattern,
+             :desc => 'The pattern to use when tagging releases.'
+      option :pre_commit_script,
+             :desc => 'A script to be run before commiting',
+             :default => CLI.defaults[:pre_commit_script]
 
       def update
         config = { :command => 'update' }.merge(options)
-        config.merge!(Util.parse_config(MODULESYNC_CONF_FILE))
         config = Util.symbolize_keys(config)
         raise Thor::Error, 'No value provided for required option "--message"' unless config[:noop] || config[:message] || config[:offline]
         config[:git_opts] = { 'amend' => config[:amend], 'force' => config[:force] }
