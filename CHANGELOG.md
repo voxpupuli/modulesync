@@ -1,16 +1,24 @@
 # Changelog
 
-## ??? - 0.8.0
+## 2017-05-05 - 0.8.0
 
-Prefer `.erb` suffixes on template files, and do not use the `.erb` suffix in configuration keys. To convert your moduleroot directory, run
+### Summary
 
-```
-find moduleroot/ -type f -exec git mv {} {}.erb \;
-```
+This release now prefers `.erb` suffixes on template files. To convert your moduleroot directory, run this command in your configs repo:
 
-in your configs repository. Configuration keys in `config_defaults.yml`, and `.sync.yml` need to be handled by hand.
+        find moduleroot/ -type f -exec git mv {} {}.erb \;
 
-ATTENTION: If you were using `.erb`-suffixed keys in your `config_defaults.yml` file, this will break your config.
+Note that any `.erb`-suffixed configuration keys in `config_defaults.yml`, and `.sync.yml` need to be removed by hand. (This was unreleased functionality, will not affect most users.)
+
+#### Refactoring
+
+- Prefer `.erb` suffixes on template files, issue deprecation warning for templates without the extension
+- Require Ruby 2.0 or higher
+
+#### Bugfixes
+
+- Fix dependency on `git` gem for diff functionality
+- Fix error from `git` gem when diff contained line ending changes
 
 ## 2017-02-13 - 0.7.2
 

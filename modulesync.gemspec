@@ -5,7 +5,7 @@ $LOAD_PATH.unshift(lib) unless $LOAD_PATH.include?(lib)
 
 Gem::Specification.new do |spec|
   spec.name                  = 'modulesync'
-  spec.version               = '0.7.2'
+  spec.version               = '0.8.0'
   spec.authors               = ['Vox Pupuli']
   spec.email                 = ['voxpupuli@groups.io']
   spec.summary               = 'Puppet Module Synchronizer'
