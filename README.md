@@ -27,7 +27,7 @@ Puppet Labs module engineers manage the zoo of Puppet modules on GitHub, and
 has now been restructured and generalized to be used within other
 organizations. Puppet modules within an organization tend to have a number of
 meta-files that are identical or very similar between modules, such as the
-`Gemfile`, `.travis.yml`, `.gitignore`, or `spec\_helper.rb`. If a file needs to
+`Gemfile`, `.travis.yml`, `.gitignore`, or `spec_helper.rb`. If a file needs to
 change in one module, it likely needs to change in the same way in every other
 module that the organization manages.
 
@@ -57,12 +57,12 @@ ModuleSync is a gem that uses the GitHub workflow to clone, update, and push mod
 repositories. It expects to be activated from a directory containing
 configuration for modulesync and the modules, or you can pass it the location
 of this configuration directory. [The configuration for the Puppet Labs
-modules](https://github.com/puppetlabs/modulesync\_configs), can be used as an
+modules](https://github.com/puppetlabs/modulesync_configs), can be used as an
 example for your own configuration. The configuration directory contains a
 directory called moduleroot which mirrors the structure of a module. The files
 in the moduleroot are ERB templates, and MUST be named after the target file,
 with `.erb.` appended. The templates are
-rendered using values from a file called `config\_defaults.yml` in the root (not
+rendered using values from a file called `config_defaults.yml` in the root (not
 moduleroot) of the configuration directory. The default values can be
 overridden or extended by adding a file called `.sync.yml` to the module itself.
 This allows us to, for example, have a set of "required" gems that are added
@@ -72,7 +72,7 @@ Within the templates, values can be accessed in the `@configs` hash, which is
 merged from the values under the keys `:global` and the target file name (no
 `.erb` suffix).
 
-The list of modules to manage is in `managed\_modules.yml` in the configuration
+The list of modules to manage is in `managed_modules.yml` in the configuration
 directory. This lists just the names of the modules to be managed.
 
 ModuleSync can be called from the command line with parameters to change the
@@ -234,7 +234,8 @@ Available parameters for modulesync.yml
 * namespace : Namespace of the projects to manage (Default: 'puppetlabs')
 * branch : Branch to push to (Default: 'master')
 * remote_branch : Remote branch to push to (Default: Same value as branch)
-* pre_commit_script : A script to be run before commiting (ie. contrib/myfooscript.sh)
+* message : Commit message to apply to updated modules.
+* pre_commit_script : A script to be run before commiting (e.g. 'contrib/myfooscript.sh')
 
 ##### Example
 
