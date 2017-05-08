@@ -1,5 +1,11 @@
 # Changelog
 
+## 2017-05-08 - 0.8.1
+
+### Summary
+
+This release fixes a nasty bug with CLI vs configuration file option handling: Before [#117](https://github.com/voxpupuli/modulesync/pull/117) it was not possible to override options set in `modulesync.yml` on the command line, which could cause confusion in many cases. Now the configuration file is only used to populate the default values of the options specified in the README, and setting them on the command line will properly use those new values.
+
 ## 2017-05-05 - 0.8.0
 
 ### Summary
