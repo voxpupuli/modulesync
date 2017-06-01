@@ -33,7 +33,7 @@ module ModuleSync
     def self.sync(template, target_name)
       path = target_name.rpartition('/').first
       FileUtils.mkdir_p(path) unless path.empty?
-      File.open(target_name, 'w') do |file|
+      File.open(target_name, 'wb:UTF-8') do |file|
         file.write(template)
       end
     end
