@@ -363,5 +363,5 @@ As commented, files within moduleroot directory can be flat files or ERB templat
 The Templates
 -------------
 
-See [Puppet's modulesync\_configs](https://github.com/puppetlabs/modulesync_configs) and [Vox Pupuli's modulesync\_configs](https://github.com/voxpupuli/modulesync_configs)
+See [Puppet's modulesync\_configs](https://github.com/puppetlabs/modulesync_configs) and [Vox Pupuli's modulesync\_config](https://github.com/voxpupuli/modulesync_config)
 repositories for different templates currently in use.
