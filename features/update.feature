@@ -34,6 +34,32 @@ Feature: update
     Given I run `cat modules/puppet-test/test`
     Then the output should contain "aruba"
 
+  Scenario: Adding a new file to repo without write access
+    Given a file named "managed_modules.yml" with:
+      """
+      ---
+        - puppet-test
+      """
+    And a file named "modulesync.yml" with:
+      """
+      ---
+        namespace: maestrodev
+        git_base: git@github.com:
+      """
+    And a file named "config_defaults.yml" with:
+      """
+      ---
+      test:
+        name: aruba
+      """
+    And a directory named "moduleroot"
+    And a file named "moduleroot/test.erb" with:
+      """
+      <%= @configs['name'] %>
+      """
+    When I run `msync update -m "Add test" -r`
+    Then the exit status should be 1
+
   Scenario: Adding a new file, without the .erb suffix
     Given a file named "managed_modules.yml" with:
       """
