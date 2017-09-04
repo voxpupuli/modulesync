@@ -19,7 +19,7 @@ module ModuleSync
     end
 
     def self.switch_branch(repo, branch)
-      return if repo.branch.name == branch
+      return if repo.current_branch == branch
 
       if local_branch_exists?(repo, branch)
         puts "Switching to branch #{branch}"
