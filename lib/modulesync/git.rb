@@ -146,7 +146,7 @@ module ModuleSync
     # https://github.com/schacon/ruby-git/issues/130
     def self.untracked_unignored_files(repo)
       ignore_path = "#{repo.dir.path}/.gitignore"
-      ignored = File.exist?(ignore_path) ? File.open(ignore_path).read.split : []
+      ignored = File.exist?(ignore_path) ? File.read(ignore_path).split : []
       repo.status.untracked.keep_if { |f, _| ignored.none? { |i| File.fnmatch(i, f) } }
     end
 
