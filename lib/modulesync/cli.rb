@@ -106,6 +106,11 @@ module ModuleSync
       option :pre_commit_script,
              :desc => 'A script to be run before commiting',
              :default => CLI.defaults[:pre_commit_script]
+      option :fail_on_warnings,
+             :type => :boolean,
+             :aliases => '-F',
+             :desc => 'Produce a failure exit code when there are warnings (only has effect when --skip_broken is enabled)',
+             :default => false
 
       def update
         config = { :command => 'update' }.merge(options)

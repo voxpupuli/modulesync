@@ -128,6 +128,7 @@ module ModuleSync
 
     managed_modules = self.managed_modules("#{options[:configs]}/#{options[:managed_modules_conf]}", options[:filter], options[:negative_filter])
 
+    errors = false
     # managed_modules is either an array or a hash
     managed_modules.each do |puppet_module, module_options|
       begin
@@ -135,8 +136,10 @@ module ModuleSync
       rescue # rubocop:disable Lint/RescueWithoutErrorClass
         STDERR.puts "Error while updating #{puppet_module}"
         raise unless options[:skip_broken]
+        errors = true
         puts "Skipping #{puppet_module} as update process failed"
       end
     end
+    exit 1 if errors && options[:fail_on_warnings]
   end
 end

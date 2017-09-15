@@ -258,6 +258,34 @@ Feature: update
     When I run `msync update --noop -s`
     Then the exit status should be 0
 
+  Scenario: Using skip_broken and fail_on_warnings options with invalid files
+    Given a file named "managed_modules.yml" with:
+      """
+      ---
+        - puppet-test
+      """
+    And a file named "modulesync.yml" with:
+      """
+      ---
+        namespace: maestrodev
+        git_base: https://github.com/
+      """
+    And a file named "config_defaults.yml" with:
+      """
+      ---
+      test:
+        name: aruba
+      """
+    And a directory named "moduleroot"
+    And a file named "moduleroot/test.erb" with:
+      """
+      <% @configs.each do |c| -%>
+        <%= c['name'] %>
+      <% end %>
+      """
+    When I run `msync update --noop --skip_broken --fail_on_warnings`
+    Then the exit status should be 1
+
   Scenario: Modifying an existing file
     Given a file named "managed_modules.yml" with:
       """
