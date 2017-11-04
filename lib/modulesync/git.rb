@@ -162,7 +162,7 @@ module ModuleSync
       end
 
       puts 'Files added:'
-      untracked_unignored_files(repo).each do |file, _|
+      untracked_unignored_files(repo).each_key do |file|
         puts file
       end
 

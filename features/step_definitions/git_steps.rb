@@ -16,9 +16,9 @@ Given 'a remote module repository' do
         - puppet-test
       """
   )
-  write_file('modulesync.yml', <<-EOS)
+  write_file('modulesync.yml', <<-CONFIG)
 ---
   namespace: sources
   git_base: file://#{expand_path('.')}/
-  EOS
+  CONFIG
 end

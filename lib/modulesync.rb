@@ -81,7 +81,7 @@ module ModuleSync
         erb = Renderer.build(templatename)
         template = Renderer.render(erb, configs)
         Renderer.sync(template, module_file(options[:project_root], module_name, filename))
-      rescue
+      rescue # rubocop:disable Lint/RescueWithoutErrorClass
         STDERR.puts "Error while rendering #{filename}"
         raise
       end
@@ -132,7 +132,7 @@ module ModuleSync
     managed_modules.each do |puppet_module, module_options|
       begin
         manage_module(puppet_module, module_files, module_options, defaults, options)
-      rescue
+      rescue # rubocop:disable Lint/RescueWithoutErrorClass
         STDERR.puts "Error while updating #{puppet_module}"
         raise unless options[:skip_broken]
         puts "Skipping #{puppet_module} as update process failed"

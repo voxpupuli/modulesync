@@ -16,5 +16,5 @@ Style/TrailingCommaInLiteral:
   Enabled: false
 
 # would require external library
-Style/IndentHeredoc:
+Layout/IndentHeredoc:
   Enabled: false
