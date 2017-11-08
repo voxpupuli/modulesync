@@ -1,5 +1,15 @@
 # Changelog
 
+## 2017-11-03 - 0.8.2
+
+### Summary
+
+This release fixes:
+  * Bug that caused .gitignore file handle to be left open - [#131](https://github.com/voxpupuli/modulesync/pull/131).
+  * Fixed switch_branch to use current_branch instead of master - [#130](https://github.com/voxpupuli/modulesync/pull/130).
+  * Fixed bug where failed runs wouldn't return correct exit code - [#125](https://github.com/voxpupuli/modulesync/pull/125).
+  * Fix typo in README link to Voxpupuli modulesync_config [#123](https://github.com/voxpupuli/modulesync/pull/123).
+
 ## 2017-05-08 - 0.8.1
 
 ### Summary
