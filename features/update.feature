@@ -97,6 +97,40 @@ Feature: update
     Given I run `cat modules/puppet-test/test`
     Then the output should contain "aruba"
 
+  Scenario: Adding 2 files, with the same basename
+    Given a file named "managed_modules.yml" with:
+      """
+      ---
+        - puppet-test
+      """
+    And a file named "modulesync.yml" with:
+      """
+      ---
+        namespace: maestrodev
+        git_base: https://github.com/
+      """
+    And a file named "config_defaults.yml" with:
+      """
+      ---
+      test.erb:
+        name: aruba
+      """
+    And a directory named "moduleroot"
+    And a file named "moduleroot/test" with:
+      """
+      <%= @configs['name'] %>
+      """
+    And a file named "moduleroot/test.erb" with:
+      """
+      <%= @configs['name'] %>
+      """
+    When I run `msync update --noop`
+    Then the exit status should be 0
+    And the output should match:
+      """
+      Collision: You cannot have 2 files in ./moduleroot/ with the same basename
+      """
+
   Scenario: Adding a new file using global values
     Given a file named "managed_modules.yml" with:
       """
