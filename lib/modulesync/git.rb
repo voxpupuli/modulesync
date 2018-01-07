@@ -19,6 +19,10 @@ module ModuleSync
     end
 
     def self.switch_branch(repo, branch)
+      unless branch
+        puts "Using repository's default branch"
+        return
+      end
       return if repo.current_branch == branch
 
       if local_branch_exists?(repo, branch)
@@ -100,6 +104,7 @@ module ModuleSync
       module_root = "#{options[:project_root]}/#{name}"
       message = options[:message]
       repo = ::Git.open(module_root)
+      options[:branch] ||= (repo.current_branch || 'master')
       repo.branch(options[:branch]).checkout
       files.each do |file|
         if repo.status.deleted.include?(file)
@@ -154,6 +159,7 @@ module ModuleSync
       puts "Using no-op. Files in #{name} may be changed but will not be committed."
 
       repo = ::Git.open("#{options[:project_root]}/#{name}")
+      options[:branch] ||= (repo.current_branch || 'master')
       repo.branch(options[:branch]).checkout
 
       puts 'Files changed:'
