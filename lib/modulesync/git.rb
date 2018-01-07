@@ -136,7 +136,7 @@ module ModuleSync
           puts "There were no files to update in #{name}. Not committing."
         else
           puts git_error
-          exit(1)
+          raise
         end
       end
     end
