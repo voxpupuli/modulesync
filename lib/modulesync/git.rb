@@ -18,10 +18,16 @@ module ModuleSync
         repo.diff("#{local_branch}..origin/#{remote_branch}").any?
     end
 
+    def self.default_branch(repo)
+      symbolic_ref = repo.branches.find { |b| b.full =~ %r{remotes/origin/HEAD} }
+      return unless symbolic_ref
+      %r{remotes/origin/HEAD\s+->\s+origin/(?<branch>.+?)$}.match(symbolic_ref.full)[:branch]
+    end
+
     def self.switch_branch(repo, branch)
       unless branch
-        puts "Using repository's default branch"
-        return
+        branch = default_branch(repo)
+        puts "Using repository's default branch: #{branch}"
       end
       return if repo.current_branch == branch
 
