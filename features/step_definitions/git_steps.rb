@@ -23,7 +23,7 @@ Given 'a remote module repository' do
   CONFIG
 end
 
-Given /a remote module repository with "(.+?)" as the default branch/ do |branch|
+Given /a remote module repository with "(.+?)" as the default branch/ do |branch| # rubocop:disable Lint/AmbiguousRegexpLiteral
   steps %(
     Given a directory named "sources"
     And I run `git clone --mirror https://github.com/maestrodev/puppet-test sources/puppet-test`
