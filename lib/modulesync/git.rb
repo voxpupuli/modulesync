@@ -2,7 +2,7 @@ require 'git'
 require 'puppet_blacksmith'
 
 module ModuleSync
-  module Git
+  module Git # rubocop:disable Metrics/ModuleLength
     include Constants
 
     def self.remote_branch_exists?(repo, branch)
