@@ -110,6 +110,7 @@ module ModuleSync
       repo.branch(selected_branch).checkout
       selected_branch
     end
+    private_class_method :checkout_branch
 
     # Git add/rm, git commit, git push
     def self.update(name, files, options)
