@@ -885,3 +885,21 @@ Feature: update
     Then the exit status should be 0
     Then the output should not contain "error"
     Then the output should not contain "rejected"
+
+  Scenario: Repository with a default branch other than master
+    Given a mocked git configuration
+    And a remote module repository with "develop" as the default branch
+    And a file named "config_defaults.yml" with:
+      """
+      ---
+      Gemfile:
+        gem_source: https://somehost.com
+      """
+    And a directory named "moduleroot"
+    And a file named "moduleroot/Gemfile.erb" with:
+      """
+      source '<%= @configs['gem_source'] %>'
+      """
+    When I run `msync update -m "Update Gemfile"`
+    Then the exit status should be 0
+    Then the output should contain "Using repository's default branch: develop"

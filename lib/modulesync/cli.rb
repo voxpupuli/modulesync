@@ -53,8 +53,8 @@ module ModuleSync
                    :desc => 'A regular expression to skip repositories.'
       class_option :branch,
                    :aliases => '-b',
-                   :desc => 'Branch name to make the changes in. Defaults to master.',
-                   :default => CLI.defaults[:branch] || 'master'
+                   :desc => 'Branch name to make the changes in. Defaults to the default branch of the upstream repository, but falls back to "master".',
+                   :default => CLI.defaults[:branch]
 
       desc 'update', 'Update the modules in managed_modules.yml'
       option :message,

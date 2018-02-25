@@ -2,7 +2,7 @@ require 'git'
 require 'puppet_blacksmith'
 
 module ModuleSync
-  module Git
+  module Git # rubocop:disable Metrics/ModuleLength
     include Constants
 
     def self.remote_branch_exists?(repo, branch)
@@ -18,7 +18,17 @@ module ModuleSync
         repo.diff("#{local_branch}..origin/#{remote_branch}").any?
     end
 
+    def self.default_branch(repo)
+      symbolic_ref = repo.branches.find { |b| b.full =~ %r{remotes/origin/HEAD} }
+      return unless symbolic_ref
+      %r{remotes/origin/HEAD\s+->\s+origin/(?<branch>.+?)$}.match(symbolic_ref.full)[:branch]
+    end
+
     def self.switch_branch(repo, branch)
+      unless branch
+        branch = default_branch(repo)
+        puts "Using repository's default branch: #{branch}"
+      end
       return if repo.current_branch == branch
 
       if local_branch_exists?(repo, branch)
@@ -95,12 +105,19 @@ module ModuleSync
       repo.push('origin', tag)
     end
 
+    def self.checkout_branch(repo, branch)
+      selected_branch = branch || repo.current_branch || 'master'
+      repo.branch(selected_branch).checkout
+      selected_branch
+    end
+    private_class_method :checkout_branch
+
     # Git add/rm, git commit, git push
     def self.update(name, files, options)
       module_root = "#{options[:project_root]}/#{name}"
       message = options[:message]
       repo = ::Git.open(module_root)
-      repo.branch(options[:branch]).checkout
+      branch = checkout_branch(repo, options[:branch])
       files.each do |file|
         if repo.status.deleted.include?(file)
           repo.remove(file)
@@ -119,11 +136,11 @@ module ModuleSync
         end
         repo.commit(message, opts_commit)
         if options[:remote_branch]
-          if remote_branch_differ?(repo, options[:branch], options[:remote_branch])
-            repo.push('origin', "#{options[:branch]}:#{options[:remote_branch]}", opts_push)
+          if remote_branch_differ?(repo, branch, options[:remote_branch])
+            repo.push('origin', "#{branch}:#{options[:remote_branch]}", opts_push)
           end
         else
-          repo.push('origin', options[:branch], opts_push)
+          repo.push('origin', branch, opts_push)
         end
         # Only bump/tag if pushing didn't fail (i.e. there were changes)
         m = Blacksmith::Modulefile.new("#{module_root}/metadata.json")
@@ -154,7 +171,7 @@ module ModuleSync
       puts "Using no-op. Files in #{name} may be changed but will not be committed."
 
       repo = ::Git.open("#{options[:project_root]}/#{name}")
-      repo.branch(options[:branch]).checkout
+      checkout_branch(repo, options[:branch])
 
       puts 'Files changed:'
       repo.diff('HEAD', '--').each do |diff|
