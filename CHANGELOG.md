@@ -1,5 +1,21 @@
 # Changelog
 
+## 2018-02-15
+
+## Summary
+
+This is an awesome release - Now honors the repo default branch[#142](https://github.com/voxpupuli/modulesync/pull/142)
+
+### Bugfixes
+
+  * Monkey patch ls_files until ruby-git/ruby-git#320 is resolved
+  * Reraise exception rather than exit so we can rescue a derived StandardError when using skip_broken option
+
+### Enhancements
+
+  * Add new option to produce a failure exit code on warnings
+  * Remove hard coding of managed_modules.yml which means that options passed to ModuleSync.update can override the filename
+
 ## 2017-11-03 - 0.8.2
 
 ### Summary
