@@ -89,6 +89,10 @@ module ModuleSync
              :type => :boolean,
              :desc => 'Submit GitHub PR',
              :default => false
+      option :pr_title,
+             :type => :boolean,
+             :desc => 'Title of GitHub PR',
+             :default => CLI.defaults[:pr_title] || 'Update to module template files'
       option :offline,
              :type => :boolean,
              :desc => 'Do not run any Git commands. Allows the user to manage Git outside of ModuleSync.',

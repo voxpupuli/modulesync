@@ -125,10 +125,10 @@ module ModuleSync
       if pushed and options[:pr]
         if GITHUB_TOKEN
           repo_path = "#{namespace}/#{module_name}"
-          puts "Submitting PR on GitHub to #{repo_path}"
+          puts "Submitting PR '#{options[:pr_title]}' on GitHub to #{repo_path} - merges #{options[:branch]} into master"
           github = Octokit::Client.new(:access_token => GITHUB_TOKEN)
-          github.create_pull_request(repo_path, "master", options[:branch],
-            "Update to module template files", options[:message])
+          pr = github.create_pull_request(repo_path, "master", options[:branch], options[:pr_title], options[:message])
+          puts "PR created at #{pr["html_url"]}"
         else
           puts "Environment variable GITHUB_TOKEN must be set to use --pr!"
         end
