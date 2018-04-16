@@ -9,6 +9,10 @@ require 'modulesync/settings'
 require 'modulesync/util'
 require 'monkey_patches'
 
+GITHUB_TOKEN = ENV.fetch('GITHUB_TOKEN', '')
+GITHUB_ORGANIZATION = ENV.fetch('GITHUB_ORGANIZATION', '')
+GITHUB_BASE_URL = ENV.fetch('GITHUB_BASE_URL', '')
+
 module ModuleSync
   include Constants
 
@@ -115,6 +119,13 @@ module ModuleSync
       Git.update_noop(module_name, options)
     elsif !options[:offline]
       Git.update(module_name, files_to_manage, options)
+      if options[:pr] and GITHUB_TOKEN
+        repo_path = "#{GITHUB_ORGANIZATION}/#{module_name}"
+        puts "Submitting PR to #{repo_path}"
+        github = Octokit::Client.new(:access_token => GITHUB_TOKEN)
+        github.create_pull_request(repo_path, "master", options[:branch],
+          "Update to module template files", options[:message])
+      end
     end
   end
 
