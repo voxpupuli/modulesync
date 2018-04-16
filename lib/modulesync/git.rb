@@ -158,7 +158,7 @@ module ModuleSync
         end
       end
 
-      return true
+      true
     end
 
     # Needed because of a bug in the git gem that lists ignored files as

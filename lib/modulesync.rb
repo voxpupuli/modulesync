@@ -122,15 +122,15 @@ module ModuleSync
       Git.update_noop(module_name, options)
     elsif !options[:offline]
       pushed = Git.update(module_name, files_to_manage, options)
-      if pushed and options[:pr]
+      if pushed && options[:pr]
         if GITHUB_TOKEN
           repo_path = "#{namespace}/#{module_name}"
           puts "Submitting PR '#{options[:pr_title]}' on GitHub to #{repo_path} - merges #{options[:branch]} into master"
           github = Octokit::Client.new(:access_token => GITHUB_TOKEN)
-          pr = github.create_pull_request(repo_path, "master", options[:branch], options[:pr_title], options[:message])
-          puts "PR created at #{pr["html_url"]}"
+          pr = github.create_pull_request(repo_path, 'master', options[:branch], options[:pr_title], options[:message])
+          puts "PR created at #{pr['html_url']}"
         else
-          puts "Environment variable GITHUB_TOKEN must be set to use --pr!"
+          puts 'Environment variable GITHUB_TOKEN must be set to use --pr!'
         end
       end
     end
