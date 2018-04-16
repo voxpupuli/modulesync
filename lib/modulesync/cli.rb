@@ -90,7 +90,6 @@ module ModuleSync
              :desc => 'Submit GitHub PR',
              :default => false
       option :pr_title,
-             :type => :boolean,
              :desc => 'Title of GitHub PR',
              :default => CLI.defaults[:pr_title] || 'Update to module template files'
       option :offline,
