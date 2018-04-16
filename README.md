@@ -176,6 +176,19 @@ touching the modules, you can deactivate the hook.
 msync hook deactivate
 ```
 
+#### Submitting PRs to GitHub
+
+You can have modulesync submit Pull Requests on GitHub automatically with the
+`--pr` CLI option.
+
+```
+msync update --pr
+```
+
+You must set `GITHUB_TOKEN` in your environment for this to work. You can set
+the PR title with `--pr-title` or in `modulesync.yml` with the `pr_title`
+attribute.
+
 ### Using Forks and Non-master branches
 
 The default functionality is to run ModuleSync on the puppetlabs modules, but

@@ -1,4 +1,5 @@
 require 'fileutils'
+require 'octokit'
 require 'pathname'
 require 'modulesync/cli'
 require 'modulesync/constants'
@@ -8,6 +9,12 @@ require 'modulesync/renderer'
 require 'modulesync/settings'
 require 'modulesync/util'
 require 'monkey_patches'
+
+GITHUB_TOKEN = ENV.fetch('GITHUB_TOKEN', '')
+
+Octokit.configure do |c|
+  c.api_endpoint = ENV.fetch('GITHUB_BASE_URL', 'https://api.github.com')
+end
 
 module ModuleSync
   include Constants
@@ -114,7 +121,18 @@ module ModuleSync
     if options[:noop]
       Git.update_noop(module_name, options)
     elsif !options[:offline]
-      Git.update(module_name, files_to_manage, options)
+      pushed = Git.update(module_name, files_to_manage, options)
+      if pushed and options[:pr]
+        if GITHUB_TOKEN
+          repo_path = "#{namespace}/#{module_name}"
+          puts "Submitting PR '#{options[:pr_title]}' on GitHub to #{repo_path} - merges #{options[:branch]} into master"
+          github = Octokit::Client.new(:access_token => GITHUB_TOKEN)
+          pr = github.create_pull_request(repo_path, "master", options[:branch], options[:pr_title], options[:message])
+          puts "PR created at #{pr["html_url"]}"
+        else
+          puts "Environment variable GITHUB_TOKEN must be set to use --pr!"
+        end
+      end
     end
   end
 
