@@ -11,7 +11,10 @@ require 'monkey_patches'
 
 GITHUB_TOKEN = ENV.fetch('GITHUB_TOKEN', '')
 GITHUB_ORGANIZATION = ENV.fetch('GITHUB_ORGANIZATION', '')
-GITHUB_BASE_URL = ENV.fetch('GITHUB_BASE_URL', '')
+
+Octokit.configure do |c|
+  c.api_endpoint = ENV.fetch('GITHUB_BASE_URL', 'https://github.com/api/v3/')
+end
 
 module ModuleSync
   include Constants
