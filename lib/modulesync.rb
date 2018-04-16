@@ -14,7 +14,7 @@ GITHUB_TOKEN = ENV.fetch('GITHUB_TOKEN', '')
 GITHUB_ORGANIZATION = ENV.fetch('GITHUB_ORGANIZATION', '')
 
 Octokit.configure do |c|
-  c.api_endpoint = ENV.fetch('GITHUB_BASE_URL', 'https://api.github.com/api/v3/')
+  c.api_endpoint = ENV.fetch('GITHUB_BASE_URL', 'https://api.github.com')
 end
 
 module ModuleSync
