@@ -228,7 +228,7 @@ probably seems excessive. You can create a file called modulesync.yml in the
 configuration directory that provides these arguments automatically. This file
 has a form such as:
 
-```
+```yaml
 ---
 namespace: mygithubusername
 branch: modulesyncbranch
@@ -243,26 +243,28 @@ msync update -m "Commit message"
 
 Available parameters for modulesync.yml
 
-* git_base : The default URL to git clone from (Default: 'git@github.com:')
-* namespace : Namespace of the projects to manage (Default: 'puppetlabs')
-* branch : Branch to push to (Default: 'master')
-* remote_branch : Remote branch to push to (Default: Same value as branch)
-* message : Commit message to apply to updated modules.
-* pre_commit_script : A script to be run before commiting (e.g. 'contrib/myfooscript.sh')
+* `git_base` : The default URL to git clone from (Default: 'git@github.com:')
+* `namespace` : Namespace of the projects to manage (Default: 'puppetlabs')
+* `branch` : Branch to push to (Default: 'master')
+* `remote_branch` : Remote branch to push to (Default: Same value as branch)
+* `message` : Commit message to apply to updated modules.
+* `pre_commit_script` : A script to be run before commiting (e.g. 'contrib/myfooscript.sh')
+* `pr_title` : The title to use when submitting PRs to GitHub.
 
 ##### Example
 
 ###### Github
 
-```
+```yaml
 ---
 namespace: MySuperOrganization
 branch: modulesyncbranch
+pr_title: "Updates to module template files via modulesync"
 ```
 
 ###### Gitlab
 
-```
+```yaml
 ---
 git_base: 'user@gitlab.example.com:'
 namespace: MySuperOrganization
@@ -271,7 +273,7 @@ branch: modulesyncbranch
 
 ###### Gerrit
 
-```
+```yaml
 ---
 namespace: stackforge
 git_base:  ssh://jdoe@review.openstack.org:29418/
@@ -367,7 +369,7 @@ If `CHANGELOG.md` is absent in the repository, nothing will happen.
 
 As commented, files within moduleroot directory can be flat files or ERB templates. These files have direct access to @configs hash, which gets values from config_defaults.yml file and from the module being processed:
 
-```
+```erb
 <%= @configs[:git_base] %>
 <%= @configs[:namespace] %>
 <%= @configs[:puppet_module] %>
