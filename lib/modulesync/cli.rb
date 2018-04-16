@@ -85,6 +85,10 @@ module ModuleSync
              :type => :boolean,
              :desc => 'No-op mode',
              :default => false
+      option :pr,
+             :type => :boolean,
+             :desc => 'Submit GitHub PR',
+             :default => false
       option :offline,
              :type => :boolean,
              :desc => 'Do not run any Git commands. Allows the user to manage Git outside of ModuleSync.',
