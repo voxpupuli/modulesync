@@ -1,4 +1,5 @@
 require 'fileutils'
+require 'octokit'
 require 'pathname'
 require 'modulesync/cli'
 require 'modulesync/constants'
