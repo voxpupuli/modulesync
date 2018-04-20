@@ -139,7 +139,7 @@ module ModuleSync
 
         # We only assign labels to the PR if we've discovered a list > 1. The labels MUST
         # already exist. We DO NOT create missing labels.
-        if !pr_labels.empty?
+        unless pr_labels.empty?
           puts "Attaching the following labels to PR #{pr['number']}: #{pr_labels.join(', ')}"
           github.add_labels_to_an_issue(repo_path, pr['number'], pr_labels)
         end
