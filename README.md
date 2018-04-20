@@ -185,9 +185,14 @@ You can have modulesync submit Pull Requests on GitHub automatically with the
 msync update --pr
 ```
 
-You must set `GITHUB_TOKEN` in your environment for this to work. You can set
-the PR title with `--pr-title` or in `modulesync.yml` with the `pr_title`
-attribute.
+You must set `GITHUB_TOKEN` in your environment for this to work. Other options
+include:
+
+* Set the PR title with `--pr-title` or in `modulesync.yml` with the `pr_title`
+  attribute.
+* Assign labels to the PR with `--pr-labels` or in `modulesync.yml` with the
+  `pr_labels` attribute. **NOTE:** `pr_labels` should be a list. When using
+  the `--pr-labels` CLI option, you should use a comma separated list.
 
 ### Using Forks and Non-master branches
 
@@ -250,6 +255,7 @@ Available parameters for modulesync.yml
 * `message` : Commit message to apply to updated modules.
 * `pre_commit_script` : A script to be run before commiting (e.g. 'contrib/myfooscript.sh')
 * `pr_title` : The title to use when submitting PRs to GitHub.
+* `pr_labels` : A list of labels to assign PRs created on GitHub.
 
 ##### Example
 
@@ -260,6 +266,10 @@ Available parameters for modulesync.yml
 namespace: MySuperOrganization
 branch: modulesyncbranch
 pr_title: "Updates to module template files via modulesync"
+pr_labels:
+  - TOOLING
+  - MAINTENANCE
+  - MODULESYNC
 ```
 
 ###### Gitlab
