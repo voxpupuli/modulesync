@@ -121,14 +121,33 @@ module ModuleSync
     if options[:noop]
       Git.update_noop(module_name, options)
     elsif !options[:offline]
+      # Git.update() returns a boolean: true if files were pushed, false if not.
       pushed = Git.update(module_name, files_to_manage, options)
       if pushed && options[:pr]
+        # We only do GitHub PR work if the GITHUB_TOKEN variable is set in the environment.
         if GITHUB_TOKEN
           repo_path = "#{namespace}/#{module_name}"
           puts "Submitting PR '#{options[:pr_title]}' on GitHub to #{repo_path} - merges #{options[:branch]} into master"
           github = Octokit::Client.new(:access_token => GITHUB_TOKEN)
           pr = github.create_pull_request(repo_path, 'master', options[:branch], options[:pr_title], options[:message])
           puts "PR created at #{pr['html_url']}"
+
+          # PR labels can either be a list in the YAML file or they can pass in a comma 
+          # separated list via the command line argument.
+          if options[:pr_labels].is_a? String
+            pr_labels = options[:pr_labels].split(',')
+          elsif options[:pr_labels].is_a? Array
+            pr_labels = options[:pr_labels]
+          else
+            pr_labels = []
+          end
+
+          # We only assign labels to the PR if we've discovered a list > 1. The labels MUST
+          # already exist. We DO NOT create missing labels.
+          if pr_labels.length:
+            puts "Attaching the following labels to PR #{pr['id']}: #{pr_labels.join(', ')}"
+            github.add_labels_to_an_issue(repo_path, pr['id'], pr_labels)
+          end
         else
           puts 'Environment variable GITHUB_TOKEN must be set to use --pr!'
         end

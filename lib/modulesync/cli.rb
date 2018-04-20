@@ -92,6 +92,9 @@ module ModuleSync
       option :pr_title,
              :desc => 'Title of GitHub PR',
              :default => CLI.defaults[:pr_title] || 'Update to module template files'
+      option :pr_labels,
+             :desc => 'Labels to add to the GitHub PR',
+             :default => CLI.defaults[:pr_labels] || []
       option :offline,
              :type => :boolean,
              :desc => 'Do not run any Git commands. Allows the user to manage Git outside of ModuleSync.',

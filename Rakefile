@@ -1,6 +1,7 @@
 require 'rake/clean'
 require 'cucumber/rake/task'
 require 'rubocop/rake_task'
+require 'octokit'
 
 begin
   require 'rspec/core/rake_task'
