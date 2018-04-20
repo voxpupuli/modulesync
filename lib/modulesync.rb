@@ -1,4 +1,4 @@
-eenuire 'fileutils'
+require 'fileutils'
 require 'octokit'
 require 'pathname'
 require 'modulesync/cli'
