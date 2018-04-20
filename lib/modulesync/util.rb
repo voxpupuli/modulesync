@@ -19,7 +19,9 @@ module ModuleSync
       if option_value.is_a? String
         option_value.split(',')
       elsif option_value.is_a? Array
-        options[:pr_labels]
+        option_value
+      else
+        []
       end
     end
   end
