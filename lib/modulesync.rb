@@ -96,9 +96,9 @@ module ModuleSync
   end
 
   def self.manage_module(puppet_module, module_files, module_options, defaults, options)
-    if option[:pr] && !GITHUB_TOKEN
-        STDERR.puts 'Environment variable GITHUB_TOKEN must be set to use --pr!'
-        raise unless options[:skip_broken]
+    if options[:pr] && !GITHUB_TOKEN
+      STDERR.puts 'Environment variable GITHUB_TOKEN must be set to use --pr!'
+      raise unless options[:skip_broken]
     end
 
     puts "Syncing #{puppet_module}"

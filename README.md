@@ -194,6 +194,10 @@ include:
   `pr_labels` attribute. **NOTE:** `pr_labels` should be a list. When using
   the `--pr-labels` CLI option, you should use a comma separated list.
 
+You can optionally set the `GITHUB_BASE_URL` environment variable to use GitHub
+Enterprise. This is passed to Octokit's [`api_endpoint`](https://github.com/octokit/octokit.rb#interacting-with-the-githubcom-apis-in-github-enterprise) 
+configuration option.
+
 ### Using Forks and Non-master branches
 
 The default functionality is to run ModuleSync on the puppetlabs modules, but
