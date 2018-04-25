@@ -125,10 +125,10 @@ module ModuleSync
 
     if options[:noop]
       Git.update_noop(module_name, options)
-    elsif !options[:offline] && options[:pr]
+    elsif !options[:offline]
       # Git.update() returns a boolean: true if files were pushed, false if not.
       pushed = Git.update(module_name, files_to_manage, options)
-      return nil unless pushed
+      return nil unless pushed && options[:pr]
 
       # We only do GitHub PR work if the GITHUB_TOKEN variable is set in the environment.
       repo_path = "#{namespace}/#{module_name}"
