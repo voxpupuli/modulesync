@@ -84,10 +84,11 @@ module ModuleSync
       Renderer.remove(module_file(options[:project_root], module_name, filename))
     else
       templatename = local_file(options[:configs], filename)
+      mode = File.stat("#{templatename}.erb").mode
       begin
         erb = Renderer.build(templatename)
         template = Renderer.render(erb, configs)
-        Renderer.sync(template, module_file(options[:project_root], module_name, filename))
+        Renderer.sync(template, module_file(options[:project_root], module_name, filename), mode)
       rescue # rubocop:disable Lint/RescueWithoutErrorClass
         STDERR.puts "Error while rendering #{filename}"
         raise
