@@ -84,7 +84,12 @@ module ModuleSync
       Renderer.remove(module_file(options[:project_root], module_name, filename))
     else
       templatename = local_file(options[:configs], filename)
-      mode = File.stat("#{templatename}.erb").mode
+      template_file = if !File.exist?("#{templatename}.erb") && File.exist?(templatename)
+                        templatename
+                      else
+                        "#{templatename}.erb"
+                      end
+      mode = File.stat(template_file).mode
       begin
         erb = Renderer.build(templatename)
         template = Renderer.render(erb, configs)
