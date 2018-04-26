@@ -30,9 +30,10 @@ module ModuleSync
       ForgeModuleFile.new(configs, metadata).render
     end
 
-    def self.sync(template, target_name)
+    def self.sync(template, target_name, mode = nil)
       FileUtils.mkdir_p(File.dirname(target_name))
       File.write(target_name, template)
+      File.chmod(mode, target_name) unless mode.nil?
     end
   end
 end

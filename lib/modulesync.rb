@@ -105,7 +105,8 @@ module ModuleSync # rubocop:disable Metrics/ModuleLength
           :target_file => target_file,
         }
         template = Renderer.render(erb, configs, metadata)
-        Renderer.sync(template, target_file)
+        mode = File.stat(template_file).mode
+        Renderer.sync(template, target_file, mode)
       rescue StandardError
         $stderr.puts "#{puppet_module.given_name}: Error while rendering file: '#{filename}'"
         raise
