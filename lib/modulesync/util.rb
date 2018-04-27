@@ -14,5 +14,15 @@ module ModuleSync
         {}
       end
     end
+
+    def self.parse_list(option_value)
+      if option_value.is_a? String
+        option_value.split(',')
+      elsif option_value.is_a? Array
+        option_value
+      else
+        []
+      end
+    end
   end
 end

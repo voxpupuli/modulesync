@@ -176,6 +176,28 @@ touching the modules, you can deactivate the hook.
 msync hook deactivate
 ```
 
+#### Submitting PRs to GitHub
+
+You can have modulesync submit Pull Requests on GitHub automatically with the
+`--pr` CLI option.
+
+```
+msync update --pr
+```
+
+You must set `GITHUB_TOKEN` in your environment for this to work. Other options
+include:
+
+* Set the PR title with `--pr-title` or in `modulesync.yml` with the `pr_title`
+  attribute.
+* Assign labels to the PR with `--pr-labels` or in `modulesync.yml` with the
+  `pr_labels` attribute. **NOTE:** `pr_labels` should be a list. When using
+  the `--pr-labels` CLI option, you should use a comma separated list.
+
+You can optionally set the `GITHUB_BASE_URL` environment variable to use GitHub
+Enterprise. This is passed to Octokit's [`api_endpoint`](https://github.com/octokit/octokit.rb#interacting-with-the-githubcom-apis-in-github-enterprise) 
+configuration option.
+
 ### Using Forks and Non-master branches
 
 The default functionality is to run ModuleSync on the puppetlabs modules, but
@@ -215,7 +237,7 @@ probably seems excessive. You can create a file called modulesync.yml in the
 configuration directory that provides these arguments automatically. This file
 has a form such as:
 
-```
+```yaml
 ---
 namespace: mygithubusername
 branch: modulesyncbranch
@@ -230,26 +252,33 @@ msync update -m "Commit message"
 
 Available parameters for modulesync.yml
 
-* git_base : The default URL to git clone from (Default: 'git@github.com:')
-* namespace : Namespace of the projects to manage (Default: 'puppetlabs')
-* branch : Branch to push to (Default: 'master')
-* remote_branch : Remote branch to push to (Default: Same value as branch)
-* message : Commit message to apply to updated modules.
-* pre_commit_script : A script to be run before commiting (e.g. 'contrib/myfooscript.sh')
+* `git_base` : The default URL to git clone from (Default: 'git@github.com:')
+* `namespace` : Namespace of the projects to manage (Default: 'puppetlabs')
+* `branch` : Branch to push to (Default: 'master')
+* `remote_branch` : Remote branch to push to (Default: Same value as branch)
+* `message` : Commit message to apply to updated modules.
+* `pre_commit_script` : A script to be run before commiting (e.g. 'contrib/myfooscript.sh')
+* `pr_title` : The title to use when submitting PRs to GitHub.
+* `pr_labels` : A list of labels to assign PRs created on GitHub.
 
 ##### Example
 
 ###### Github
 
-```
+```yaml
 ---
 namespace: MySuperOrganization
 branch: modulesyncbranch
+pr_title: "Updates to module template files via modulesync"
+pr_labels:
+  - TOOLING
+  - MAINTENANCE
+  - MODULESYNC
 ```
 
 ###### Gitlab
 
-```
+```yaml
 ---
 git_base: 'user@gitlab.example.com:'
 namespace: MySuperOrganization
@@ -258,7 +287,7 @@ branch: modulesyncbranch
 
 ###### Gerrit
 
-```
+```yaml
 ---
 namespace: stackforge
 git_base:  ssh://jdoe@review.openstack.org:29418/
@@ -354,7 +383,7 @@ If `CHANGELOG.md` is absent in the repository, nothing will happen.
 
 As commented, files within moduleroot directory can be flat files or ERB templates. These files have direct access to @configs hash, which gets values from config_defaults.yml file and from the module being processed:
 
-```
+```erb
 <%= @configs[:git_base] %>
 <%= @configs[:namespace] %>
 <%= @configs[:puppet_module] %>

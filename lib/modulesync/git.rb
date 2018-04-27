@@ -151,11 +151,14 @@ module ModuleSync
       rescue ::Git::GitExecuteError => git_error
         if git_error.message =~ /working (directory|tree) clean/
           puts "There were no files to update in #{name}. Not committing."
+          return false
         else
           puts git_error
           raise
         end
       end
+
+      true
     end
 
     # Needed because of a bug in the git gem that lists ignored files as
