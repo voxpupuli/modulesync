@@ -128,25 +128,39 @@ module ModuleSync
     elsif !options[:offline]
       # Git.update() returns a boolean: true if files were pushed, false if not.
       pushed = Git.update(module_name, files_to_manage, options)
-      return nil unless pushed && options[:pr]
+      manage_pr(namespace, module_name, options) if pushed && options[:pr]
+    end
+  end
 
-      # We only do GitHub PR work if the GITHUB_TOKEN variable is set in the environment.
-      repo_path = "#{namespace}/#{module_name}"
-      puts "Submitting PR '#{options[:pr_title]}' on GitHub to #{repo_path} - merges #{options[:branch]} into master"
-      github = Octokit::Client.new(:access_token => GITHUB_TOKEN)
-      pr = github.create_pull_request(repo_path, 'master', options[:branch], options[:pr_title], options[:message])
-      puts "PR created at #{pr['html_url']}"
+  def self.manage_pr(namespace, module_name, options)
+    # We only do GitHub PR work if the GITHUB_TOKEN variable is set in the environment.
+    repo_path = "#{namespace}/#{module_name}"
+    puts "Submitting PR '#{options[:pr_title]}' on GitHub to #{repo_path} - merges #{options[:branch]} into master"
+    github = Octokit::Client.new(:access_token => GITHUB_TOKEN)
+    pr = github.create_pull_request(repo_path, 'master', options[:branch], options[:pr_title], options[:message])
+    puts "PR created at #{pr['html_url']}"
 
-      # PR labels can either be a list in the YAML file or they can pass in a comma
-      # separated list via the command line argument.
-      pr_labels = Util.parse_list(options[:pr_labels])
+    # PR labels can either be a list in the YAML file or they can pass in a comma
+    # separated list via the command line argument.
+    pr_labels = Util.parse_list(options[:pr_labels])
 
-      # We only assign labels to the PR if we've discovered a list > 1. The labels MUST
-      # already exist. We DO NOT create missing labels.
-      unless pr_labels.empty?
-        puts "Attaching the following labels to PR #{pr['number']}: #{pr_labels.join(', ')}"
-        github.add_labels_to_an_issue(repo_path, pr['number'], pr_labels)
-      end
+    # We only assign labels to the PR if we've discovered a list > 1. The labels MUST
+    # already exist. We DO NOT create missing labels.
+    unless pr_labels.empty?
+      puts "Attaching the following labels to PR #{pr['number']}: #{pr_labels.join(', ')}"
+      github.add_labels_to_an_issue(repo_path, pr['number'], pr_labels)
+    end
+
+    return nil unless options[:pr_auto_merge]
+
+    # Automatically merge the downstream PRs if they've specified. Don't bail out completely
+    # if they specify --skip-broken.
+    begin
+      github.merge_pull_request(repo_path, pr['number'], "Auto-merge modulesync generated PR #{pr['number']}")
+      puts "Automatically merged PR #{pr['number']}"
+    rescue Octokit::Error => exception
+      raise unless options[:skip_broken]
+      puts "Could not automatically merge PR #{pr['number']}: #{exception}"
     end
   end
 

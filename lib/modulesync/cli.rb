@@ -95,6 +95,10 @@ module ModuleSync
       option :pr_labels,
              :desc => 'Labels to add to the GitHub PR',
              :default => CLI.defaults[:pr_labels] || []
+      option :pr_auto_merge,
+             :type => :boolean,
+             :desc => 'Automatically merge downstream PRs',
+             :default => false
       option :offline,
              :type => :boolean,
              :desc => 'Do not run any Git commands. Allows the user to manage Git outside of ModuleSync.',

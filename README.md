@@ -193,6 +193,9 @@ include:
 * Assign labels to the PR with `--pr-labels` or in `modulesync.yml` with the
   `pr_labels` attribute. **NOTE:** `pr_labels` should be a list. When using
   the `--pr-labels` CLI option, you should use a comma separated list.
+* `--pr-auto-merge` will attempt to automatically merge downstream PRs created
+  by modulesync. Skips PRs that aren't able to be merged when the 
+  `--skip-broken` option is passed.
 
 You can optionally set the `GITHUB_BASE_URL` environment variable to use GitHub
 Enterprise. This is passed to Octokit's [`api_endpoint`](https://github.com/octokit/octokit.rb#interacting-with-the-githubcom-apis-in-github-enterprise) 
