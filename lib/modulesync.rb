@@ -32,8 +32,8 @@ module ModuleSync
     "#{config_path}/#{MODULE_FILES_DIR}/#{file}"
   end
 
-  def self.module_file(project_root, puppet_module, file)
-    "#{project_root}/#{puppet_module}/#{file}"
+  def self.module_file(project_root, namespace, puppet_module, file)
+    "#{project_root}/#{namespace}/#{puppet_module}/#{file}"
   end
 
   def self.local_files(path)
@@ -78,16 +78,17 @@ module ModuleSync
   end
 
   def self.manage_file(filename, settings, options)
+    namespace = settings.additional_settings[:namespace]
     module_name = settings.additional_settings[:puppet_module]
     configs = settings.build_file_configs(filename)
     if configs['delete']
-      Renderer.remove(module_file(options[:project_root], module_name, filename))
+      Renderer.remove(module_file(options[:project_root], namespace, module_name, filename))
     else
       templatename = local_file(options[:configs], filename)
       begin
         erb = Renderer.build(templatename)
         template = Renderer.render(erb, configs)
-        Renderer.sync(template, module_file(options[:project_root], module_name, filename))
+        Renderer.sync(template, module_file(options[:project_root], namespace, module_name, filename))
       rescue # rubocop:disable Lint/RescueWithoutErrorClass
         STDERR.puts "Error while rendering #{filename}"
         raise
@@ -101,20 +102,18 @@ module ModuleSync
       raise unless options[:skip_broken]
     end
 
-    puts "Syncing #{puppet_module}"
     namespace, module_name = module_name(puppet_module, options[:namespace])
+    git_repo = "#{namespace}/#{module_name}"
     unless options[:offline]
-      git_base = options[:git_base]
-      git_uri = "#{git_base}#{namespace}"
-      Git.pull(git_uri, module_name, options[:branch], options[:project_root], module_options || {})
+      Git.pull(options[:git_base], git_repo, options[:branch], options[:project_root], module_options || {})
     end
-    module_configs = Util.parse_config("#{options[:project_root]}/#{module_name}/#{MODULE_CONF_FILE}")
+    module_configs = Util.parse_config("#{options[:project_root]}/#{namespace}/#{module_name}/#{MODULE_CONF_FILE}")
     settings = Settings.new(defaults[GLOBAL_DEFAULTS_KEY] || {},
                             defaults,
                             module_configs[GLOBAL_DEFAULTS_KEY] || {},
                             module_configs,
                             :puppet_module => module_name,
-                            :git_base => git_base,
+                            :git_base => options[:git_base],
                             :namespace => namespace)
     settings.unmanaged_files(module_files).each do |filename|
       puts "Not managing #{filename} in #{module_name}"
@@ -124,10 +123,10 @@ module ModuleSync
     files_to_manage.each { |filename| manage_file(filename, settings, options) }
 
     if options[:noop]
-      Git.update_noop(module_name, options)
+      Git.update_noop(git_repo, options)
     elsif !options[:offline]
       # Git.update() returns a boolean: true if files were pushed, false if not.
-      pushed = Git.update(module_name, files_to_manage, options)
+      pushed = Git.update(git_repo, files_to_manage, options)
       return nil unless pushed && options[:pr]
 
       # We only do GitHub PR work if the GITHUB_TOKEN variable is set in the environment.
