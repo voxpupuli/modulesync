@@ -30,13 +30,13 @@ module ModuleSync
       ForgeModuleFile.new(configs).render
     end
 
-    def self.sync(template, target_name, mode)
+    def self.sync(template, target_name, mode = nil)
       path = target_name.rpartition('/').first
       FileUtils.mkdir_p(path) unless path.empty?
       File.open(target_name, 'w') do |file|
         file.write(template)
       end
-      File.chmod(mode, target_name)
+      File.chmod(mode, target_name) unless mode.nil?
     end
   end
 end
