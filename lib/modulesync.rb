@@ -16,11 +16,13 @@ GITHUB_ORGANIZATION = ENV.fetch('GITHUB_ORGANIZATION', '')
 Octokit.configure do |c|
   c.api_endpoint = ENV.fetch('GITHUB_BASE_URL', 'https://api.github.com')
   c.auto_paginate = true
+
+  # We use a different Accept header by default here so we can get access
+  # to the developer's preview that enables repository topics.
   c.default_media_type = ::Octokit::Preview::PREVIEW_TYPES[:topics]
 end
 
 GITHUB = Octokit::Client.new(:access_token => GITHUB_TOKEN)
-
 
 module ModuleSync
   include Constants
@@ -59,10 +61,8 @@ module ModuleSync
   def self.managed_modules(config_file, filter, negative_filter, topic)
     if topic
       managed_modules = []
-      GITHUB.org_repos(GITHUB_ORGANIZATION, {:type => 'all'}).each do |repo|
-        if repo.topics.include?(topic)
-          managed_modules.push(repo.name)
-        end
+      GITHUB.org_repos(GITHUB_ORGANIZATION).each do |repo|
+        managed_modules.push(repo.name) if repo.topics.include?(topic)
       end
     else
       managed_modules = Util.parse_config(config_file)
