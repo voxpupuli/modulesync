@@ -11,10 +11,16 @@ require 'modulesync/util'
 require 'monkey_patches'
 
 GITHUB_TOKEN = ENV.fetch('GITHUB_TOKEN', '')
+GITHUB_ORGANIZATION = ENV.fetch('GITHUB_ORGANIZATION', '')
 
 Octokit.configure do |c|
   c.api_endpoint = ENV.fetch('GITHUB_BASE_URL', 'https://api.github.com')
+  c.auto_paginate = true
+  c.default_media_type = ::Octokit::Preview::PREVIEW_TYPES[:topics]
 end
+
+GITHUB = Octokit::Client.new(:access_token => GITHUB_TOKEN)
+
 
 module ModuleSync
   include Constants
@@ -50,8 +56,18 @@ module ModuleSync
     local_files.map { |file| file.sub(/#{path}/, '') }
   end
 
-  def self.managed_modules(config_file, filter, negative_filter)
-    managed_modules = Util.parse_config(config_file)
+  def self.managed_modules(config_file, filter, negative_filter, topic)
+    if topic
+      managed_modules = []
+      GITHUB.org_repos(GITHUB_ORGANIZATION, {:type => 'all'}).each do |repo|
+        if repo.topics.include?(topic)
+          managed_modules.push(repo.name)
+        end
+      end
+    else
+      managed_modules = Util.parse_config(config_file)
+    end
+
     if managed_modules.empty?
       puts "No modules found in #{config_file}. Check that you specified the right :configs directory and :managed_modules_conf file."
       exit
@@ -133,8 +149,7 @@ module ModuleSync
       # We only do GitHub PR work if the GITHUB_TOKEN variable is set in the environment.
       repo_path = "#{namespace}/#{module_name}"
       puts "Submitting PR '#{options[:pr_title]}' on GitHub to #{repo_path} - merges #{options[:branch]} into master"
-      github = Octokit::Client.new(:access_token => GITHUB_TOKEN)
-      pr = github.create_pull_request(repo_path, 'master', options[:branch], options[:pr_title], options[:message])
+      pr = GITHUB.create_pull_request(repo_path, 'master', options[:branch], options[:pr_title], options[:message])
       puts "PR created at #{pr['html_url']}"
 
       # PR labels can either be a list in the YAML file or they can pass in a comma
@@ -145,7 +160,7 @@ module ModuleSync
       # already exist. We DO NOT create missing labels.
       unless pr_labels.empty?
         puts "Attaching the following labels to PR #{pr['number']}: #{pr_labels.join(', ')}"
-        github.add_labels_to_an_issue(repo_path, pr['number'], pr_labels)
+        GITHUB.add_labels_to_an_issue(repo_path, pr['number'], pr_labels)
       end
     end
   end
@@ -158,7 +173,7 @@ module ModuleSync
     local_files = self.local_files(path)
     module_files = self.module_files(local_files, path)
 
-    managed_modules = self.managed_modules("#{options[:configs]}/#{options[:managed_modules_conf]}", options[:filter], options[:negative_filter])
+    managed_modules = self.managed_modules("#{options[:configs]}/#{options[:managed_modules_conf]}", options[:filter], options[:negative_filter], options[:topic])
 
     errors = false
     # managed_modules is either an array or a hash
