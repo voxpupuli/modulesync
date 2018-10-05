@@ -95,6 +95,10 @@ module ModuleSync
     end
   end
 
+  def codecommit?(git_base, namespace)
+    git_base.include?('git-codecommit') && 'v1/repos' || namespace
+  end
+
   def self.manage_module(puppet_module, module_files, module_options, defaults, options)
     if options[:pr] && !GITHUB_TOKEN
       STDERR.puts 'Environment variable GITHUB_TOKEN must be set to use --pr!'
@@ -105,8 +109,6 @@ module ModuleSync
     namespace, module_name = module_name(puppet_module, options[:namespace])
     unless options[:offline]
       git_base = options[:git_base]
-      git_base.include?('git-codecommit') && namespace = 'v1/repos'
-
       git_uri = "#{git_base}#{namespace}"
       Git.pull(git_uri, module_name, options[:branch], options[:project_root], module_options || {})
     end
@@ -117,7 +119,7 @@ module ModuleSync
                             module_configs,
                             :puppet_module => module_name,
                             :git_base => git_base,
-                            :namespace => namespace)
+                            :namespace => codecommit?(git_base, namespace))
     settings.unmanaged_files(module_files).each do |filename|
       puts "Not managing #{filename} in #{module_name}"
     end
