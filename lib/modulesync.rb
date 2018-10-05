@@ -105,9 +105,7 @@ module ModuleSync
     namespace, module_name = module_name(puppet_module, options[:namespace])
     unless options[:offline]
       git_base = options[:git_base]
-      if git_base.include? 'git-codecommit'
-        namespace = 'v1/repos'
-      end
+      git_base.include?('git-codecommit') && namespace = 'v1/repos'
 
       git_uri = "#{git_base}#{namespace}"
       Git.pull(git_uri, module_name, options[:branch], options[:project_root], module_options || {})
