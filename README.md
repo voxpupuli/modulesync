@@ -296,6 +296,14 @@ remote_branch: refs/publish/master/msync_foo
 pre_commit_script: openstack-commit-msg-hook.sh
 ```
 
+###### AWS Codecommit
+
+```
+---
+gitbase: https://git-commit.us-east-1.amazonaws.com/
+branch: modulesyncbranch
+```
+
 #### Filtering Repositories
 
 If you only want to sync some of the repositories in your managed_modules.yml, use the `-f` flag to filter by a regex:
