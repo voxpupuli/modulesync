@@ -46,12 +46,13 @@ module ModuleSync
     end
 
     def self.pull(git_base, name, branch, project_root, opts)
+      puts "Syncing #{name}"
       Dir.mkdir(project_root) unless Dir.exist?(project_root)
 
       # Repo needs to be cloned in the cwd
       if !Dir.exist?("#{project_root}/#{name}") || !Dir.exist?("#{project_root}/#{name}/.git")
         puts 'Cloning repository fresh'
-        remote = opts[:remote] || (git_base.start_with?('file://') ? "#{git_base}/#{name}" : "#{git_base}/#{name}.git")
+        remote = opts[:remote] || (git_base.start_with?('file://') ? "#{git_base}#{name}" : "#{git_base}#{name}.git")
         local = "#{project_root}/#{name}"
         puts "Cloning from #{remote}"
         repo = ::Git.clone(remote, local)
