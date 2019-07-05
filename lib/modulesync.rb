@@ -36,12 +36,19 @@ module ModuleSync
     File.join(project_root, namespace, puppet_module, file)
   end
 
-  def self.local_files(path)
-    if File.exist?(path)
-      # only select *.erb files, and strip the extension. This way all the code will only have to handle bare paths, except when reading the actual ERB text
-      local_files = Find.find(path).find_all { |p| p =~ /.erb$/ && !File.directory?(p) }.collect { |p| p.chomp('.erb') }.to_a
+  # List all template files.
+  #
+  # Only select *.erb files, and strip the extension. This way all the code will only have to handle bare paths,
+  # except when reading the actual ERB text
+  def self.find_template_files(local_template_dir)
+    if File.exist?(local_template_dir)
+      Find.find(local_template_dir).find_all { |p| p =~ /.erb$/ && !File.directory?(p) }
+          .collect { |p| p.chomp('.erb') }
+          .to_a
     else
-      puts "#{path} does not exist. Check that you are working in your module configs directory or that you have passed in the correct directory with -c."
+      puts "#{local_template_dir} does not exist." \
+        ' Check that you are working in your module configs directory or' \
+        ' that you have passed in the correct directory with -c.'
       exit
     end
   end
@@ -154,7 +161,7 @@ module ModuleSync
     defaults = Util.parse_config(File.join(options[:configs], CONF_FILE))
 
     path = File.join(options[:configs], MODULE_FILES_DIR)
-    local_files = self.local_files(path)
+    local_files = find_template_files(path)
     module_files = self.module_files(local_files, path)
 
     managed_modules = self.managed_modules(File.join(options[:configs], options[:managed_modules_conf]),
