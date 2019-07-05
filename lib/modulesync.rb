@@ -53,8 +53,8 @@ module ModuleSync
     end
   end
 
-  def self.module_files(local_files, path)
-    local_files.map { |file| file.sub(/#{path}/, '') }
+  def self.relative_names(file_list, path)
+    file_list.map { |file| file.sub(/#{path}/, '') }
   end
 
   def self.managed_modules(config_file, filter, negative_filter)
@@ -162,7 +162,7 @@ module ModuleSync
 
     local_template_dir = File.join(options[:configs], MODULE_FILES_DIR)
     local_files = find_template_files(local_template_dir)
-    module_files = self.module_files(local_files, local_template_dir)
+    module_files = relative_names(local_files, local_template_dir)
 
     managed_modules = self.managed_modules(File.join(options[:configs], options[:managed_modules_conf]),
                                            options[:filter],
