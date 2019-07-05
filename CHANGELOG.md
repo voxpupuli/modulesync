@@ -1,6 +1,13 @@
 # Changelog
 
-## 2018-02-15
+## 2018-12-27 - 0.10.0
+
+This is another awesome release!
+
+* Add support to submit PRs to GitHub when changes are pushed - [#147](https://github.com/voxpupuli/modulesync/pull/147)
+* Fix "flat files" still mentioned in README - [#151](https://github.com/voxpupuli/modulesync/pull/151)
+
+## 2018-02-15 - 0.9.0
 
 ## Summary
 

@@ -114,7 +114,7 @@ module ModuleSync
       option :tag_pattern,
              :desc => 'The pattern to use when tagging releases.'
       option :pre_commit_script,
-             :desc => 'A script to be run before commiting',
+             :desc => 'A script to be run before committing',
              :default => CLI.defaults[:pre_commit_script]
       option :fail_on_warnings,
              :type => :boolean,

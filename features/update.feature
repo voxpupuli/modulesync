@@ -31,7 +31,7 @@ Feature: update
       Files added:
       test
       """
-    Given I run `cat modules/puppet-test/test`
+    Given I run `cat modules/maestrodev/puppet-test/test`
     Then the output should contain "aruba"
 
   Scenario: Using skip_broken option and adding a new file to repo without write access
@@ -120,7 +120,7 @@ Feature: update
       Files added:
       test
       """
-    Given I run `cat modules/puppet-test/test`
+    Given I run `cat modules/maestrodev/puppet-test/test`
     Then the output should contain "aruba"
 
   Scenario: Adding a new file using global values
@@ -153,7 +153,7 @@ Feature: update
       Files added:
       test
       """
-    Given I run `cat modules/puppet-test/test`
+    Given I run `cat modules/maestrodev/puppet-test/test`
     Then the output should contain "aruba"
 
   Scenario: Adding a new file overriding global values
@@ -189,7 +189,7 @@ Feature: update
       Files added:
       test
       """
-    Given I run `cat modules/puppet-test/test`
+    Given I run `cat modules/maestrodev/puppet-test/test`
     Then the output should contain "aruba"
 
   Scenario: Adding a new file ignoring global values
@@ -225,7 +225,7 @@ Feature: update
       Files added:
       test
       """
-    Given I run `cat modules/puppet-test/test`
+    Given I run `cat modules/maestrodev/puppet-test/test`
     Then the output should contain "aruba"
 
   Scenario: Adding a file that ERB can't parse
@@ -342,7 +342,7 @@ Feature: update
       Files changed:
       +diff --git a/Gemfile b/Gemfile
       """
-    Given I run `cat modules/puppet-test/Gemfile`
+    Given I run `cat modules/maestrodev/puppet-test/Gemfile`
     Then the output should contain:
       """
       source 'https://somehost.com'
@@ -405,7 +405,7 @@ Feature: update
       Not managing Gemfile in puppet-test
       """
     And the exit status should be 0
-    Given I run `cat modules/puppet-test/Gemfile`
+    Given I run `cat modules/maestrodev/puppet-test/Gemfile`
     Then the output should contain:
       """
       source 'https://rubygems.org'
@@ -488,8 +488,8 @@ Feature: update
       """
       some spec_helper fud
       """
-    And a directory named "modules/puppetlabs-apache/spec"
-    And a file named "modules/puppetlabs-apache/spec/spec_helper.rb" with:
+    And a directory named "modules/puppetlabs/puppetlabs-apache/spec"
+    And a file named "modules/puppetlabs/puppetlabs-apache/spec/spec_helper.rb" with:
       """
       This is a fake spec_helper!
       """
@@ -499,7 +499,7 @@ Feature: update
       Not managing spec/spec_helper.rb in puppetlabs-apache
       """
     And the exit status should be 0
-    Given I run `cat modules/puppetlabs-apache/spec/spec_helper.rb`
+    Given I run `cat modules/puppetlabs/puppetlabs-apache/spec/spec_helper.rb`
     Then the output should contain:
       """
       This is a fake spec_helper!
@@ -538,7 +538,7 @@ Feature: update
       Files added:
       spec/spec_helper.rb
       """
-    Given I run `cat modules/puppet-test/spec/spec_helper.rb`
+    Given I run `cat modules/maestrodev/puppet-test/spec/spec_helper.rb`
     Then the output should contain:
       """
       require 'puppetlabs_spec_helper/module_helper'
@@ -577,7 +577,7 @@ Feature: update
     Given a file named "managed_modules.yml" with:
       """
       ---
-        - puppet-test
+        - maestrodev/puppet-test
       """
     And a file named "modulesync.yml" with:
       """
@@ -597,8 +597,8 @@ Feature: update
         require '<%= required %>'
       <% end %>
       """
-    Given I run `git init modules/puppet-test`
-    Given a file named "modules/puppet-test/.git/config" with:
+    Given I run `git init modules/maestrodev/puppet-test`
+    Given a file named "modules/maestrodev/puppet-test/.git/config" with:
       """
       [core]
           repositoryformatversion = 0
@@ -667,7 +667,7 @@ Feature: update
       Files added:
       test
       """
-    Given I run `cat modules/puppet-test/test`
+    Given I run `cat modules/maestrodev/puppet-test/test`
     Then the output should contain "aruba"
 
   Scenario: When specifying configurations in managed_modules.yml and using a filter
@@ -702,9 +702,9 @@ Feature: update
       Files added:
       test
       """
-    Given I run `cat modules/puppet-test/test`
+    Given I run `cat modules/maestrodev/puppet-test/test`
     Then the output should contain "aruba"
-    And a directory named "modules/puppet-blacksmith" should not exist
+    And a directory named "modules/maestrodev/puppet-blacksmith" should not exist
 
   Scenario: When specifying configurations in managed_modules.yml and using a negative filter
     Given a file named "managed_modules.yml" with:
@@ -738,15 +738,15 @@ Feature: update
       Files added:
       test
       """
-    Given I run `cat modules/puppet-test/test`
+    Given I run `cat modules/maestrodev/puppet-test/test`
     Then the output should contain "aruba"
-    And a directory named "modules/puppet-blacksmith" should not exist
+    And a directory named "modules/maestrodev/puppet-blacksmith" should not exist
 
   Scenario: Updating a module with a .sync.yml file
     Given a file named "managed_modules.yml" with:
       """
       ---
-        - puppet-test
+        - maestrodev/puppet-test
       """
     And a file named "modulesync.yml" with:
       """
@@ -766,8 +766,8 @@ Feature: update
         require '<%= required %>'
       <% end %>
       """
-    Given I run `git init modules/puppet-test`
-    Given a file named "modules/puppet-test/.git/config" with:
+    Given I run `git init modules/maestrodev/puppet-test`
+    Given a file named "modules/maestrodev/puppet-test/.git/config" with:
       """
       [core]
           repositoryformatversion = 0
@@ -780,7 +780,7 @@ Feature: update
           url = https://github.com/maestrodev/puppet-test.git
           fetch = +refs/heads/*:refs/remotes/origin/*
       """
-    Given a file named "modules/puppet-test/.sync.yml" with:
+    Given a file named "modules/maestrodev/puppet-test/.sync.yml" with:
       """
       ---
       spec/spec_helper.rb:
@@ -824,9 +824,9 @@ Feature: update
       Files added:
       test
       """
-    Given I run `cat modules/puppet-test/.git/config`
+    Given I run `cat modules/maestrodev/puppet-test/.git/config`
     Then the output should contain "url = https://github.com/maestrodev/puppet-test.git"
-    Given I run `cat modules/puppet-lib-file_concat/.git/config`
+    Given I run `cat modules/electrical/puppet-lib-file_concat/.git/config`
     Then the output should contain "url = https://github.com/electrical/puppet-lib-file_concat.git"
 
   Scenario: Modifying an existing file with values exposed by the module
@@ -858,7 +858,7 @@ Feature: update
       Files changed:
       +diff --git a/README.md b/README.md
       """
-    Given I run `cat modules/puppet-test/README.md`
+    Given I run `cat modules/maestrodev/puppet-test/README.md`
     Then the output should contain:
       """
       echo 'https://github.com/maestrodev'
