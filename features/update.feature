@@ -670,6 +670,28 @@ Feature: update
     Given I run `cat modules/maestrodev/puppet-test/test`
     Then the output should contain "aruba"
 
+  Scenario: When specifying configurations in managed_modules.yml and setting a remote
+    Given a file named "managed_modules.yml" with:
+      """
+      ---
+        puppet-test: {}
+        puppet-blacksmith:
+          remote: https://github.com/voxpupuli/puppet-blacksmith.git
+      """
+    And a file named "modulesync.yml" with:
+      """
+      ---
+        namespace: maestrodev
+        git_base: https://github.com/
+      """
+    And a directory named "moduleroot"
+    When I run `msync update --noop`
+    Then the exit status should be 0
+    Given I run `cat modules/maestrodev/puppet-test/.git/config`
+    Then the output should contain "url = https://github.com/maestrodev/puppet-test.git"
+    Given I run `cat modules/maestrodev/puppet-blacksmith/.git/config`
+    Then the output should contain "url = https://github.com/voxpupuli/puppet-blacksmith.git"
+
   Scenario: When specifying configurations in managed_modules.yml and using a filter
     Given a file named "managed_modules.yml" with:
       """
