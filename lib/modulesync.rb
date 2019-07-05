@@ -60,7 +60,8 @@ module ModuleSync
   def self.managed_modules(config_file, filter, negative_filter)
     managed_modules = Util.parse_config(config_file)
     if managed_modules.empty?
-      puts "No modules found in #{config_file}. Check that you specified the right :configs directory and :managed_modules_conf file."
+      puts "No modules found in #{config_file}." \
+        ' Check that you specified the right :configs directory and :managed_modules_conf file.'
       exit
     end
     managed_modules.select! { |m| m =~ Regexp.new(filter) } unless filter.nil?
