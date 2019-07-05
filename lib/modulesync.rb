@@ -160,9 +160,9 @@ module ModuleSync
     options = config_defaults.merge(options)
     defaults = Util.parse_config(File.join(options[:configs], CONF_FILE))
 
-    path = File.join(options[:configs], MODULE_FILES_DIR)
-    local_files = find_template_files(path)
-    module_files = self.module_files(local_files, path)
+    local_template_dir = File.join(options[:configs], MODULE_FILES_DIR)
+    local_files = find_template_files(local_template_dir)
+    module_files = self.module_files(local_files, local_template_dir)
 
     managed_modules = self.managed_modules(File.join(options[:configs], options[:managed_modules_conf]),
                                            options[:filter],
