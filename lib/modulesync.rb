@@ -115,6 +115,7 @@ module ModuleSync
     unless options[:offline]
       Git.pull(options[:git_base], git_repo, options[:branch], options[:project_root], module_options || {})
     end
+
     module_configs = Util.parse_config(module_file(options[:project_root], namespace, module_name, MODULE_CONF_FILE))
     settings = Settings.new(defaults[GLOBAL_DEFAULTS_KEY] || {},
                             defaults,

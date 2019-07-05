@@ -43,7 +43,8 @@ module ModuleSync
                    :default => CLI.defaults[:git_base] || 'git@github.com:'
       class_option :namespace,
                    :aliases => '-n',
-                   :desc => 'Remote github namespace (user or organization) to clone from and push to. Defaults to puppetlabs',
+                   :desc => 'Remote github namespace (user or organization) to clone from and push to.' \
+                              ' Defaults to puppetlabs',
                    :default => CLI.defaults[:namespace] || 'puppetlabs'
       class_option :filter,
                    :aliases => '-f',
@@ -53,7 +54,8 @@ module ModuleSync
                    :desc => 'A regular expression to skip repositories.'
       class_option :branch,
                    :aliases => '-b',
-                   :desc => 'Branch name to make the changes in. Defaults to the default branch of the upstream repository, but falls back to "master".',
+                   :desc => 'Branch name to make the changes in.' \
+                              ' Defaults to the default branch of the upstream repository, but falls back to "master".',
                    :default => CLI.defaults[:branch]
 
       desc 'update', 'Update the modules in managed_modules.yml'
@@ -63,7 +65,8 @@ module ModuleSync
              :default => CLI.defaults[:message]
       option :configs,
              :aliases => '-c',
-             :desc => 'The local directory or remote repository to define the list of managed modules, the file templates, and the default values for template variables.'
+             :desc => 'The local directory or remote repository to define the list of managed modules,' \
+                        ' the file templates, and the default values for template variables.'
       option :remote_branch,
              :aliases => '-r',
              :desc => 'Remote branch name to push the changes to. Defaults to the branch name.',
@@ -119,13 +122,16 @@ module ModuleSync
       option :fail_on_warnings,
              :type => :boolean,
              :aliases => '-F',
-             :desc => 'Produce a failure exit code when there are warnings (only has effect when --skip_broken is enabled)',
+             :desc => 'Produce a failure exit code when there are warnings' \
+                        ' (only has effect when --skip_broken is enabled)',
              :default => false
 
       def update
         config = { :command => 'update' }.merge(options)
         config = Util.symbolize_keys(config)
-        raise Thor::Error, 'No value provided for required option "--message"' unless config[:noop] || config[:message] || config[:offline]
+        raise Thor::Error, 'No value provided for required option "--message"' unless config[:noop] \
+                                                                                      || config[:message] \
+                                                                                      || config[:offline]
         config[:git_opts] = { 'amend' => config[:amend], 'force' => config[:force] }
         ModuleSync.update(config)
       end

@@ -18,3 +18,7 @@ Style/TrailingCommaInLiteral:
 # would require external library
 Layout/IndentHeredoc:
   Enabled: false
+
+# sane line length
+Metrics/LineLength:
+  Max: 120
