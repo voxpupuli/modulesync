@@ -29,11 +29,11 @@ module ModuleSync
   end
 
   def self.local_file(config_path, file)
-    "#{config_path}/#{MODULE_FILES_DIR}/#{file}"
+    File.join(config_path, MODULE_FILES_DIR, file)
   end
 
   def self.module_file(project_root, namespace, puppet_module, file)
-    "#{project_root}/#{namespace}/#{puppet_module}/#{file}"
+    File.join(project_root, namespace, puppet_module, file)
   end
 
   def self.local_files(path)
@@ -103,11 +103,11 @@ module ModuleSync
     end
 
     namespace, module_name = module_name(puppet_module, options[:namespace])
-    git_repo = "#{namespace}/#{module_name}"
+    git_repo = File.join(namespace, module_name)
     unless options[:offline]
       Git.pull(options[:git_base], git_repo, options[:branch], options[:project_root], module_options || {})
     end
-    module_configs = Util.parse_config("#{options[:project_root]}/#{namespace}/#{module_name}/#{MODULE_CONF_FILE}")
+    module_configs = Util.parse_config(module_file(options[:project_root], namespace, module_name, MODULE_CONF_FILE))
     settings = Settings.new(defaults[GLOBAL_DEFAULTS_KEY] || {},
                             defaults,
                             module_configs[GLOBAL_DEFAULTS_KEY] || {},
@@ -130,7 +130,7 @@ module ModuleSync
       return nil unless pushed && options[:pr]
 
       # We only do GitHub PR work if the GITHUB_TOKEN variable is set in the environment.
-      repo_path = "#{namespace}/#{module_name}"
+      repo_path = File.join(namespace, module_name)
       puts "Submitting PR '#{options[:pr_title]}' on GitHub to #{repo_path} - merges #{options[:branch]} into master"
       github = Octokit::Client.new(:access_token => GITHUB_TOKEN)
       pr = github.create_pull_request(repo_path, 'master', options[:branch], options[:pr_title], options[:message])
@@ -151,13 +151,15 @@ module ModuleSync
 
   def self.update(options)
     options = config_defaults.merge(options)
-    defaults = Util.parse_config("#{options[:configs]}/#{CONF_FILE}")
+    defaults = Util.parse_config(File.join(options[:configs], CONF_FILE))
 
-    path = "#{options[:configs]}/#{MODULE_FILES_DIR}"
+    path = File.join(options[:configs], MODULE_FILES_DIR)
     local_files = self.local_files(path)
     module_files = self.module_files(local_files, path)
 
-    managed_modules = self.managed_modules("#{options[:configs]}/#{options[:managed_modules_conf]}", options[:filter], options[:negative_filter])
+    managed_modules = self.managed_modules(File.join(options[:configs], options[:managed_modules_conf]),
+                                           options[:filter],
+                                           options[:negative_filter])
 
     errors = false
     # managed_modules is either an array or a hash
