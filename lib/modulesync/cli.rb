@@ -51,6 +51,9 @@ module ModuleSync
       class_option :negative_filter,
                    :aliases => '-x',
                    :desc => 'A regular expression to skip repositories.'
+      class_option :topic,
+                   :aliases => '-t',
+                   :desc => 'Use GitHub topic to populate list of managed modules.'
       class_option :branch,
                    :aliases => '-b',
                    :desc => 'Branch name to make the changes in. Defaults to the default branch of the upstream repository, but falls back to "master".',
