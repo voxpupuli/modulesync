@@ -29,31 +29,39 @@ module ModuleSync
   end
 
   def self.local_file(config_path, file)
-    "#{config_path}/#{MODULE_FILES_DIR}/#{file}"
+    File.join(config_path, MODULE_FILES_DIR, file)
   end
 
   def self.module_file(project_root, namespace, puppet_module, file)
-    "#{project_root}/#{namespace}/#{puppet_module}/#{file}"
+    File.join(project_root, namespace, puppet_module, file)
   end
 
-  def self.local_files(path)
-    if File.exist?(path)
-      # only select *.erb files, and strip the extension. This way all the code will only have to handle bare paths, except when reading the actual ERB text
-      local_files = Find.find(path).find_all { |p| p =~ /.erb$/ && !File.directory?(p) }.collect { |p| p.chomp('.erb') }.to_a
+  # List all template files.
+  #
+  # Only select *.erb files, and strip the extension. This way all the code will only have to handle bare paths,
+  # except when reading the actual ERB text
+  def self.find_template_files(local_template_dir)
+    if File.exist?(local_template_dir)
+      Find.find(local_template_dir).find_all { |p| p =~ /.erb$/ && !File.directory?(p) }
+          .collect { |p| p.chomp('.erb') }
+          .to_a
     else
-      puts "#{path} does not exist. Check that you are working in your module configs directory or that you have passed in the correct directory with -c."
+      puts "#{local_template_dir} does not exist." \
+        ' Check that you are working in your module configs directory or' \
+        ' that you have passed in the correct directory with -c.'
       exit
     end
   end
 
-  def self.module_files(local_files, path)
-    local_files.map { |file| file.sub(/#{path}/, '') }
+  def self.relative_names(file_list, path)
+    file_list.map { |file| file.sub(/#{path}/, '') }
   end
 
   def self.managed_modules(config_file, filter, negative_filter)
     managed_modules = Util.parse_config(config_file)
     if managed_modules.empty?
-      puts "No modules found in #{config_file}. Check that you specified the right :configs directory and :managed_modules_conf file."
+      puts "No modules found in #{config_file}." \
+        ' Check that you specified the right :configs directory and :managed_modules_conf file.'
       exit
     end
     managed_modules.select! { |m| m =~ Regexp.new(filter) } unless filter.nil?
@@ -103,11 +111,12 @@ module ModuleSync
     end
 
     namespace, module_name = module_name(puppet_module, options[:namespace])
-    git_repo = "#{namespace}/#{module_name}"
+    git_repo = File.join(namespace, module_name)
     unless options[:offline]
       Git.pull(options[:git_base], git_repo, options[:branch], options[:project_root], module_options || {})
     end
-    module_configs = Util.parse_config("#{options[:project_root]}/#{namespace}/#{module_name}/#{MODULE_CONF_FILE}")
+
+    module_configs = Util.parse_config(module_file(options[:project_root], namespace, module_name, MODULE_CONF_FILE))
     settings = Settings.new(defaults[GLOBAL_DEFAULTS_KEY] || {},
                             defaults,
                             module_configs[GLOBAL_DEFAULTS_KEY] || {},
@@ -130,7 +139,7 @@ module ModuleSync
       return nil unless pushed && options[:pr]
 
       # We only do GitHub PR work if the GITHUB_TOKEN variable is set in the environment.
-      repo_path = "#{namespace}/#{module_name}"
+      repo_path = File.join(namespace, module_name)
       puts "Submitting PR '#{options[:pr_title]}' on GitHub to #{repo_path} - merges #{options[:branch]} into master"
       github = Octokit::Client.new(:access_token => GITHUB_TOKEN)
       pr = github.create_pull_request(repo_path, 'master', options[:branch], options[:pr_title], options[:message])
@@ -151,13 +160,15 @@ module ModuleSync
 
   def self.update(options)
     options = config_defaults.merge(options)
-    defaults = Util.parse_config("#{options[:configs]}/#{CONF_FILE}")
+    defaults = Util.parse_config(File.join(options[:configs], CONF_FILE))
 
-    path = "#{options[:configs]}/#{MODULE_FILES_DIR}"
-    local_files = self.local_files(path)
-    module_files = self.module_files(local_files, path)
+    local_template_dir = File.join(options[:configs], MODULE_FILES_DIR)
+    local_files = find_template_files(local_template_dir)
+    module_files = relative_names(local_files, local_template_dir)
 
-    managed_modules = self.managed_modules("#{options[:configs]}/#{options[:managed_modules_conf]}", options[:filter], options[:negative_filter])
+    managed_modules = self.managed_modules(File.join(options[:configs], options[:managed_modules_conf]),
+                                           options[:filter],
+                                           options[:negative_filter])
 
     errors = false
     # managed_modules is either an array or a hash

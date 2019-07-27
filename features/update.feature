@@ -113,7 +113,7 @@ Feature: update
     Then the exit status should be 0
     And the output should match:
       """
-      Warning: using './moduleroot//test' as template without '.erb' suffix
+      Warning: using './moduleroot/test' as template without '.erb' suffix
       """
     And the output should match:
       """
