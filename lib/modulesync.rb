@@ -32,8 +32,8 @@ module ModuleSync # rubocop:disable Metrics/ModuleLength
     File.join(config_path, MODULE_FILES_DIR, file)
   end
 
-  def self.module_file(project_root, namespace, puppet_module, file)
-    File.join(project_root, namespace, puppet_module, file)
+  def self.module_file(project_root, namespace, puppet_module, *parts)
+    File.join(project_root, namespace, puppet_module, *parts)
   end
 
   # List all template files.
@@ -89,14 +89,21 @@ module ModuleSync # rubocop:disable Metrics/ModuleLength
     namespace = settings.additional_settings[:namespace]
     module_name = settings.additional_settings[:puppet_module]
     configs = settings.build_file_configs(filename)
+    target_file = module_file(options[:project_root], namespace, module_name, filename)
     if configs['delete']
-      Renderer.remove(module_file(options[:project_root], namespace, module_name, filename))
+      Renderer.remove(target_file)
     else
       templatename = local_file(options[:configs], filename)
       begin
         erb = Renderer.build(templatename)
-        template = Renderer.render(erb, configs)
-        Renderer.sync(template, module_file(options[:project_root], namespace, module_name, filename))
+        # Meta data passed to the template as @metadata[:name]
+        metadata = {
+          :module_name => module_name,
+          :workdir     => module_file(options[:project_root], namespace, module_name),
+          :target_file => target_file,
+        }
+        template = Renderer.render(erb, configs, metadata)
+        Renderer.sync(template, target_file)
       rescue # rubocop:disable Lint/RescueWithoutErrorClass
         $stderr.puts "Error while rendering #{filename}"
         raise

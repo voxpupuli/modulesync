@@ -389,6 +389,23 @@ As mentioned, files in the moduleroot directory must be ERB templates (they must
 <%= @configs[:puppet_module] %>
 ```
 
+Alternatively some meta data is passed to the template. This will allow you to add custom Ruby extensions inside the
+template, reading other files from the module, to make the template system more adaptive.
+
+```erb
+module: <%= @metadata[:module_name] %>
+target: <%= @metadata[:target_file] %>
+workdir: <%= @metadata[:workdir] %>
+```
+
+Will result in something like:
+
+```
+module: puppet-test
+target: modules/github-org/puppet-test/test
+workdir: modules/github-org/puppet-test
+```
+
 The Templates
 -------------
 

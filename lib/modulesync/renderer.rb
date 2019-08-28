@@ -4,8 +4,9 @@ require 'find'
 module ModuleSync
   module Renderer
     class ForgeModuleFile
-      def initialize(configs = {})
+      def initialize(configs = {}, metadata = {})
         @configs = configs
+        @metadata = metadata
       end
     end
 
@@ -26,8 +27,8 @@ module ModuleSync
       File.delete(file) if File.exist?(file)
     end
 
-    def self.render(_template, configs = {})
-      ForgeModuleFile.new(configs).render
+    def self.render(_template, configs = {}, metadata = {})
+      ForgeModuleFile.new(configs, metadata).render
     end
 
     def self.sync(template, target_name)

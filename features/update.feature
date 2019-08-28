@@ -922,3 +922,36 @@ Feature: update
     When I run `msync update -m "Update Gemfile"`
     Then the exit status should be 0
     Then the output should contain "Using repository's default branch: develop"
+
+  Scenario: Adding a new file from a template using meta data
+    And a file named "config_defaults.yml" with:
+      """
+      ---
+      """
+    Given a file named "managed_modules.yml" with:
+      """
+      ---
+        - puppet-test
+      """
+    And a file named "modulesync.yml" with:
+      """
+      ---
+        namespace: maestrodev
+        git_base: https://github.com/
+      """
+    And a directory named "moduleroot"
+    And a file named "moduleroot/test.erb" with:
+      """
+      module: <%= @metadata[:module_name] %>
+      target: <%= @metadata[:target_file] %>
+      workdir: <%= @metadata[:workdir] %>
+      """
+    When I run `msync update --noop`
+    Then the exit status should be 0
+    Given I run `cat modules/maestrodev/puppet-test/test`
+    Then the output should contain:
+      """
+      module: puppet-test
+      target: modules/maestrodev/puppet-test/test
+      workdir: modules/maestrodev/puppet-test
+      """
