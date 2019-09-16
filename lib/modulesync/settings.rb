@@ -19,10 +19,9 @@ module ModuleSync
 
     def build_file_configs(target_name)
       file_def = lookup_config(defaults, target_name)
-      file_md  = lookup_config(module_defaults, target_name)
       file_mc  = lookup_config(module_configs, target_name)
 
-      global_defaults.merge(file_def).merge(file_md).merge(file_mc).merge(additional_settings)
+      global_defaults.merge(file_def).merge(module_defaults).merge(file_mc).merge(additional_settings)
     end
 
     def managed?(target_name)
