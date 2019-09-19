@@ -756,6 +756,9 @@ Feature: update
     And a file named "config_defaults.yml" with:
       """
       ---
+      :global:
+        global-default: some-default
+        global-to-overwrite: to-be-overwritten
       spec/spec_helper.rb:
         require:
           - puppetlabs_spec_helper/module_helper
@@ -765,6 +768,12 @@ Feature: update
       <% @configs['require'].each do |required| -%>
         require '<%= required %>'
       <% end %>
+      """
+    And a file named "moduleroot/global-test.md.erb" with:
+      """
+      <%= @configs['global-default'] %>
+      <%= @configs['global-to-overwrite'] %>
+      <%= @configs['module-default'] %>
       """
     Given I run `git init modules/maestrodev/puppet-test`
     Given a file named "modules/maestrodev/puppet-test/.git/config" with:
@@ -783,6 +792,9 @@ Feature: update
     Given a file named "modules/maestrodev/puppet-test/.sync.yml" with:
       """
       ---
+      :global:
+        global-to-overwrite: it-is-overwritten
+        module-default: some-value
       spec/spec_helper.rb:
         unmanaged: true
       """
@@ -791,6 +803,13 @@ Feature: update
     And the output should match:
       """
       Not managing spec/spec_helper.rb in puppet-test
+      """
+    Given I run `cat modules/maestrodev/puppet-test/global-test.md`
+    Then the output should match:
+      """
+      some-default
+      it-is-overwritten
+      some-value
       """
 
   Scenario: Module with custom namespace
