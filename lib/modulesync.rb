@@ -142,10 +142,9 @@ module ModuleSync
 
   def self.manage_pr(git_repo, options)
     # We only do GitHub PR work if the GITHUB_TOKEN variable is set in the environment.
-    repo_path = "#{namespace}/#{module_name}"
-    puts "Submitting PR '#{options[:pr_title]}' on GitHub to #{repo_path} - merges #{options[:branch]} into master"
+    puts "Submitting PR '#{options[:pr_title]}' on GitHub to #{git_repo} - merges #{options[:branch]} into master"
     github = Octokit::Client.new(:access_token => GITHUB_TOKEN)
-    pr = github.create_pull_request(repo_path, 'master', options[:branch], options[:pr_title], options[:message])
+    pr = github.create_pull_request(git_repo, 'master', options[:branch], options[:pr_title], options[:message])
     puts "PR created at #{pr['html_url']}"
 
     # PR labels can either be a list in the YAML file or they can pass in a comma
