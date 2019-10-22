@@ -266,7 +266,7 @@ Available parameters for modulesync.yml
 
 ##### Example
 
-###### Github
+###### GitHub
 
 ```yaml
 ---
@@ -279,7 +279,7 @@ pr_labels:
   - MODULESYNC
 ```
 
-###### Gitlab
+###### GitLab
 
 ```yaml
 ---
@@ -382,9 +382,9 @@ current date, bumped (minor) version, and commit message.
 If `CHANGELOG.md` is absent in the repository, nothing will happen.
 
 
-#### Defining templates
+#### Working with templates
 
-As commented, files within moduleroot directory can be flat files or ERB templates. These files have direct access to @configs hash, which gets values from config_defaults.yml file and from the module being processed:
+As mentioned, files in the moduleroot directory must be ERB templates (they must have an .erb extension, or they will be ignored). These files have direct access to @configs hash, which gets values from config_defaults.yml file and from the module being processed:
 
 ```erb
 <%= @configs[:git_base] %>

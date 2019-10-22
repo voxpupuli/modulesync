@@ -1,6 +1,22 @@
 # Changelog
 
-## 2018-02-15
+## 2019-09-19 - 1.0.0
+
+This is the first stable release! 🎉
+
+* Use namespace in directory structure when cloning repositories - [#152](https://github.com/voxpupuli/modulesync/pull/152)
+* Fix minor typo in help output - [#165](https://github.com/voxpupuli/modulesync/pull/165)
+* Small improvements and fixes - [#166](https://github.com/voxpupuli/modulesync/pull/166)
+* Fix overwriting of :global values - [#169](https://github.com/voxpupuli/modulesync/pull/169)
+
+## 2018-12-27 - 0.10.0
+
+This is another awesome release!
+
+* Add support to submit PRs to GitHub when changes are pushed - [#147](https://github.com/voxpupuli/modulesync/pull/147)
+* Fix "flat files" still mentioned in README - [#151](https://github.com/voxpupuli/modulesync/pull/151)
+
+## 2018-02-15 - 0.9.0
 
 ## Summary
 
