@@ -16,7 +16,7 @@ Octokit.configure do |c|
   c.api_endpoint = ENV.fetch('GITHUB_BASE_URL', 'https://api.github.com')
 end
 
-module ModuleSync
+module ModuleSync # rubocop:disable Metrics/ModuleLength
   include Constants
 
   def self.config_defaults
@@ -138,31 +138,37 @@ module ModuleSync
       pushed = Git.update(git_repo, files_to_manage, options)
       return nil unless pushed && options[:pr]
 
-      # We only do GitHub PR work if the GITHUB_TOKEN variable is set in the environment.
-      repo_path = File.join(namespace, module_name)
-      github = Octokit::Client.new(:access_token => GITHUB_TOKEN)
-
-      # Skip creating the PR if it exists already.
-      pull_requests = github.pull_request(repo_path, 'open', {'base' => 'master', 'head' => options[:branch]})
-      if pull_requests.length == 0
-        pr = github.create_pull_request(repo_path, 'master', options[:branch], options[:pr_title], options[:message])
-        puts "Submitted PR '#{options[:pr_title]}' on GitHub to #{repo_path} - merges #{options[:branch]} into master"
-      else
-        pr = pull_requests.pop()
-        puts "Skipped! PR '#{pr['title']}' already exists! See #{pr['html_url']}"
-      end
-
-      # PR labels can either be a list in the YAML file or they can pass in a comma
-      # separated list via the command line argument.
-      pr_labels = Util.parse_list(options[:pr_labels])
-
-      # We only assign labels to the PR if we've discovered a list > 1. The labels MUST
-      # already exist. We DO NOT create missing labels.
-      unless pr_labels.empty?
-        puts "Attaching the following labels to PR #{pr['number']}: #{pr_labels.join(', ')}"
-        github.add_labels_to_an_issue(repo_path, pr['number'], pr_labels)
-      end
+      manage_pr(namespace, module_name, options)
     end
+  end
+
+  def self.manage_pr(namespace, module_name, options)
+    # We only do GitHub PR work if the GITHUB_TOKEN variable is set in the environment.
+    repo_path = File.join(namespace, module_name)
+    github = Octokit::Client.new(:access_token => GITHUB_TOKEN)
+
+    # Skip creating the PR if it exists already.
+    head = "#{namespace}:#{options[:branch]}"
+    pull_requests = github.pull_requests(repo_path, :state => 'open', :base => 'master', :head => head)
+    if pull_requests.empty?
+      pr = github.create_pull_request(repo_path, 'master', options[:branch], options[:pr_title], options[:message])
+      puts "Submitted PR '#{options[:pr_title]}' on GitHub to #{repo_path} - merges #{options[:branch]} into master"
+    elsif pull_requests.length == 1
+      pr = pull_requests.pop
+      puts "Skipped! PR '#{pr['title']}' already exists! See #{pr['html_url']}"
+    else
+      puts "Skipped! #{pull_requests.length} PRs found for branch #{options[:branch]}"
+    end
+
+    # PR labels can either be a list in the YAML file or they can pass in a comma
+    # separated list via the command line argument.
+    pr_labels = Util.parse_list(options[:pr_labels])
+
+    # We only assign labels to the PR if we've discovered a list > 1. The labels MUST
+    # already exist. We DO NOT create missing labels.
+    return if pr_labels.empty?
+    puts "Attaching the following labels to PR #{pr['number']}: #{pr_labels.join(', ')}"
+    github.add_labels_to_an_issue(repo_path, pr['number'], pr_labels)
   end
 
   def self.update(options)
