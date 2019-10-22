@@ -16,7 +16,7 @@ Octokit.configure do |c|
   c.api_endpoint = ENV.fetch('GITHUB_BASE_URL', 'https://api.github.com')
 end
 
-module ModuleSync
+module ModuleSync # rubocop:disable Metrics/ModuleLength
   include Constants
 
   def self.config_defaults
