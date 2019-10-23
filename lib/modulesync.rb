@@ -152,12 +152,9 @@ module ModuleSync # rubocop:disable Metrics/ModuleLength
     pull_requests = github.pull_requests(repo_path, :state => 'open', :base => 'master', :head => head)
     if pull_requests.empty?
       pr = github.create_pull_request(repo_path, 'master', options[:branch], options[:pr_title], options[:message])
-      puts "Submitted PR '#{options[:pr_title]}' on GitHub to #{repo_path} - merges #{options[:branch]} into master"
-    elsif pull_requests.length == 1
-      pr = pull_requests.pop
-      puts "Skipped! PR '#{pr['title']}' already exists! See #{pr['html_url']}"
+      $stdout.puts "Submitted PR '#{options[:pr_title]}' on GitHub to #{repo_path} - merges #{options[:branch]} into master"
     else
-      puts "Skipped! #{pull_requests.length} PRs found for branch #{options[:branch]}"
+      $stdout.puts "Skipped! #{pull_requests.length} PRs found for branch #{options[:branch]}"
     end
 
     # PR labels can either be a list in the YAML file or they can pass in a comma
