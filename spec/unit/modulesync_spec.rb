@@ -37,7 +37,7 @@ describe ModuleSync do
         "number" => "44"
       }
 
-      allow(@client).to receive(:pull_requests).with(@git_repo, :state => 'open', :base => 'master', :head => "#{@namespace}:#{@options[:branch]}").and_return([pr])
+      expect(@client).to receive(:pull_requests).with(@git_repo, :state => 'open', :base => 'master', :head => "#{@namespace}:#{@options[:branch]}").and_return([pr])
       expect { ModuleSync.manage_pr(@namespace, @repo_name, @options) }.to output(/Skipped! 1 PRs found for branch test/).to_stdout
     end
   end
