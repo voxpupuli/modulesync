@@ -152,7 +152,7 @@ module ModuleSync # rubocop:disable Metrics/ModuleLength
     pull_requests = github.pull_requests(repo_path, :state => 'open', :base => 'master', :head => head)
     if pull_requests.empty?
       pr = github.create_pull_request(repo_path, 'master', options[:branch], options[:pr_title], options[:message])
-      $stdout.puts "Submitted PR '#{options[:pr_title]}' on GitHub to #{repo_path} - merges #{options[:branch]} into master"
+      $stdout.puts "Submitted PR '#{options[:pr_title]}' to #{repo_path} - merges #{options[:branch]} into master"
     else
       $stdout.puts "Skipped! #{pull_requests.length} PRs found for branch #{options[:branch]}"
     end
