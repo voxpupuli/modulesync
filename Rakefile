@@ -19,3 +19,5 @@ Cucumber::Rake::Task.new do |t|
 end
 
 task :test => %i[clean spec cucumber rubocop]
+
+task :default => ["test"]
