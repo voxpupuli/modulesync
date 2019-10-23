@@ -46,7 +46,7 @@ module ModuleSync # rubocop:disable Metrics/ModuleLength
           .collect { |p| p.chomp('.erb') }
           .to_a
     else
-      puts "#{local_template_dir} does not exist." \
+      $stdout.puts "#{local_template_dir} does not exist." \
         ' Check that you are working in your module configs directory or' \
         ' that you have passed in the correct directory with -c.'
       exit
@@ -60,7 +60,7 @@ module ModuleSync # rubocop:disable Metrics/ModuleLength
   def self.managed_modules(config_file, filter, negative_filter)
     managed_modules = Util.parse_config(config_file)
     if managed_modules.empty?
-      puts "No modules found in #{config_file}." \
+      $stdout.puts "No modules found in #{config_file}." \
         ' Check that you specified the right :configs directory and :managed_modules_conf file.'
       exit
     end
@@ -98,18 +98,13 @@ module ModuleSync # rubocop:disable Metrics/ModuleLength
         template = Renderer.render(erb, configs)
         Renderer.sync(template, module_file(options[:project_root], namespace, module_name, filename))
       rescue # rubocop:disable Lint/RescueWithoutErrorClass
-        STDERR.puts "Error while rendering #{filename}"
+        $stderr.puts "Error while rendering #{filename}"
         raise
       end
     end
   end
 
   def self.manage_module(puppet_module, module_files, module_options, defaults, options)
-    if options[:pr] && !GITHUB_TOKEN
-      STDERR.puts 'Environment variable GITHUB_TOKEN must be set to use --pr!'
-      raise unless options[:skip_broken]
-    end
-
     namespace, module_name = module_name(puppet_module, options[:namespace])
     git_repo = File.join(namespace, module_name)
     unless options[:offline]
@@ -125,7 +120,7 @@ module ModuleSync # rubocop:disable Metrics/ModuleLength
                             :git_base => options[:git_base],
                             :namespace => namespace)
     settings.unmanaged_files(module_files).each do |filename|
-      puts "Not managing #{filename} in #{module_name}"
+      $stdout.puts "Not managing #{filename} in #{module_name}"
     end
 
     files_to_manage = settings.managed_files(module_files)
@@ -143,6 +138,11 @@ module ModuleSync # rubocop:disable Metrics/ModuleLength
   end
 
   def self.manage_pr(namespace, module_name, options)
+    if options[:pr] && GITHUB_TOKEN.empty?
+      $stderr.puts 'Environment variable GITHUB_TOKEN must be set to use --pr!'
+      raise unless options[:skip_broken]
+    end
+
     # We only do GitHub PR work if the GITHUB_TOKEN variable is set in the environment.
     repo_path = File.join(namespace, module_name)
     github = Octokit::Client.new(:access_token => GITHUB_TOKEN)
@@ -164,7 +164,7 @@ module ModuleSync # rubocop:disable Metrics/ModuleLength
     # We only assign labels to the PR if we've discovered a list > 1. The labels MUST
     # already exist. We DO NOT create missing labels.
     return if pr_labels.empty?
-    puts "Attaching the following labels to PR #{pr['number']}: #{pr_labels.join(', ')}"
+    $stdout.puts "Attaching the following labels to PR #{pr['number']}: #{pr_labels.join(', ')}"
     github.add_labels_to_an_issue(repo_path, pr['number'], pr_labels)
   end
 
@@ -186,10 +186,10 @@ module ModuleSync # rubocop:disable Metrics/ModuleLength
       begin
         manage_module(puppet_module, module_files, module_options, defaults, options)
       rescue # rubocop:disable Lint/RescueWithoutErrorClass
-        STDERR.puts "Error while updating #{puppet_module}"
+        $stderr.puts "Error while updating #{puppet_module}"
         raise unless options[:skip_broken]
         errors = true
-        puts "Skipping #{puppet_module} as update process failed"
+        $stdout.puts "Skipping #{puppet_module} as update process failed"
       end
     end
     exit 1 if errors && options[:fail_on_warnings]
