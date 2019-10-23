@@ -20,4 +20,4 @@ end
 
 task :test => %i[clean spec cucumber rubocop]
 
-task :default => ["test"]
+task :default => ['test']

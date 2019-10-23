@@ -142,7 +142,7 @@ module ModuleSync # rubocop:disable Metrics/ModuleLength
     end
 
     # We only do GitHub PR work if the GITHUB_TOKEN variable is set in the environment.
-    $stdout.puts "Submitting PR '#{options[:pr_title]}' on GitHub to #{git_repo} - merges #{options[:branch]} into master"
+    $stdout.puts "Submitted PR '#{options[:pr_title]}' to #{git_repo} - merges #{options[:branch]} into master"
     github = Octokit::Client.new(:access_token => GITHUB_TOKEN)
     pr = github.create_pull_request(git_repo, 'master', options[:branch], options[:pr_title], options[:message])
     $stdout.puts "PR created at #{pr['html_url']}"
@@ -167,7 +167,7 @@ module ModuleSync # rubocop:disable Metrics/ModuleLength
       $stdout.puts "Automatically merged PR #{pr['number']}"
     rescue Octokit::Error => exception
       raise unless options[:skip_broken]
-      $std.outputs "Could not automatically merge PR #{pr['number']}: #{exception}"
+      $stdout.outputs "Could not automatically merge PR #{pr['number']}: #{exception}"
     end
   end
 
