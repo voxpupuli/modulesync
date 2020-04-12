@@ -6,10 +6,13 @@ dist: trusty
 script: 'bundle exec rake test'
 rvm:
   - 2.0
-  - 2.1.9
-  - 2.2.6
-  - 2.3.3
-  - 2.4.0
+  - 2.1
+  - 2.2
+  - 2.3
+  - 2.4
+  - 2.5
+  - 2.6
+  - 2.7
 notifications:
   email: false
 deploy:
@@ -18,7 +21,7 @@ deploy:
     secure: "Tbf1EbLEobIIox+fftJZADZsfQQ6kl0urcMNetK7NJzFo/negD/WyJIUj3kro/B7buyYADEjTui/JR4o8EPbugfM3ie5vYOd5k3AesSzbdr4BSwGe/cGbGOB7/PZuGfFLkb94/FiCU2mIwibkbh1rHWGlBoPj7ntL0+5ZtdvsM4="
   gem: modulesync
   on:
-    rvm: 2.4.0
+    rvm: 2.7
     tags: true
     all_branches: true
     repo: voxpupuli/modulesync
