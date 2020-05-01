@@ -1,5 +1,13 @@
 # Changelog
 
+## 2020-05-01 - 1.1.0
+
+This release provides metadata in the ERB template scope which makes it easy to read files from inside the module. A possible application is reading metadata.json and generating CI configs based on that.
+
+* Add metadata to ERB template scope - [#168](https://github.com/voxpupuli/modulesync/pull/168)
+* Skip issuing a PR if one already exists for -b option - [#171](https://github.com/voxpupuli/modulesync/pull/171)
+* Correct the type on the pr-labels option to prevent a deprecation warning - [#173](https://github.com/voxpupuli/modulesync/pull/173)
+
 ## 2019-09-19 - 1.0.0
 
 This is the first stable release! 🎉
