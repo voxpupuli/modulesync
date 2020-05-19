@@ -12,6 +12,34 @@ describe ModuleSync do
     end
   end
 
+  context '::manage_module' do
+    before(:each) do
+      stub_const('GITHUB_TOKEN', '')
+      ModuleSync::GLOBAL_DEFAULTS_KEY = 0
+      @puppet_module = 'puppet'
+      @module_options = 'module'
+      @module_files = []
+      @defaults = {}
+      @options = {
+        :namespace => 'test',
+        :offline => false,
+        :branch => 'test',
+        :project_root => 'root',
+        :git_base => 'base',
+        :skip_broken => false,
+        :pr => true
+      }
+    end
+
+    describe "Raise Error" do
+      it 'raises an error when neither GITHUB_TOKEN nor GITLAB_TOKEN are set for PRs' do
+        allow(ModuleSync::Git).to receive(:pull)
+        allow(ModuleSync::Git).to receive(:update).and_return(true)
+        expect { ModuleSync.manage_module(@puppet_module, @module_files, @module_options, @defaults, @options) }.to raise_error(RuntimeError).and output(/GITHUB_TOKEN/).to_stderr
+      end
+    end
+  end
+
   context '::manage_pr' do
     before(:each) do
       stub_const('GITHUB_TOKEN', 'test')
@@ -26,13 +54,6 @@ describe ModuleSync do
       }
 
       @client = double()
-    end
-
-    it 'rasies an error when GITHUB_TOKEN not set for PRs' do
-      stub_const('GITHUB_TOKEN', '')
-      options = {:pr => true, :skip_broken => false}
-
-      expect { ModuleSync.manage_pr(@namespace, @repo_name, options) }.to raise_error(RuntimeError).and output(/GITHUB_TOKEN/).to_stderr
     end
 
     it 'submits PR when --pr is set' do
