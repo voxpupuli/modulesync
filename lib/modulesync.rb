@@ -132,32 +132,22 @@ module ModuleSync # rubocop:disable Metrics/ModuleLength
     if options[:noop]
       Git.update_noop(git_repo, options)
     elsif !options[:offline]
-      if options[:pr]
-        manage_pr_or_mr(git_repo, files_to_manage, namespace, module_name, options)
-      else
-        Git.update(git_repo, files_to_manage, options)
-      end
+      pushed = Git.update(git_repo, files_to_manage, options)
+      pushed && options[:pr] && @pr.manage(namespace, module_name, options)
     end
-  end
-
-  def self.manage_pr_or_mr(git_repo, files_to_manage, namespace, module_name, options)
-    unless options[:branch]
-      $stderr.puts 'A branch must be specified with --branch to use --pr!'
-      return nil
-    end
-    # Git.update() returns a boolean: true if files were pushed, false if not.
-    pushed = Git.update(git_repo, files_to_manage, options)
-
-    # If there's nothing pushed, we're done
-    return nil unless pushed
-
-    @pr.manage(namespace, module_name, options)
   end
 
   def self.update(options)
     options = config_defaults.merge(options)
     defaults = Util.parse_config(File.join(options[:configs], CONF_FILE))
-    @pr = get_pr_manager if options[:pr]
+    if options[:pr]
+      unless options[:branch]
+        $stderr.puts 'A branch must be specified with --branch to use --pr!'
+        raise
+      end
+
+      @pr = create_pr_manager if options[:pr]
+    end
 
     local_template_dir = File.join(options[:configs], MODULE_FILES_DIR)
     local_files = find_template_files(local_template_dir)
@@ -182,14 +172,13 @@ module ModuleSync # rubocop:disable Metrics/ModuleLength
     exit 1 if errors && options[:fail_on_warnings]
   end
 
-  def self.get_pr_manager
-    case
-    when !GITHUB_TOKEN.empty?
+  def self.create_pr_manager
+    if !GITHUB_TOKEN.empty?
       require 'modulesync/pr/github'
-      return ModuleSync::PR::GitHub.new(GITHUB_TOKEN, ENV.fetch('GITHUB_BASE_URL', 'https://api.github.com'))
-    when !GITLAB_TOKEN.empty?
+      ModuleSync::PR::GitHub.new(GITHUB_TOKEN, ENV.fetch('GITHUB_BASE_URL', 'https://api.github.com'))
+    elsif !GITLAB_TOKEN.empty?
       require 'modulesync/pr/github'
-      return ModuleSync::PR::GitLab.new(GITLAB_TOKEN, ENV.fetch('GITLAB_BASE_URL', 'https://gitlab.com/api/v4'))
+      ModuleSync::PR::GitLab.new(GITLAB_TOKEN, ENV.fetch('GITLAB_BASE_URL', 'https://gitlab.com/api/v4'))
     else
       $stderr.puts 'Environment variables GITHUB_TOKEN or GITLAB_TOKEN must be set to use --pr!'
       raise
