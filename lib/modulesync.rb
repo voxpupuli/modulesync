@@ -1,6 +1,4 @@
 require 'fileutils'
-require 'gitlab'
-require 'octokit'
 require 'pathname'
 require 'modulesync/cli'
 require 'modulesync/constants'
@@ -13,14 +11,6 @@ require 'monkey_patches'
 
 GITHUB_TOKEN = ENV.fetch('GITHUB_TOKEN', '')
 GITLAB_TOKEN = ENV.fetch('GITLAB_TOKEN', '')
-
-Octokit.configure do |c|
-  c.api_endpoint = ENV.fetch('GITHUB_BASE_URL', 'https://api.github.com')
-end
-
-Gitlab.configure do |c|
-  c.endpoint = ENV.fetch('GITLAB_BASE_URL', 'https://gitlab.com/api/v4')
-end
 
 module ModuleSync # rubocop:disable Metrics/ModuleLength
   include Constants
@@ -161,68 +151,13 @@ module ModuleSync # rubocop:disable Metrics/ModuleLength
     # If there's nothing pushed, we're done
     return nil unless pushed
 
-    if !GITHUB_TOKEN.empty?
-      manage_pr(namespace, module_name, options)
-    elsif !GITLAB_TOKEN.empty?
-      manage_mr(namespace, module_name, options)
-    else
-      $stderr.puts 'Environment variables GITHUB_TOKEN or GITLAB_TOKEN must be set to use --pr!'
-      raise unless options[:skip_broken]
-    end
-  end
-
-  def self.manage_mr(namespace, module_name, options)
-    repo_path = File.join(namespace, module_name)
-    api = Gitlab::Client.new(:private_token => GITLAB_TOKEN)
-
-    head = "#{namespace}:#{options[:branch]}"
-    merge_requests = api.merge_requests(repo_path,
-                                        :state => 'opened',
-                                        :source_branch => head,
-                                        :target_branch => 'master')
-    if merge_requests.empty?
-      mr_labels = Util.parse_list(options[:pr_labels])
-      mr = api.create_merge_request(repo_path, options[:pr_title],
-                                    :source_branch => options[:branch],
-                                    :target_branch => 'master',
-                                    :labels => mr_labels)
-      $stdout.puts "Submitted MR '#{options[:pr_title]}' to #{repo_path} - merges #{options[:branch]} into master"
-      return if mr_labels.empty?
-      $stdout.puts "Attaching the following labels to MR #{mr.iid}: #{mr_labels.join(', ')}"
-    else
-      # Skip creating the MR if it exists already.
-      $stdout.puts "Skipped! #{pull_requests.length} MRs found for branch #{options[:branch]}"
-    end
-  end
-
-  def self.manage_pr(namespace, module_name, options)
-    repo_path = File.join(namespace, module_name)
-    api = Octokit::Client.new(:access_token => GITHUB_TOKEN)
-
-    head = "#{namespace}:#{options[:branch]}"
-    pull_requests = api.pull_requests(repo_path, :state => 'open', :base => 'master', :head => head)
-    if pull_requests.empty?
-      pr = api.create_pull_request(repo_path, 'master', options[:branch], options[:pr_title], options[:message])
-      $stdout.puts "Submitted PR '#{options[:pr_title]}' to #{repo_path} - merges #{options[:branch]} into master"
-    else
-      # Skip creating the PR if it exists already.
-      $stdout.puts "Skipped! #{pull_requests.length} PRs found for branch #{options[:branch]}"
-    end
-
-    # PR labels can either be a list in the YAML file or they can pass in a comma
-    # separated list via the command line argument.
-    pr_labels = Util.parse_list(options[:pr_labels])
-
-    # We only assign labels to the PR if we've discovered a list > 1. The labels MUST
-    # already exist. We DO NOT create missing labels.
-    return if pr_labels.empty?
-    $stdout.puts "Attaching the following labels to PR #{pr['number']}: #{pr_labels.join(', ')}"
-    api.add_labels_to_an_issue(repo_path, pr['number'], pr_labels)
+    @pr.manage(namespace, module_name, options)
   end
 
   def self.update(options)
     options = config_defaults.merge(options)
     defaults = Util.parse_config(File.join(options[:configs], CONF_FILE))
+    @pr = get_pr_manager if options[:pr]
 
     local_template_dir = File.join(options[:configs], MODULE_FILES_DIR)
     local_files = find_template_files(local_template_dir)
@@ -245,5 +180,19 @@ module ModuleSync # rubocop:disable Metrics/ModuleLength
       end
     end
     exit 1 if errors && options[:fail_on_warnings]
+  end
+
+  def self.get_pr_manager
+    case
+    when !GITHUB_TOKEN.empty?
+      require 'modulesync/pr/github'
+      return ModuleSync::PR::GitHub.new(GITHUB_TOKEN, ENV.fetch('GITHUB_BASE_URL', 'https://api.github.com'))
+    when !GITLAB_TOKEN.empty?
+      require 'modulesync/pr/github'
+      return ModuleSync::PR::GitLab.new(GITLAB_TOKEN, ENV.fetch('GITLAB_BASE_URL', 'https://gitlab.com/api/v4'))
+    else
+      $stderr.puts 'Environment variables GITHUB_TOKEN or GITLAB_TOKEN must be set to use --pr!'
+      raise
+    end
   end
 end
