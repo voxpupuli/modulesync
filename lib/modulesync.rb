@@ -9,9 +9,6 @@ require 'modulesync/settings'
 require 'modulesync/util'
 require 'monkey_patches'
 
-GITHUB_TOKEN = ENV.fetch('GITHUB_TOKEN', '')
-GITLAB_TOKEN = ENV.fetch('GITLAB_TOKEN', '')
-
 module ModuleSync # rubocop:disable Metrics/ModuleLength
   include Constants
 
@@ -173,12 +170,15 @@ module ModuleSync # rubocop:disable Metrics/ModuleLength
   end
 
   def self.create_pr_manager
-    if !GITHUB_TOKEN.empty?
+    github_token = ENV.fetch('GITHUB_TOKEN', '')
+    gitlab_token = ENV.fetch('GITLAB_TOKEN', '')
+
+    if !github_token.empty?
       require 'modulesync/pr/github'
-      ModuleSync::PR::GitHub.new(GITHUB_TOKEN, ENV.fetch('GITHUB_BASE_URL', 'https://api.github.com'))
-    elsif !GITLAB_TOKEN.empty?
+      ModuleSync::PR::GitHub.new(github_token, ENV.fetch('GITHUB_BASE_URL', 'https://api.github.com'))
+    elsif !gitlab_token.empty?
       require 'modulesync/pr/github'
-      ModuleSync::PR::GitLab.new(GITLAB_TOKEN, ENV.fetch('GITLAB_BASE_URL', 'https://gitlab.com/api/v4'))
+      ModuleSync::PR::GitLab.new(gitlab_token, ENV.fetch('GITLAB_BASE_URL', 'https://gitlab.com/api/v4'))
     else
       $stderr.puts 'Environment variables GITHUB_TOKEN or GITLAB_TOKEN must be set to use --pr!'
       raise
