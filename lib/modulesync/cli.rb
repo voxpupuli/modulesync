@@ -90,14 +90,14 @@ module ModuleSync
              :default => false
       option :pr,
              :type => :boolean,
-             :desc => 'Submit GitHub PR',
+             :desc => 'Submit pull/merge request',
              :default => false
       option :pr_title,
-             :desc => 'Title of GitHub PR',
+             :desc => 'Title of pull/merge request',
              :default => CLI.defaults[:pr_title] || 'Update to module template files'
       option :pr_labels,
              :type => :array,
-             :desc => 'Labels to add to the GitHub PR',
+             :desc => 'Labels to add to the pull/merge request',
              :default => CLI.defaults[:pr_labels] || []
       option :offline,
              :type => :boolean,

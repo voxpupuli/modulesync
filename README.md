@@ -176,27 +176,29 @@ touching the modules, you can deactivate the hook.
 msync hook deactivate
 ```
 
-#### Submitting PRs to GitHub
+#### Submitting PRs/MRs to GitHub or GitLab
 
-You can have modulesync submit Pull Requests on GitHub automatically with the
-`--pr` CLI option.
+You can have modulesync submit Pull Requests on GitHub or Merge Requests on
+GitLab automatically with the `--pr` CLI option.
 
 ```
 msync update --pr
 ```
 
-You must set `GITHUB_TOKEN` in your environment for this to work. Other options
-include:
+You must set the `GITHUB_TOKEN` or `GITLAB_TOKEN` environment variable
+for GitHub PRs or GitLab MRs to work. Additional options:
 
-* Set the PR title with `--pr-title` or in `modulesync.yml` with the `pr_title`
-  attribute.
-* Assign labels to the PR with `--pr-labels` or in `modulesync.yml` with the
-  `pr_labels` attribute. **NOTE:** `pr_labels` should be a list. When using
-  the `--pr-labels` CLI option, you should use a comma separated list.
+* Set the PR/MR title with `--pr-title` or in `modulesync.yml` with the
+  `pr_title` attribute.
+* Assign labels to the PR/MR with `--pr-labels` or in `modulesync.yml` with
+  the `pr_labels` attribute. **NOTE:** `pr_labels` should be a list. When
+  using the `--pr-labels` CLI option, you should use a comma separated list.
 
-You can optionally set the `GITHUB_BASE_URL` environment variable to use GitHub
-Enterprise. This is passed to Octokit's [`api_endpoint`](https://github.com/octokit/octokit.rb#interacting-with-the-githubcom-apis-in-github-enterprise) 
-configuration option.
+For GitHub Enterprise and self-hosted GitLab instances you need to set the
+`GITHUB_BASE_URL` or `GITLAB_BASE_URL` environment variable in addition.
+More details for GitHub:
+
+* Octokit [`api_endpoint`](https://github.com/octokit/octokit.rb#interacting-with-the-githubcom-apis-in-github-enterprise)
 
 ### Using Forks and Non-master branches
 
@@ -258,8 +260,8 @@ Available parameters for modulesync.yml
 * `remote_branch` : Remote branch to push to (Default: Same value as branch)
 * `message` : Commit message to apply to updated modules.
 * `pre_commit_script` : A script to be run before commiting (e.g. 'contrib/myfooscript.sh')
-* `pr_title` : The title to use when submitting PRs to GitHub.
-* `pr_labels` : A list of labels to assign PRs created on GitHub.
+* `pr_title` : The title to use when submitting PRs/MRs to GitHub or GitLab.
+* `pr_labels` : A list of labels to assign PRs/MRs created on GitHub or GitLab.
 
 ##### Example
 

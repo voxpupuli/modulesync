@@ -1,5 +1,10 @@
-tmp/
-modules/
 *.gem
-Gemfile.lock
 .bundle/
+.ruby-version
+.vscode/
+Gemfile.lock
+bin/bundle
+bin/rspec
+modules/
+tmp/
+vendor/

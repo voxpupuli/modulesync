@@ -1,5 +1,4 @@
 require 'fileutils'
-require 'octokit'
 require 'pathname'
 require 'modulesync/cli'
 require 'modulesync/constants'
@@ -9,12 +8,6 @@ require 'modulesync/renderer'
 require 'modulesync/settings'
 require 'modulesync/util'
 require 'monkey_patches'
-
-GITHUB_TOKEN = ENV.fetch('GITHUB_TOKEN', '')
-
-Octokit.configure do |c|
-  c.api_endpoint = ENV.fetch('GITHUB_BASE_URL', 'https://api.github.com')
-end
 
 module ModuleSync # rubocop:disable Metrics/ModuleLength
   include Constants
@@ -136,48 +129,22 @@ module ModuleSync # rubocop:disable Metrics/ModuleLength
     if options[:noop]
       Git.update_noop(git_repo, options)
     elsif !options[:offline]
-      # Git.update() returns a boolean: true if files were pushed, false if not.
       pushed = Git.update(git_repo, files_to_manage, options)
-      return nil unless pushed && options[:pr]
-
-      manage_pr(namespace, module_name, options)
+      pushed && options[:pr] && @pr.manage(namespace, module_name, options)
     end
-  end
-
-  def self.manage_pr(namespace, module_name, options)
-    if options[:pr] && GITHUB_TOKEN.empty?
-      $stderr.puts 'Environment variable GITHUB_TOKEN must be set to use --pr!'
-      raise unless options[:skip_broken]
-    end
-
-    # We only do GitHub PR work if the GITHUB_TOKEN variable is set in the environment.
-    repo_path = File.join(namespace, module_name)
-    github = Octokit::Client.new(:access_token => GITHUB_TOKEN)
-
-    # Skip creating the PR if it exists already.
-    head = "#{namespace}:#{options[:branch]}"
-    pull_requests = github.pull_requests(repo_path, :state => 'open', :base => 'master', :head => head)
-    if pull_requests.empty?
-      pr = github.create_pull_request(repo_path, 'master', options[:branch], options[:pr_title], options[:message])
-      $stdout.puts "Submitted PR '#{options[:pr_title]}' to #{repo_path} - merges #{options[:branch]} into master"
-    else
-      $stdout.puts "Skipped! #{pull_requests.length} PRs found for branch #{options[:branch]}"
-    end
-
-    # PR labels can either be a list in the YAML file or they can pass in a comma
-    # separated list via the command line argument.
-    pr_labels = Util.parse_list(options[:pr_labels])
-
-    # We only assign labels to the PR if we've discovered a list > 1. The labels MUST
-    # already exist. We DO NOT create missing labels.
-    return if pr_labels.empty?
-    $stdout.puts "Attaching the following labels to PR #{pr['number']}: #{pr_labels.join(', ')}"
-    github.add_labels_to_an_issue(repo_path, pr['number'], pr_labels)
   end
 
   def self.update(options)
     options = config_defaults.merge(options)
     defaults = Util.parse_config(File.join(options[:configs], CONF_FILE))
+    if options[:pr]
+      unless options[:branch]
+        $stderr.puts 'A branch must be specified with --branch to use --pr!'
+        raise
+      end
+
+      @pr = create_pr_manager if options[:pr]
+    end
 
     local_template_dir = File.join(options[:configs], MODULE_FILES_DIR)
     local_files = find_template_files(local_template_dir)
@@ -200,5 +167,21 @@ module ModuleSync # rubocop:disable Metrics/ModuleLength
       end
     end
     exit 1 if errors && options[:fail_on_warnings]
+  end
+
+  def self.create_pr_manager
+    github_token = ENV.fetch('GITHUB_TOKEN', '')
+    gitlab_token = ENV.fetch('GITLAB_TOKEN', '')
+
+    if !github_token.empty?
+      require 'modulesync/pr/github'
+      ModuleSync::PR::GitHub.new(github_token, ENV.fetch('GITHUB_BASE_URL', 'https://api.github.com'))
+    elsif !gitlab_token.empty?
+      require 'modulesync/pr/github'
+      ModuleSync::PR::GitLab.new(gitlab_token, ENV.fetch('GITLAB_BASE_URL', 'https://gitlab.com/api/v4'))
+    else
+      $stderr.puts 'Environment variables GITHUB_TOKEN or GITLAB_TOKEN must be set to use --pr!'
+      raise
+    end
   end
 end
