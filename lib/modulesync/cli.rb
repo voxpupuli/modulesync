@@ -99,6 +99,8 @@ module ModuleSync
              :type => :array,
              :desc => 'Labels to add to the pull/merge request',
              :default => CLI.defaults[:pr_labels] || []
+      option :pr_target_branch,
+             :desc => 'Target branch for the pull/merge request'
       option :offline,
              :type => :boolean,
              :desc => 'Do not run any Git commands. Allows the user to manage Git outside of ModuleSync.',
