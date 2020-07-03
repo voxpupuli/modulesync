@@ -105,7 +105,7 @@ module ModuleSync # rubocop:disable Metrics/ModuleLength
   end
 
   def self.manage_module(puppet_module, module_files, module_options, defaults, options)
-    namespace, module_name = module_name(puppet_module, options[:namespace])
+    namespace, module_name = module_name(puppet_module, (module_options[:namespace] || options[:namespace]))
     git_repo = File.join(namespace, module_name)
     unless options[:offline]
       Git.pull(options[:git_base], git_repo, options[:branch], options[:project_root], module_options || {})
