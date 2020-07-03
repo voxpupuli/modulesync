@@ -12,10 +12,10 @@ describe ModuleSync do
     end
   end
 
-  context '::create_pr_manager' do
+  context '::pr' do
     describe "Raise Error" do
       it 'raises an error when neither GITHUB_TOKEN nor GITLAB_TOKEN are set for PRs' do
-        expect { ModuleSync.create_pr_manager() }.to raise_error(RuntimeError).and output(/GITHUB_TOKEN/).to_stderr
+        expect { ModuleSync.pr({}) }.to raise_error(RuntimeError).and output(/No GitHub or GitLab token specified for --pr/).to_stderr
       end
     end
   end

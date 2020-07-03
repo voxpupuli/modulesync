@@ -130,7 +130,7 @@ module ModuleSync # rubocop:disable Metrics/ModuleLength
       Git.update_noop(git_repo, options)
     elsif !options[:offline]
       pushed = Git.update(git_repo, files_to_manage, options)
-      pushed && options[:pr] && @pr.manage(namespace, module_name, options)
+      pushed && options[:pr] && pr(module_options).manage(namespace, module_name, options)
     end
   end
 
@@ -169,6 +169,26 @@ module ModuleSync # rubocop:disable Metrics/ModuleLength
     exit 1 if errors && options[:fail_on_warnings]
   end
 
+  def self.pr(module_options)
+    github_conf = module_options[:github]
+    gitlab_conf = module_options[:gitlab]
+
+    if !github_conf.nil?
+      base_url = github_conf[:base_url] || ENV.fetch('GITHUB_BASE_URL', 'https://api.github.com')
+      require 'modulesync/pr/github'
+      ModuleSync::PR::GitHub.new(github_conf[:token], base_url)
+    elsif !gitlab_conf.nil?
+      base_url = gitlab_conf[:base_url] || ENV.fetch('GITLAB_BASE_URL', 'https://gitlab.com/api/v4')
+      require 'modulesync/pr/gitlab'
+      ModuleSync::PR::GitLab.new(gitlab_conf[:token], base_url)
+    elsif @pr.nil?
+      $stderr.puts 'No GitHub or GitLab token specified for --pr!'
+      raise
+    else
+      @pr
+    end
+  end
+
   def self.create_pr_manager
     github_token = ENV.fetch('GITHUB_TOKEN', '')
     gitlab_token = ENV.fetch('GITLAB_TOKEN', '')
@@ -180,8 +200,7 @@ module ModuleSync # rubocop:disable Metrics/ModuleLength
       require 'modulesync/pr/gitlab'
       ModuleSync::PR::GitLab.new(gitlab_token, ENV.fetch('GITLAB_BASE_URL', 'https://gitlab.com/api/v4'))
     else
-      $stderr.puts 'Environment variables GITHUB_TOKEN or GITLAB_TOKEN must be set to use --pr!'
-      raise
+      warn '--pr specified without environment variables GITHUB_TOKEN or GITLAB_TOKEN'
     end
   end
 end
