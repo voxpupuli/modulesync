@@ -1,5 +1,9 @@
 # Changelog
 
+## 2020-07-03 - 1.2.0
+
+Add support for GitLab merge requests (MRs) [#175](https://github.com/voxpupuli/modulesync/pull/175)
+
 ## 2020-05-01 - 1.1.0
 
 This release provides metadata in the ERB template scope which makes it easy to read files from inside the module. A possible application is reading metadata.json and generating CI configs based on that.
