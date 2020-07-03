@@ -177,7 +177,7 @@ module ModuleSync # rubocop:disable Metrics/ModuleLength
       require 'modulesync/pr/github'
       ModuleSync::PR::GitHub.new(github_token, ENV.fetch('GITHUB_BASE_URL', 'https://api.github.com'))
     elsif !gitlab_token.empty?
-      require 'modulesync/pr/github'
+      require 'modulesync/pr/gitlab'
       ModuleSync::PR::GitLab.new(gitlab_token, ENV.fetch('GITLAB_BASE_URL', 'https://gitlab.com/api/v4'))
     else
       $stderr.puts 'Environment variables GITHUB_TOKEN or GITLAB_TOKEN must be set to use --pr!'
