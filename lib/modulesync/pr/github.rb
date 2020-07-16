@@ -16,12 +16,17 @@ module ModuleSync
       def manage(namespace, module_name, options)
         repo_path = File.join(namespace, module_name)
         head = "#{namespace}:#{options[:branch]}"
-        target_branch = options[:pr_target_branch]
+        target_branch = options[:pr_target_branch] || 'master'
 
         pull_requests = @api.pull_requests(repo_path, :state => 'open', :base => target_branch, :head => head)
         if pull_requests.empty?
-          pr = @api.create_pull_request(repo_path, target_branch, options[:branch], options[:pr_title], options[:message])
-          $stdout.puts "Submitted PR '#{options[:pr_title]}' to #{repo_path} - merges #{options[:branch]} into #{target_branch}"
+          pr = @api.create_pull_request(repo_path,
+                                        target_branch,
+                                        options[:branch],
+                                        options[:pr_title],
+                                        options[:message])
+          $stdout.puts \
+            "Submitted PR '#{options[:pr_title]}' to #{repo_path} - merges #{options[:branch]} into #{target_branch}"
         else
           # Skip creating the PR if it exists already.
           $stdout.puts "Skipped! #{pull_requests.length} PRs found for branch #{options[:branch]}"
