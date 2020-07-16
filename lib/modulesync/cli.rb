@@ -67,6 +67,8 @@ module ModuleSync
              :aliases => '-c',
              :desc => 'The local directory or remote repository to define the list of managed modules,' \
                         ' the file templates, and the default values for template variables.'
+      option :managed_modules_conf,
+             :desc => 'The file name to define the list of managed modules'
       option :remote_branch,
              :aliases => '-r',
              :desc => 'Remote branch name to push the changes to. Defaults to the branch name.',
