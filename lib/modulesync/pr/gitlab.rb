@@ -17,7 +17,7 @@ module ModuleSync
         repo_path = File.join(namespace, module_name)
 
         head = "#{namespace}:#{options[:branch]}"
-        target_branch = options[:pr_target_branch] || 'master'
+        target_branch = options[:pr_target_branch]
         merge_requests = @api.merge_requests(repo_path,
                                              :state => 'opened',
                                              :source_branch => head,

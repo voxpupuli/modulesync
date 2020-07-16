@@ -16,7 +16,7 @@ module ModuleSync
       def manage(namespace, module_name, options)
         repo_path = File.join(namespace, module_name)
         head = "#{namespace}:#{options[:branch]}"
-        target_branch = options[:pr_target_branch] || 'master'
+        target_branch = options[:pr_target_branch]
 
         pull_requests = @api.pull_requests(repo_path, :state => 'open', :base => target_branch, :head => head)
         if pull_requests.empty?
