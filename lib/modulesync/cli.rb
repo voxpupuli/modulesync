@@ -100,7 +100,7 @@ module ModuleSync
              :desc => 'Labels to add to the pull/merge request',
              :default => CLI.defaults[:pr_labels] || []
       option :pr_target_branch,
-             :desc => 'Target branch for the pull/merge request'
+             :desc => 'Target branch for the pull/merge request',
              :default => CLI.defaults[:pr_target_branch] || 'master'
       option :offline,
              :type => :boolean,
