@@ -106,7 +106,7 @@ module ModuleSync # rubocop:disable Metrics/ModuleLength
 
   def self.manage_module(puppet_module, module_files, module_options, defaults, options)
     default_namespace = options[:namespace]
-    if module_options.is_a?(Hash) && module_options.has_key?(:namespace)
+    if module_options.is_a?(Hash) && module_options.key?(:namespace)
       default_namespace = module_options[:namespace]
     end
     namespace, module_name = module_name(puppet_module, default_namespace)
