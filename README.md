@@ -185,17 +185,38 @@ GitLab automatically with the `--pr` CLI option.
 msync update --pr
 ```
 
-You must set the `GITHUB_TOKEN` or `GITLAB_TOKEN` environment variable
-for GitHub PRs or GitLab MRs to work. Additional options:
+In order for GitHub PRs or GitLab MRs to work, you must either provide
+the `GITHUB_TOKEN` or `GITLAB_TOKEN` environment variables,
+or set them per repository in `managed_modules.yml`, using the `github` or
+`gitlab` keys respectively.
+
+For GitHub Enterprise and self-hosted GitLab instances you also need to set the
+`GITHUB_BASE_URL` or `GITLAB_BASE_URL` environment variables, or use the
+`base_url` parameter in `managed_modules.yml`:
+
+```yaml
+---
+repo1:
+  :github:
+    :token: 'EXAMPLE_TOKEN'
+    :base_url: 'https://api.github.com/'
+
+repo2:
+  :gitlab:
+    :token: 'EXAMPLE_TOKEN'
+    :base_url: 'https://git.example.com/api/v4'
+```
+
+Then:
 
 * Set the PR/MR title with `--pr-title` or in `modulesync.yml` with the
   `pr_title` attribute.
 * Assign labels to the PR/MR with `--pr-labels` or in `modulesync.yml` with
   the `pr_labels` attribute. **NOTE:** `pr_labels` should be a list. When
   using the `--pr-labels` CLI option, you should use a comma separated list.
+* Set the target branch with `--pr_target_branch` or in `modulesync.yml` with
+  the `pr_target_branch` attribute.
 
-For GitHub Enterprise and self-hosted GitLab instances you need to set the
-`GITHUB_BASE_URL` or `GITLAB_BASE_URL` environment variable in addition.
 More details for GitHub:
 
 * Octokit [`api_endpoint`](https://github.com/octokit/octokit.rb#interacting-with-the-githubcom-apis-in-github-enterprise)
