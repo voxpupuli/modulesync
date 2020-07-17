@@ -135,11 +135,8 @@ module ModuleSync # rubocop:disable Metrics/ModuleLength
   end
 
   def config_path(file, options)
-    if Pathname.new(file).absolute?
-      file
-    else
-      File.join(options[:configs], file)
-    end
+    return file if Pathname.new(file).absolute?
+    File.join(options[:configs], file)
   end
 
   def self.update(options)
