@@ -138,9 +138,18 @@ module ModuleSync # rubocop:disable Metrics/ModuleLength
     end
   end
 
+  def self.config_path(file, options)
+    return file if Pathname.new(file).absolute?
+    File.join(options[:configs], file)
+  end
+
+  def config_path(file, options)
+    self.class.config_path(file, options)
+  end
+
   def self.update(options)
     options = config_defaults.merge(options)
-    defaults = Util.parse_config(File.join(options[:configs], CONF_FILE))
+    defaults = Util.parse_config(config_path(CONF_FILE, options))
     if options[:pr]
       unless options[:branch]
         $stderr.puts 'A branch must be specified with --branch to use --pr!'
@@ -150,11 +159,11 @@ module ModuleSync # rubocop:disable Metrics/ModuleLength
       @pr = create_pr_manager if options[:pr]
     end
 
-    local_template_dir = File.join(options[:configs], MODULE_FILES_DIR)
+    local_template_dir = config_path(MODULE_FILES_DIR, options)
     local_files = find_template_files(local_template_dir)
     module_files = relative_names(local_files, local_template_dir)
 
-    managed_modules = self.managed_modules(File.join(options[:configs], options[:managed_modules_conf]),
+    managed_modules = self.managed_modules(config_path(options[:managed_modules_conf], options),
                                            options[:filter],
                                            options[:negative_filter])
 
