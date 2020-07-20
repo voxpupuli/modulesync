@@ -276,7 +276,9 @@ msync update -m "Commit message"
 Available parameters for modulesync.yml
 
 * `git_base` : The default URL to git clone from (Default: 'git@github.com:')
-* `namespace` : Namespace of the projects to manage (Default: 'puppetlabs')
+* `namespace` : Namespace of the projects to manage (Default: 'puppetlabs').
+  This value can be overridden in the module name (e.g. 'namespace/mod') or by
+  using the `namespace` key for the module in `managed_modules.yml`.
 * `branch` : Branch to push to (Default: 'master')
 * `remote_branch` : Remote branch to push to (Default: Same value as branch)
 * `message` : Commit message to apply to updated modules.
