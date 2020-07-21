@@ -3,7 +3,7 @@
 ## 2020-07-03 - 1.3.0
 
 * Expose --managed_modules_conf [#184](https://github.com/voxpupuli/modulesync/pull/184)
-* https://github.com/voxpupuli/modulesync/pull/183 [#183](https://github.com/voxpupuli/modulesync/pull/183)
+* Allow absolute path for config files [#183](https://github.com/voxpupuli/modulesync/pull/183)
 * Add pr_target_branch option [#182](https://github.com/voxpupuli/modulesync/pull/182)
 * Allow to specify namespace in module_options [#181](https://github.com/voxpupuli/modulesync/pull/181)
 * Allow to override PR parameters per module [#178](https://github.com/voxpupuli/modulesync/pull/178)
