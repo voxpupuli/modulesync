@@ -171,7 +171,8 @@ module ModuleSync # rubocop:disable Metrics/ModuleLength
     # managed_modules is either an array or a hash
     managed_modules.each do |puppet_module, module_options|
       begin
-        manage_module(puppet_module, module_files, module_options, defaults, options)
+        mod_options = module_options.nil? ? nil : Util.symbolize_keys(module_options)
+        manage_module(puppet_module, module_files, mod_options, defaults, options)
       rescue # rubocop:disable Lint/RescueWithoutErrorClass
         $stderr.puts "Error while updating #{puppet_module}"
         raise unless options[:skip_broken]
