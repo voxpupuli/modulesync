@@ -1,8 +1,17 @@
 # Changelog
 
+## 2020-07-03 - 1.3.0
+
+* Expose --managed_modules_conf [#184](https://github.com/voxpupuli/modulesync/pull/184)
+* Allow absolute path for config files [#183](https://github.com/voxpupuli/modulesync/pull/183)
+* Add pr_target_branch option [#182](https://github.com/voxpupuli/modulesync/pull/182)
+* Allow to specify namespace in module_options [#181](https://github.com/voxpupuli/modulesync/pull/181)
+* Allow to override PR parameters per module [#178](https://github.com/voxpupuli/modulesync/pull/178)
+* Include the gitlab library (if we interact with gitlab), not github [#179](https://github.com/voxpupuli/modulesync/pull/179)
+
 ## 2020-07-03 - 1.2.0
 
-Add support for GitLab merge requests (MRs) [#175](https://github.com/voxpupuli/modulesync/pull/175)
+* Add support for GitLab merge requests (MRs) [#175](https://github.com/voxpupuli/modulesync/pull/175)
 
 ## 2020-05-01 - 1.1.0
 
