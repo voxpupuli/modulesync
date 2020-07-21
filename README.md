@@ -197,14 +197,14 @@ For GitHub Enterprise and self-hosted GitLab instances you also need to set the
 ```yaml
 ---
 repo1:
-  :github:
-    :token: 'EXAMPLE_TOKEN'
-    :base_url: 'https://api.github.com/'
+  github:
+    token: 'EXAMPLE_TOKEN'
+    base_url: 'https://api.github.com/'
 
 repo2:
-  :gitlab:
-    :token: 'EXAMPLE_TOKEN'
-    :base_url: 'https://git.example.com/api/v4'
+  gitlab:
+    token: 'EXAMPLE_TOKEN'
+    base_url: 'https://git.example.com/api/v4'
 ```
 
 Then:
