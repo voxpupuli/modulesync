@@ -3,7 +3,10 @@ require 'yaml'
 module ModuleSync
   module Util
     def self.symbolize_keys(hash)
-      hash.inject({}) { |memo, (k, v)| memo[k.to_sym] = v; memo }
+      hash.inject({}) do |memo, (k, v)|
+        memo[k.to_sym] = v.is_a?(Hash) ? symbolize_keys(v) : v
+        memo
+      end
     end
 
     def self.parse_config(config_file)
