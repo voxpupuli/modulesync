@@ -182,7 +182,7 @@ module ModuleSync # rubocop:disable Metrics/ModuleLength
     exit 1 if errors && options[:fail_on_warnings]
   end
 
-  def self.pr(module_options)
+  def self.pr(module_options = {})
     github_conf = module_options[:github]
     gitlab_conf = module_options[:gitlab]
 
