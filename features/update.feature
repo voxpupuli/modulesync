@@ -905,6 +905,28 @@ Feature: update
     Then the output should not contain "error"
     Then the output should not contain "rejected"
 
+  Scenario: Creating a GitHub PR with an update
+    Given a mocked git configuration
+    And a remote module repository
+    And a directory named "moduleroot"
+    And I set the environment variables to:
+      | variable     | value  |
+      | GITHUB_TOKEN | foobar |
+    When I run `msync update --noop --branch managed_update --pr`
+    Then the output should contain "Submitted PR "
+    And the exit status should be 0
+
+  Scenario: Creating a GitLab MR with an update
+    Given a mocked git configuration
+    And a remote module repository
+    And a directory named "moduleroot"
+    And I set the environment variables to:
+      | variable     | value  |
+      | GITLAB_TOKEN | foobar |
+    When I run `msync update --noop --branch managed_update --pr`
+    Then the output should contain "Submitted MR "
+    And the exit status should be 0
+
   Scenario: Repository with a default branch other than master
     Given a mocked git configuration
     And a remote module repository with "develop" as the default branch

@@ -132,6 +132,7 @@ module ModuleSync # rubocop:disable Metrics/ModuleLength
 
     if options[:noop]
       Git.update_noop(git_repo, options)
+      options[:pr] && pr(module_options).manage(namespace, module_name, options)
     elsif !options[:offline]
       pushed = Git.update(git_repo, files_to_manage, options)
       pushed && options[:pr] && pr(module_options).manage(namespace, module_name, options)
