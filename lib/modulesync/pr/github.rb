@@ -19,7 +19,7 @@ module ModuleSync
         target_branch = options[:pr_target_branch] || 'master'
 
         if options[:noop]
-          puts "Using no-op. Submitted PR '#{options[:pr_title]}' to #{repo_path} - merges #{options[:branch]} into #{target_branch}"
+          puts "Using no-op. Would submit PR '#{options[:pr_title]}' to #{repo_path} - merges #{options[:branch]} into #{target_branch}"
         else
           pull_requests = @api.pull_requests(repo_path, :state => 'open', :base => target_branch, :head => head)
           if pull_requests.empty?
@@ -44,7 +44,7 @@ module ModuleSync
         # already exist. We DO NOT create missing labels.
         return if pr_labels.empty?
         if options[:noop]
-          puts "Using no-op. Attaching the following labels to the PR: #{pr_labels.join(', ')}"
+          puts "Using no-op. Would attach the following labels to the PR: #{pr_labels.join(', ')}"
         else
           $stdout.puts "Attaching the following labels to PR #{pr['number']}: #{pr_labels.join(', ')}"
           @api.add_labels_to_an_issue(repo_path, pr['number'], pr_labels)

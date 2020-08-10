@@ -913,7 +913,7 @@ Feature: update
       | variable     | value  |
       | GITHUB_TOKEN | foobar |
     When I run `msync update --noop --branch managed_update --pr`
-    Then the output should contain "Submitted PR "
+    Then the output should contain "Would submit PR "
     And the exit status should be 0
 
   Scenario: Creating a GitLab MR with an update
@@ -924,7 +924,7 @@ Feature: update
       | variable     | value  |
       | GITLAB_TOKEN | foobar |
     When I run `msync update --noop --branch managed_update --pr`
-    Then the output should contain "Submitted MR "
+    Then the output should contain "Would submit MR "
     And the exit status should be 0
 
   Scenario: Repository with a default branch other than master

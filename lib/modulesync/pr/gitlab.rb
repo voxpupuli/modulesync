@@ -20,7 +20,7 @@ module ModuleSync
         target_branch = options[:pr_target_branch] || 'master'
 
         if options[:noop]
-          puts "Using no-op. Submitted MR '#{options[:pr_title]}' to #{repo_path} - merges #{options[:branch]} into #{target_branch}"
+          puts "Using no-op. Would submit MR '#{options[:pr_title]}' to #{repo_path} - merges #{options[:branch]} into #{target_branch}"
         else
           merge_requests = @api.merge_requests(repo_path,
                                                :state => 'opened',
