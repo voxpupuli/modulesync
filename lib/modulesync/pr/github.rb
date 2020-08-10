@@ -19,7 +19,9 @@ module ModuleSync
         target_branch = options[:pr_target_branch] || 'master'
 
         if options[:noop]
-          puts "Using no-op. Would submit PR '#{options[:pr_title]}' to #{repo_path} - merges #{options[:branch]} into #{target_branch}"
+          $stdout.puts \
+            "Using no-op. Would submit PR '#{options[:pr_title]}' to #{repo_path} " \
+            "- merges #{options[:branch]} into #{target_branch}"
         else
           pull_requests = @api.pull_requests(repo_path, :state => 'open', :base => target_branch, :head => head)
           if pull_requests.empty?
@@ -29,7 +31,8 @@ module ModuleSync
                                           options[:pr_title],
                                           options[:message])
             $stdout.puts \
-              "Submitted PR '#{options[:pr_title]}' to #{repo_path} - merges #{options[:branch]} into #{target_branch}"
+              "Submitted PR '#{options[:pr_title]}' to #{repo_path} "\
+              "- merges #{options[:branch]} into #{target_branch}"
           else
             # Skip creating the PR if it exists already.
             $stdout.puts "Skipped! #{pull_requests.length} PRs found for branch #{options[:branch]}"
