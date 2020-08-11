@@ -185,13 +185,9 @@ module ModuleSync # rubocop:disable Metrics/ModuleLength
   end
 
   def self.pr(module_options)
-    if !module_options.nil?
-      github_conf = module_options[:github]
-      gitlab_conf = module_options[:gitlab]
-    else
-      github_conf = nil
-      gitlab_conf = nil
-    end
+    module_options ||= {}
+    github_conf = module_options[:github]
+    gitlab_conf = module_options[:gitlab]
 
     if !github_conf.nil?
       base_url = github_conf[:base_url] || ENV.fetch('GITHUB_BASE_URL', 'https://api.github.com')
