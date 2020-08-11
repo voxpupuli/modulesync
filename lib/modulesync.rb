@@ -132,6 +132,7 @@ module ModuleSync # rubocop:disable Metrics/ModuleLength
 
     if options[:noop]
       Git.update_noop(git_repo, options)
+      options[:pr] && pr(module_options).manage(namespace, module_name, options)
     elsif !options[:offline]
       pushed = Git.update(git_repo, files_to_manage, options)
       pushed && options[:pr] && pr(module_options).manage(namespace, module_name, options)
@@ -183,7 +184,8 @@ module ModuleSync # rubocop:disable Metrics/ModuleLength
     exit 1 if errors && options[:fail_on_warnings]
   end
 
-  def self.pr(module_options = {})
+  def self.pr(module_options)
+    module_options ||= {}
     github_conf = module_options[:github]
     gitlab_conf = module_options[:gitlab]
 
