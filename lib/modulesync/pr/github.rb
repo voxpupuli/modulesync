@@ -22,36 +22,34 @@ module ModuleSync
           $stdout.puts \
             "Using no-op. Would submit PR '#{options[:pr_title]}' to #{repo_path} " \
             "- merges #{options[:branch]} into #{target_branch}"
-        else
-          pull_requests = @api.pull_requests(repo_path, :state => 'open', :base => target_branch, :head => head)
-          if pull_requests.empty?
-            pr = @api.create_pull_request(repo_path,
-                                          target_branch,
-                                          options[:branch],
-                                          options[:pr_title],
-                                          options[:message])
-            $stdout.puts \
-              "Submitted PR '#{options[:pr_title]}' to #{repo_path} "\
-              "- merges #{options[:branch]} into #{target_branch}"
-          else
-            # Skip creating the PR if it exists already.
-            $stdout.puts "Skipped! #{pull_requests.length} PRs found for branch #{options[:branch]}"
-          end
+          return
         end
 
-        # PR labels can either be a list in the YAML file or they can pass in a comma
-        # separated list via the command line argument.
+        pull_requests = @api.pull_requests(repo_path,
+                                           :state => 'open',
+                                           :base => target_branch,
+                                           :head => head)
+        unless pull_requests.empty?
+          # Skip creating the PR if it exists already.
+          $stdout.puts "Skipped! #{pull_requests.length} PRs found for branch #{options[:branch]}"
+          return
+        end
+
         pr_labels = ModuleSync::Util.parse_list(options[:pr_labels])
+        pr = @api.create_pull_request(repo_path,
+                                      target_branch,
+                                      options[:branch],
+                                      options[:pr_title],
+                                      options[:message])
+        $stdout.puts \
+          "Submitted PR '#{options[:pr_title]}' to #{repo_path} " \
+          "- merges #{options[:branch]} into #{target_branch}"
 
         # We only assign labels to the PR if we've discovered a list > 1. The labels MUST
         # already exist. We DO NOT create missing labels.
         return if pr_labels.empty?
-        if options[:noop]
-          puts "Using no-op. Would attach the following labels to the PR: #{pr_labels.join(', ')}"
-        else
-          $stdout.puts "Attaching the following labels to PR #{pr['number']}: #{pr_labels.join(', ')}"
-          @api.add_labels_to_an_issue(repo_path, pr['number'], pr_labels)
-        end
+        $stdout.puts "Attaching the following labels to PR #{pr['number']}: #{pr_labels.join(', ')}"
+        @api.add_labels_to_an_issue(repo_path, pr['number'], pr_labels)
       end
     end
   end
