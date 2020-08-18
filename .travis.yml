@@ -4,12 +4,18 @@ language: ruby
 cache: bundler
 dist: focal
 script: 'bundle exec rake test'
+bundler_args: --without release
 rvm:
   - 2.5
   - 2.6
   - 2.7
 notifications:
   email: false
+  irc:
+    on_success: always
+    on_failure: always
+    channels:
+      - "chat.freenode.org#voxpupuli-notifications"
 deploy:
   provider: rubygems
   api_key:

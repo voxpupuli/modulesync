@@ -8,6 +8,8 @@ AllCops:
     - 'pkg/**/*'
     - 'lib/monkey_patches.rb'
     - 'spec/**/*'
+    - 'Gemfile'
+    - 'Rakefile'
 
 Style/HashSyntax:
   Enabled: false

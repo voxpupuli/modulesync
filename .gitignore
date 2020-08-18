@@ -8,3 +8,4 @@ bin/rspec
 modules/
 tmp/
 vendor/
+.vendor/
