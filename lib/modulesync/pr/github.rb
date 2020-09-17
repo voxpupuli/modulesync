@@ -15,13 +15,14 @@ module ModuleSync
 
       def manage(namespace, module_name, options)
         repo_path = File.join(namespace, module_name)
-        head = "#{namespace}:#{options[:branch]}"
+        branch = options[:remote_branch] || options[:branch]
+        head = "#{namespace}:#{branch}"
         target_branch = options[:pr_target_branch] || 'master'
 
         if options[:noop]
           $stdout.puts \
             "Using no-op. Would submit PR '#{options[:pr_title]}' to #{repo_path} " \
-            "- merges #{options[:branch]} into #{target_branch}"
+            "- merges #{branch} into #{target_branch}"
           return
         end
 
@@ -31,19 +32,19 @@ module ModuleSync
                                            :head => head)
         unless pull_requests.empty?
           # Skip creating the PR if it exists already.
-          $stdout.puts "Skipped! #{pull_requests.length} PRs found for branch #{options[:branch]}"
+          $stdout.puts "Skipped! #{pull_requests.length} PRs found for branch #{branch}"
           return
         end
 
         pr_labels = ModuleSync::Util.parse_list(options[:pr_labels])
         pr = @api.create_pull_request(repo_path,
                                       target_branch,
-                                      options[:branch],
+                                      branch,
                                       options[:pr_title],
                                       options[:message])
         $stdout.puts \
           "Submitted PR '#{options[:pr_title]}' to #{repo_path} " \
-          "- merges #{options[:branch]} into #{target_branch}"
+          "- merges #{branch} into #{target_branch}"
 
         # We only assign labels to the PR if we've discovered a list > 1. The labels MUST
         # already exist. We DO NOT create missing labels.
