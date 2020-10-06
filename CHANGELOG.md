@@ -2,6 +2,18 @@
 
 All notable changes to this project will be documented in this file.
 
+## [2.0.1](https://github.com/voxpupuli/modulesync/tree/2.0.1) (2020-10-06)
+
+[Full Changelog](https://github.com/voxpupuli/modulesync/compare/2.0.0...2.0.1)
+
+**Fixed bugs:**
+
+- Use remote\_branch for PRs when specified [\#194](https://github.com/voxpupuli/modulesync/pull/194) ([raphink](https://github.com/raphink))
+
+**Merged pull requests:**
+
+- Allow newer puppet-blacksmith versions [\#197](https://github.com/voxpupuli/modulesync/pull/197) ([bastelfreak](https://github.com/bastelfreak))
+
 ## [2.0.0](https://github.com/voxpupuli/modulesync/tree/2.0.0) (2020-08-18)
 
 [Full Changelog](https://github.com/voxpupuli/modulesync/compare/1.3.0...2.0.0)
