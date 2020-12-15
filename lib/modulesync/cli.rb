@@ -190,6 +190,74 @@ module ModuleSync
         ModuleSync.push(config)
       end
 
+      desc 'execute SCRIPT', 'Execute a script on each managed modules then push/PR if requested'
+      option :configs,
+             :aliases => '-c',
+             :desc => 'The local directory or remote repository to define the list of managed modules,' \
+                        ' the file templates, and the default values for template variables.'
+      option :managed_modules_conf,
+             :desc => 'The file name to define the list of managed modules'
+      option :skip_broken,
+             :type => :boolean,
+             :aliases => '-s',
+             :desc => 'Process remaining modules if an error is found',
+             :default => false
+      option :fail_on_warnings,
+             :type => :boolean,
+             :aliases => '-F',
+             :desc => 'Produce a failure exit code when there are warnings' \
+                        ' (only has effect when --skip_broken is enabled)',
+             :default => false
+      option :branch,
+             :aliases => '-b',
+             :desc => 'Branch name to make the changes in.',
+             :required => true
+      option :reset_hard,
+             :desc => 'Hard-reset on specified branch (e.g. origin/master) between fetch and script execution'
+      option :push,
+             :desc => 'Push the changes. Please note that it is up to the script to carry out commits.',
+             :type => :boolean,
+             :default => false
+      option :remote_branch,
+             :aliases => '-r',
+             :desc => 'Remote branch name to push the changes to. Defaults to the branch name.'
+      option :force,
+             :type => :boolean,
+             :desc => 'Force push commit',
+             :default => false
+      option :pr,
+             :type => :boolean,
+             :desc => 'Submit pull/merge request',
+             :default => false
+      option :pr_title,
+             :desc => 'Title of pull/merge request'
+      option :pr_labels,
+             :type => :array,
+             :desc => 'Labels to add to the pull/merge request',
+             :default => CLI.defaults[:pr_labels] || []
+      option :pr_target_branch,
+             :desc => 'Target branch for the pull/merge request',
+             :default => CLI.defaults[:pr_target_branch] || 'master'
+      def execute(script)
+        script = File.expand_path(script)
+
+        unless File.executable? script
+          $stderr.puts 'Script does not exist nor executable'
+          raise
+        end
+
+        config = {
+          :command => 'execute',
+          :script => script,
+        }.merge(options)
+        config = Util.symbolize_keys(config)
+
+        raise Thor::Error, 'Option "--pr" requires "--push"' if config[:pr] && !config[:push]
+        raise Thor::Error, 'No value provided for required option "--pr-title"' if config[:pr] && !config[:pr_title]
+
+        ModuleSync.execute(config)
+      end
+
       desc 'hook', 'Activate or deactivate a git hook.'
       subcommand 'hook', ModuleSync::CLI::Hook
     end
