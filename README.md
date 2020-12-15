@@ -441,6 +441,24 @@ repositories for different templates currently in use.
 Additional features
 -------------------
 
+## Execute a custom script on each module
+
+During puppet modules maintenance, you may want to run a custom script to modify, add or deleted files then commit modifications.
+
+As example, if you want to generate REFERENCES.md, CHANGELOG.md or update your module to be PDK compliant, this command could be useful.
+
+```shell
+msync exec /path/to/script --branch my-new-feature
+```
+
+**Important**: Please note that it is up to your script to modify correctly the repository (e.g. `git mv old-path new-path`, `git add my-file`) and performs the commits (ie. `git commit -m'Set a smart commit message here'`).
+
+Like `update` command, you can push and submit a PR/MR using the same options:
+
+```shell
+msync exec /path/to/script --branch my-new-feature --push --pr --pr-title "Add a new super feature"
+```
+
 ## Push manually a branch for each module
 
 After a regular `msync update` without push, you may want to add some commits manually then push.
