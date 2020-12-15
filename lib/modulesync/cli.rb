@@ -33,7 +33,7 @@ module ModuleSync
       end
     end
 
-    class Base < Thor
+    class Base < Thor # rubocop:disable Metrics/ClassLength
       class_option :project_root,
                    :aliases => '-c',
                    :desc => 'Path used by git to clone modules into.',
@@ -139,6 +139,55 @@ module ModuleSync
                                                                                       || config[:offline]
         config[:git_opts] = { 'amend' => config[:amend], 'force' => config[:force] }
         ModuleSync.update(config)
+      end
+
+      desc 'push', 'Push specified branch for each modules and submit PR if requested'
+      option :configs,
+             :aliases => '-c',
+             :desc => 'The local directory or remote repository to define the list of managed modules,' \
+                        ' the file templates, and the default values for template variables.'
+      option :managed_modules_conf,
+             :desc => 'The file name to define the list of managed modules'
+      option :skip_broken,
+             :type => :boolean,
+             :aliases => '-s',
+             :desc => 'Process remaining modules if an error is found',
+             :default => false
+      option :fail_on_warnings,
+             :type => :boolean,
+             :aliases => '-F',
+             :desc => 'Produce a failure exit code when there are warnings' \
+                        ' (only has effect when --skip_broken is enabled)',
+             :default => false
+      option :branch,
+             :aliases => '-b',
+             :desc => 'Branch name to push',
+             :required => true
+      option :remote_branch,
+             :aliases => '-r',
+             :desc => 'Remote branch name to push. Defaults to the branch name.'
+      option :force,
+             :type => :boolean,
+             :desc => 'Force push',
+             :default => false
+      option :pr,
+             :type => :boolean,
+             :desc => 'Submit pull/merge request',
+             :default => false
+      option :pr_title,
+             :desc => 'Title of pull/merge request'
+      option :pr_labels,
+             :type => :array,
+             :desc => 'Labels to add to the pull/merge request',
+             :default => CLI.defaults[:pr_labels] || []
+      option :pr_target_branch,
+             :desc => 'Target branch for the pull/merge request',
+             :default => CLI.defaults[:pr_target_branch] || 'master'
+      def push
+        config = { :command => 'push' }.merge(options)
+        config = Util.symbolize_keys(config)
+        raise Thor::Error, 'No value provided for required option "--pr-title"' if config[:pr] && !config[:pr_title]
+        ModuleSync.push(config)
       end
 
       desc 'hook', 'Activate or deactivate a git hook.'

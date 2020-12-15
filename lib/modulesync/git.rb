@@ -71,6 +71,16 @@ module ModuleSync
       end
     end
 
+    def self.push(repo, options)
+      git_options = {}
+      git_options = { :force => true } if options[:force]
+
+      remote = 'origin'
+      remote_url = repo.remote('origin').url
+      $stdout.puts "Push branch '#{options[:branch]}' to '#{remote_url}' (#{remote}/#{options[:remote_branch]})"
+      repo.push(remote, "#{options[:branch]}:#{options[:remote_branch]}", git_options)
+    end
+
     def self.update_changelog(repo, version, message, module_root)
       changelog = "#{module_root}/CHANGELOG.md"
       if File.exist?(changelog)

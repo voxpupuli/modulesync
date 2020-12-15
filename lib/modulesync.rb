@@ -10,6 +10,8 @@ require 'modulesync/util'
 require 'monkey_patches'
 
 module ModuleSync # rubocop:disable Metrics/ModuleLength
+  class Error < StandardError; end
+
   include Constants
 
   def self.config_defaults
@@ -161,6 +163,25 @@ module ModuleSync # rubocop:disable Metrics/ModuleLength
     }
 
     run(cli_options, job, prepare)
+  end
+
+  def self.push(cli_options)
+    job = lambda { |puppet_module, module_options, _defaults, options|
+      default_namespace = module_options[:namespace] || options[:namespace]
+      namespace, module_name = module_name(puppet_module, default_namespace)
+      repo_dir = File.join(options[:project_root], namespace, module_name)
+
+      begin
+        repo = ::Git.open repo_dir
+      rescue ArgumentError => e
+        raise unless e.message == 'path does not exist'
+        raise ModuleSync::Error, 'Repository must be locally available before trying to push'
+      end
+      Git.push(repo, options)
+      options[:pr] && pr(module_options).manage(namespace, module_name, options)
+    }
+
+    run(cli_options, job)
   end
 
   def self.run(options, job, prepare = nil)
