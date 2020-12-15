@@ -10,6 +10,7 @@ Table of Contents
 4. [Installing](#installing)
 5. [Workflow](#workflow)
 6. [The Templates](#the-templates)
+7. [Additional features](#additional-features)
 
 Usage TLDR
 ----------
@@ -436,3 +437,20 @@ The Templates
 
 See [Puppet's modulesync\_configs](https://github.com/puppetlabs/modulesync_configs) and [Vox Pupuli's modulesync\_config](https://github.com/voxpupuli/modulesync_config)
 repositories for different templates currently in use.
+
+Additional features
+-------------------
+
+## Push manually a branch for each module
+
+After a regular `msync update` without push, you may want to add some commits manually then push.
+
+```shell
+msync push --branch my-specific-branch
+```
+
+Like `update` command, you can submit a PR/MR using the same options:
+
+```shell
+msync push --branch my-specific-feature-branch --pr --pr-title "Add a new super feature"
+```
