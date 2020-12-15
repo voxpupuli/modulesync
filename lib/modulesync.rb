@@ -165,6 +165,7 @@ module ModuleSync # rubocop:disable Metrics/ModuleLength
 
   def self.run(options, job, prepare = nil)
     options = config_defaults.merge(options)
+    options[:remote_branch] ||= options[:branch]
     defaults = Util.parse_config(config_path(CONF_FILE, options))
     if options[:pr]
       unless options[:branch]
