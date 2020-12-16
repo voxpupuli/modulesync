@@ -22,4 +22,7 @@ Feature: CLI
     And a directory named "moduleroot"
     When I run `msync update --noop --namespace fakenamespace`
     Then the exit status should be 0
-    And the output should match /Syncing fakenamespace/
+    And the stdout should contain:
+      """
+      Syncing 'fakenamespace/puppet-test'
+      """

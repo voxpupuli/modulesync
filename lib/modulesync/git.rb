@@ -45,30 +45,43 @@ module ModuleSync
       end
     end
 
-    def self.pull(git_base, name, branch, project_root, opts)
-      puts "Syncing #{name}"
-      Dir.mkdir(project_root) unless Dir.exist?(project_root)
+    def self.pull(git_base, name, branch, project_root, options)
+      puts "Syncing '#{name}'"
 
+      repo_dir = "#{project_root}/#{name}"
       # Repo needs to be cloned in the cwd
-      if !Dir.exist?("#{project_root}/#{name}") || !Dir.exist?("#{project_root}/#{name}/.git")
-        puts 'Cloning repository fresh'
-        remote = opts[:remote] || (git_base.start_with?('file://') ? "#{git_base}#{name}" : "#{git_base}#{name}.git")
-        local = "#{project_root}/#{name}"
-        puts "Cloning from #{remote}"
-        repo = ::Git.clone(remote, local)
+      if !Dir.exist?("#{repo_dir}/.git")
+        remote = options[:remote] || (git_base.start_with?('file://') ? "#{git_base}#{name}" : "#{git_base}#{name}.git")
+        puts "Cloning '#{remote}' to '#{repo_dir}'"
+        repo = ::Git.clone(remote, repo_dir)
         switch_branch(repo, branch)
       # Repo already cloned, check out master and override local changes
       else
         # Some versions of git can't properly handle managing a repo from outside the repo directory
-        Dir.chdir("#{project_root}/#{name}") do
-          puts "Overriding any local changes to repositories in #{project_root}"
+        Dir.chdir(repo_dir) do
           repo = ::Git.open('.')
           repo.fetch
-          repo.reset_hard
+          if options[:override_changes]
+            puts "Overriding any local changes in '#{repo_dir}'"
+            repo.reset_hard
+          end
+
           switch_branch(repo, branch)
-          repo.pull('origin', branch) if remote_branch_exists?(repo, branch)
+
+          if options[:reset_hard]
+            repo.reset_hard(options[:reset_hard])
+          elsif options[:override_changes]
+            if remote_branch_exists?(repo, branch)
+              # FIXME: It does not honor --remote-branch option, should it?
+              puts "Pulling changes from 'origin/#{branch}' in '#{repo_dir}'"
+              # NOTE: It seems to be more efficient to hard-reset here
+              repo.pull('origin', branch)
+            end
+          end
         end
       end
+
+      repo
     end
 
     def self.push(repo, options)
