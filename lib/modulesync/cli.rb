@@ -85,6 +85,8 @@ module ModuleSync
              :type => :boolean,
              :desc => 'Force push amended commit',
              :default => false
+      option :reset_hard,
+             :desc => 'Hard-reset on specified branch (e.g. origin/master) before updating modules'
       option :noop,
              :type => :boolean,
              :desc => 'No-op mode',

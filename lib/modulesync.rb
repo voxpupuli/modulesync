@@ -118,6 +118,7 @@ module ModuleSync # rubocop:disable Metrics/ModuleLength
       git_options = {
         override_changes: true,
         remote: module_options[:remote],
+        reset_hard: options[:reset_hard],
       }
       Git.pull(options[:git_base], git_repo, options[:branch], options[:project_root], git_options)
     end
