@@ -64,6 +64,11 @@ Given 'the puppet module {string} from {string} have a file named {string} with:
   pmrr.add_file(filename, content)
 end
 
+Given 'the puppet module {string} from {string} have a file named {string} on branch {string} with:' do |name, namespace, filename, branch, content|
+  pmrr = Faker::PuppetModuleRemoteRepo.new(name, namespace)
+  pmrr.add_file(filename, content, branch)
+end
+
 Then 'the puppet module {string} from {string} should have a branch {string} with a file named {string} which contains:' do |name, namespace, branch, filename, content|
   pmrr = Faker::PuppetModuleRemoteRepo.new(name, namespace)
   expect(pmrr.read_file(filename, branch)).to include(content)
@@ -72,4 +77,9 @@ end
 Given 'the puppet module {string} from {string} have the default branch named {string}' do |name, namespace, default_branch|
   pmrr = Faker::PuppetModuleRemoteRepo.new(name, namespace)
   pmrr.default_branch = default_branch
+end
+
+Given 'the puppet module {string} from {string} have a branch {string}' do |name, namespace, branch|
+  pmrr = Faker::PuppetModuleRemoteRepo.new(name, namespace)
+  pmrr.create_branch(branch)
 end

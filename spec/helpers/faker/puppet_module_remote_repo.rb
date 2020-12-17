@@ -55,14 +55,30 @@ module Faker
       end
     end
 
+    def default_branch
+      FileUtils.chdir(bare_repo_dir) do
+        stdout = run "git symbolic-ref --short HEAD"
+        return stdout.chomp
+      end
+    end
+
     def read_file(filename, branch = nil)
+      branch ||= default_branch
       FileUtils.chdir(tmp_repo_dir) do
         run "git fetch"
-        run "git checkout #{branch}" unless branch.nil?
+        run "git checkout #{branch}"
         run "git merge --ff-only"
         return unless File.exists?(filename)
 
         return File.read filename
+      end
+    end
+
+    def create_branch(branch, from = nil)
+      from ||= default_branch
+      FileUtils.chdir(tmp_repo_dir) do
+        run "git checkout -B #{branch} #{from}"
+        run "git push --set-upstream origin #{branch}"
       end
     end
 
