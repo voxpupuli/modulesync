@@ -1,7 +1,7 @@
 inherit_from: .rubocop_todo.yml
 
 AllCops:
-  TargetRubyVersion: 2.0
+  TargetRubyVersion: 2.4
   Exclude:
     - 'vendor/**/*'
     - 'tmp/**/*'
@@ -25,3 +25,6 @@ Layout/IndentHeredoc:
 # sane line length
 Metrics/LineLength:
   Max: 120
+
+Style/FrozenStringLiteralComment:
+  Enabled: false

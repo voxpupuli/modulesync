@@ -16,11 +16,11 @@ Given 'a remote module repository' do
         - puppet-test
       """
   )
-  write_file('modulesync.yml', <<-CONFIG)
----
-  namespace: sources
-  git_base: file://#{expand_path('.')}/
-  CONFIG
+  write_file('modulesync.yml', <<~CONFIG)
+    ---
+    namespace: sources
+    git_base: file://#{expand_path('.')}/
+    CONFIG
 end
 
 Given Regexp.new(/a remote module repository with "(.+?)" as the default branch/) do |branch|
@@ -33,11 +33,12 @@ Given Regexp.new(/a remote module repository with "(.+?)" as the default branch/
         - puppet-test
       """
   )
-  write_file('modulesync.yml', <<-CONFIG)
----
-  namespace: sources
-  git_base: file://#{expand_path('.')}/
-  CONFIG
+  write_file('modulesync.yml', <<~CONFIG)
+    ---
+    namespace: sources
+    git_base: file://#{expand_path('.')}/
+    CONFIG
+
   cd('sources/puppet-test') do
     steps %(
       And I run `git branch -M master #{branch}`

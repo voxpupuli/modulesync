@@ -36,15 +36,14 @@ module ModuleSync
     class Base < Thor
       class_option :project_root,
                    :aliases => '-c',
-                   :desc => 'Path used by git to clone modules into. Defaults to "modules"',
+                   :desc => 'Path used by git to clone modules into.',
                    :default => CLI.defaults[:project_root] || 'modules'
       class_option :git_base,
                    :desc => 'Specify the base part of a git URL to pull from',
                    :default => CLI.defaults[:git_base] || 'git@github.com:'
       class_option :namespace,
                    :aliases => '-n',
-                   :desc => 'Remote github namespace (user or organization) to clone from and push to.' \
-                              ' Defaults to puppetlabs',
+                   :desc => 'Remote github namespace (user or organization) to clone from and push to.',
                    :default => CLI.defaults[:namespace] || 'puppetlabs'
       class_option :filter,
                    :aliases => '-f',
