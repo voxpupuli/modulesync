@@ -18,7 +18,7 @@ Feature: CLI
     And the output should match /Commands:/
 
   Scenario: When overriding a setting from the config file on the command line
-    Given a puppet module "puppet-test" from "maestrodev"
+    Given a puppet module "puppet-test" from "fakenamespace"
     And a file named "managed_modules.yml" with:
       """
       ---
@@ -31,6 +31,6 @@ Feature: CLI
       """
     And a git_base option appended to "modulesync.yml" for local tests
     And a directory named "moduleroot"
-    When I run `msync update --noop --namespace maestrodev`
+    When I run `msync update --noop --namespace fakenamespace`
     Then the exit status should be 0
-    And the output should match /Syncing maestrodev/
+    And the output should match /Syncing fakenamespace/
