@@ -18,18 +18,7 @@ Feature: CLI
     And the output should match /Commands:/
 
   Scenario: When overriding a setting from the config file on the command line
-    Given a puppet module "puppet-test" from "fakenamespace"
-    And a file named "managed_modules.yml" with:
-      """
-      ---
-        - puppet-test
-      """
-    And a file named "modulesync.yml" with:
-      """
-      ---
-      namespace: default
-      """
-    And a git_base option appended to "modulesync.yml" for local tests
+    Given a basic setup with a puppet module "puppet-test" from "fakenamespace"
     And a directory named "moduleroot"
     When I run `msync update --noop --namespace fakenamespace`
     Then the exit status should be 0
