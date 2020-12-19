@@ -3,8 +3,8 @@ require_relative '../../spec/helpers/faker/puppet_module_remote_repo'
 Given 'a mocked git configuration' do
   steps %(
     Given a mocked home directory
-    And I run `git config --global user.name Test`
-    And I run `git config --global user.email test@example.com`
+    And I run `git config --global user.name Aruba`
+    And I run `git config --global user.email aruba@example.com`
   )
 end
 
