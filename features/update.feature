@@ -2,19 +2,7 @@ Feature: update
   ModuleSync needs to update module boilerplate
 
   Scenario: Adding a new file
-    Given a mocked git configuration
-    And a puppet module "puppet-test" from "fakenamespace"
-    And a file named "managed_modules.yml" with:
-      """
-      ---
-        - puppet-test
-      """
-    And a file named "modulesync.yml" with:
-      """
-      ---
-      namespace: fakenamespace
-      """
-    And a git_base option appended to "modulesync.yml" for local tests
+    Given a basic setup with a puppet module "puppet-test" from "fakenamespace"
     And a file named "config_defaults.yml" with:
       """
       ---
@@ -36,20 +24,8 @@ Feature: update
     And the file named "modules/fakenamespace/puppet-test/test" should contain "aruba"
 
   Scenario: Using skip_broken option and adding a new file to repo without write access
-    Given a mocked git configuration
-    And a puppet module "puppet-test" from "fakenamespace"
+    Given a basic setup with a puppet module "puppet-test" from "fakenamespace"
     And the puppet module "puppet-test" from "fakenamespace" is read-only
-    And a file named "managed_modules.yml" with:
-      """
-      ---
-        - puppet-test
-      """
-    And a file named "modulesync.yml" with:
-      """
-      ---
-      namespace: fakenamespace
-      """
-    And a git_base option appended to "modulesync.yml" for local tests
     And a file named "config_defaults.yml" with:
       """
       ---
@@ -66,20 +42,8 @@ Feature: update
     And the puppet module "puppet-test" from "fakenamespace" should have no commits made by "Aruba"
 
   Scenario: Adding a new file to repo without write access
-    Given a mocked git configuration
-    And a puppet module "puppet-test" from "fakenamespace"
+    Given a basic setup with a puppet module "puppet-test" from "fakenamespace"
     And the puppet module "puppet-test" from "fakenamespace" is read-only
-    And a file named "managed_modules.yml" with:
-      """
-      ---
-        - puppet-test
-      """
-    And a file named "modulesync.yml" with:
-      """
-      ---
-      namespace: fakenamespace
-      """
-    And a git_base option appended to "modulesync.yml" for local tests
     And a file named "config_defaults.yml" with:
       """
       ---
@@ -96,19 +60,7 @@ Feature: update
     And the puppet module "puppet-test" from "fakenamespace" should have no commits made by "Aruba"
 
   Scenario: Adding a new file, without the .erb suffix
-    Given a mocked git configuration
-    And a puppet module "puppet-test" from "fakenamespace"
-    And a file named "managed_modules.yml" with:
-      """
-      ---
-        - puppet-test
-      """
-    And a file named "modulesync.yml" with:
-      """
-      ---
-      namespace: fakenamespace
-      """
-    And a git_base option appended to "modulesync.yml" for local tests
+    Given a basic setup with a puppet module "puppet-test" from "fakenamespace"
     And a file named "config_defaults.yml" with:
       """
       ---
@@ -135,19 +87,7 @@ Feature: update
     And the puppet module "puppet-test" from "fakenamespace" should have no commits made by "Aruba"
 
   Scenario: Adding a new file using global values
-    Given a mocked git configuration
-    And a puppet module "puppet-test" from "fakenamespace"
-    And a file named "managed_modules.yml" with:
-      """
-      ---
-        - puppet-test
-      """
-    And a file named "modulesync.yml" with:
-      """
-      ---
-      namespace: fakenamespace
-      """
-    And a git_base option appended to "modulesync.yml" for local tests
+    Given a basic setup with a puppet module "puppet-test" from "fakenamespace"
     And a file named "config_defaults.yml" with:
       """
       ---
@@ -170,19 +110,7 @@ Feature: update
     And the puppet module "puppet-test" from "fakenamespace" should have no commits made by "Aruba"
 
   Scenario: Adding a new file overriding global values
-    Given a mocked git configuration
-    And a puppet module "puppet-test" from "fakenamespace"
-    And a file named "managed_modules.yml" with:
-      """
-      ---
-        - puppet-test
-      """
-    And a file named "modulesync.yml" with:
-      """
-      ---
-      namespace: fakenamespace
-      """
-    And a git_base option appended to "modulesync.yml" for local tests
+    Given a basic setup with a puppet module "puppet-test" from "fakenamespace"
     And a file named "config_defaults.yml" with:
       """
       ---
@@ -208,19 +136,7 @@ Feature: update
     And the puppet module "puppet-test" from "fakenamespace" should have no commits made by "Aruba"
 
   Scenario: Adding a new file ignoring global values
-    Given a mocked git configuration
-    And a puppet module "puppet-test" from "fakenamespace"
-    And a file named "managed_modules.yml" with:
-      """
-      ---
-        - puppet-test
-      """
-    And a file named "modulesync.yml" with:
-      """
-      ---
-      namespace: fakenamespace
-      """
-    And a git_base option appended to "modulesync.yml" for local tests
+    Given a basic setup with a puppet module "puppet-test" from "fakenamespace"
     And a file named "config_defaults.yml" with:
       """
       ---
@@ -246,19 +162,7 @@ Feature: update
     And the puppet module "puppet-test" from "fakenamespace" should have no commits made by "Aruba"
 
   Scenario: Adding a file that ERB can't parse
-    Given a mocked git configuration
-    And a puppet module "puppet-test" from "fakenamespace"
-    And a file named "managed_modules.yml" with:
-      """
-      ---
-        - puppet-test
-      """
-    And a file named "modulesync.yml" with:
-      """
-      ---
-      namespace: fakenamespace
-      """
-    And a git_base option appended to "modulesync.yml" for local tests
+    Given a basic setup with a puppet module "puppet-test" from "fakenamespace"
     And a file named "config_defaults.yml" with:
       """
       ---
@@ -277,19 +181,7 @@ Feature: update
     And the puppet module "puppet-test" from "fakenamespace" should have no commits made by "Aruba"
 
   Scenario: Using skip_broken option with invalid files
-    Given a mocked git configuration
-    And a puppet module "puppet-test" from "fakenamespace"
-    And a file named "managed_modules.yml" with:
-      """
-      ---
-        - puppet-test
-      """
-    And a file named "modulesync.yml" with:
-      """
-      ---
-      namespace: fakenamespace
-      """
-    And a git_base option appended to "modulesync.yml" for local tests
+    Given a basic setup with a puppet module "puppet-test" from "fakenamespace"
     And a file named "config_defaults.yml" with:
       """
       ---
@@ -308,19 +200,7 @@ Feature: update
     And the puppet module "puppet-test" from "fakenamespace" should have no commits made by "Aruba"
 
   Scenario: Using skip_broken and fail_on_warnings options with invalid files
-    Given a mocked git configuration
-    And a puppet module "puppet-test" from "fakenamespace"
-    And a file named "managed_modules.yml" with:
-      """
-      ---
-        - puppet-test
-      """
-    And a file named "modulesync.yml" with:
-      """
-      ---
-      namespace: fakenamespace
-      """
-    And a git_base option appended to "modulesync.yml" for local tests
+    Given a basic setup with a puppet module "puppet-test" from "fakenamespace"
     And a file named "config_defaults.yml" with:
       """
       ---
@@ -339,23 +219,11 @@ Feature: update
     And the puppet module "puppet-test" from "fakenamespace" should have no commits made by "Aruba"
 
   Scenario: Modifying an existing file
-    Given a mocked git configuration
-    And a puppet module "puppet-test" from "fakenamespace"
+    Given a basic setup with a puppet module "puppet-test" from "fakenamespace"
     And the puppet module "puppet-test" from "fakenamespace" has a file named "Gemfile" with:
       """
       source 'https://example.com'
       """
-    And a file named "managed_modules.yml" with:
-      """
-      ---
-        - puppet-test
-      """
-    And a file named "modulesync.yml" with:
-      """
-      ---
-      namespace: fakenamespace
-      """
-    And a git_base option appended to "modulesync.yml" for local tests
     And a file named "config_defaults.yml" with:
       """
       ---
@@ -381,23 +249,11 @@ Feature: update
     And the puppet module "puppet-test" from "fakenamespace" should have no commits made by "Aruba"
 
   Scenario: Modifying an existing file and committing the change
-    Given a mocked git configuration
-    And a puppet module "puppet-test" from "fakenamespace"
+    Given a basic setup with a puppet module "puppet-test" from "fakenamespace"
     And the puppet module "puppet-test" from "fakenamespace" has a file named "Gemfile" with:
       """
       source 'https://example.com'
       """
-    And a file named "managed_modules.yml" with:
-      """
-      ---
-        - puppet-test
-      """
-    And a file named "modulesync.yml" with:
-      """
-      ---
-      namespace: fakenamespace
-      """
-    And a git_base option appended to "modulesync.yml" for local tests
     And a file named "config_defaults.yml" with:
       """
       ---
@@ -419,23 +275,11 @@ Feature: update
       """
 
   Scenario: Setting an existing file to unmanaged
-    Given a mocked git configuration
-    And a puppet module "puppet-test" from "fakenamespace"
+    Given a basic setup with a puppet module "puppet-test" from "fakenamespace"
     And the puppet module "puppet-test" from "fakenamespace" has a file named "Gemfile" with:
       """
       source 'https://rubygems.org'
       """
-    And a file named "managed_modules.yml" with:
-      """
-      ---
-        - puppet-test
-      """
-    And a file named "modulesync.yml" with:
-      """
-      ---
-      namespace: fakenamespace
-      """
-    And a git_base option appended to "modulesync.yml" for local tests
     And a file named "config_defaults.yml" with:
       """
       ---
@@ -466,19 +310,7 @@ Feature: update
     And the puppet module "puppet-test" from "fakenamespace" should have no commits made by "Aruba"
 
   Scenario: Setting an existing file to deleted
-    Given a mocked git configuration
-    And a puppet module "puppet-test" from "fakenamespace"
-    And a file named "managed_modules.yml" with:
-      """
-      ---
-        - puppet-test
-      """
-    And a file named "modulesync.yml" with:
-      """
-      ---
-      namespace: fakenamespace
-      """
-    And a git_base option appended to "modulesync.yml" for local tests
+    Given a basic setup with a puppet module "puppet-test" from "fakenamespace"
     And a file named "config_defaults.yml" with:
       """
       ---
@@ -505,19 +337,7 @@ Feature: update
     And the puppet module "puppet-test" from "fakenamespace" should have no commits made by "Aruba"
 
   Scenario: Setting a non-existent file to deleted
-    Given a mocked git configuration
-    And a puppet module "puppet-test" from "fakenamespace"
-    And a file named "managed_modules.yml" with:
-      """
-      ---
-        - puppet-test
-      """
-    And a file named "modulesync.yml" with:
-      """
-      ---
-      namespace: fakenamespace
-      """
-    And a git_base option appended to "modulesync.yml" for local tests
+    Given a basic setup with a puppet module "puppet-test" from "fakenamespace"
     And a file named "config_defaults.yml" with:
       """
       ---
@@ -530,19 +350,7 @@ Feature: update
     And the puppet module "puppet-test" from "fakenamespace" should have no commits made by "Aruba"
 
   Scenario: Setting a directory to unmanaged
-    Given a mocked git configuration
-    And a puppet module "puppet-apache" from "puppetlabs"
-    And a file named "managed_modules.yml" with:
-      """
-      ---
-        - puppet-apache
-      """
-    And a file named "modulesync.yml" with:
-      """
-      ---
-      namespace: puppetlabs
-      """
-    And a git_base option appended to "modulesync.yml" for local tests
+    Given a basic setup with a puppet module "puppet-apache" from "puppetlabs"
     And a file named "config_defaults.yml" with:
       """
       ---
@@ -573,19 +381,7 @@ Feature: update
     And the puppet module "puppet-apache" from "puppetlabs" should have no commits made by "Aruba"
 
   Scenario: Adding a new file in a new subdirectory
-    Given a mocked git configuration
-    And a puppet module "puppet-test" from "fakenamespace"
-    And a file named "managed_modules.yml" with:
-      """
-      ---
-        - puppet-test
-      """
-    And a file named "modulesync.yml" with:
-      """
-      ---
-      namespace: fakenamespace
-      """
-    And a git_base option appended to "modulesync.yml" for local tests
+    Given a basic setup with a puppet module "puppet-test" from "fakenamespace"
     And a file named "config_defaults.yml" with:
       """
       ---
@@ -613,19 +409,7 @@ Feature: update
     And the puppet module "puppet-test" from "fakenamespace" should have no commits made by "Aruba"
 
   Scenario: Updating offline
-    Given a mocked git configuration
-    And a puppet module "puppet-test" from "fakenamespace"
-    And a file named "managed_modules.yml" with:
-      """
-      ---
-        - puppet-test
-      """
-    And a file named "modulesync.yml" with:
-      """
-      ---
-      namespace: fakenamespace
-      """
-    And a git_base option appended to "modulesync.yml" for local tests
+    Given a basic setup with a puppet module "puppet-test" from "fakenamespace"
     And a file named "config_defaults.yml" with:
       """
       ---
@@ -645,19 +429,7 @@ Feature: update
     And the puppet module "puppet-test" from "fakenamespace" should have no commits made by "Aruba"
 
   Scenario: Pulling a module that already exists in the modules directory
-    Given a mocked git configuration
-    And a puppet module "puppet-test" from "fakenamespace"
-    And a file named "managed_modules.yml" with:
-      """
-      ---
-        - fakenamespace/puppet-test
-      """
-    And a file named "modulesync.yml" with:
-      """
-      ---
-      namespace: fakenamespace
-      """
-    And a git_base option appended to "modulesync.yml" for local tests
+    Given a basic setup with a puppet module "puppet-test" from "fakenamespace"
     When I run `msync update`
     Then the exit status should be 0
     And the puppet module "puppet-test" from "fakenamespace" should have no commits made by "Aruba"
@@ -684,39 +456,20 @@ Feature: update
     And the puppet module "puppet-test" from "fakenamespace" should have no commits made by "Aruba"
 
   Scenario: When running update with no changes
-    Given a mocked git configuration
-    And a puppet module "puppet-test" from "fakenamespace"
-    And a file named "managed_modules.yml" with:
-      """
-      ---
-        - puppet-test
-      """
-    And a file named "modulesync.yml" with:
-      """
-      ---
-      namespace: fakenamespace
-      """
-    And a git_base option appended to "modulesync.yml" for local tests
+    Given a basic setup with a puppet module "puppet-test" from "fakenamespace"
     And a directory named "moduleroot"
     When I run `msync update`
     Then the exit status should be 0
     And the puppet module "puppet-test" from "fakenamespace" should have no commits made by "Aruba"
 
   Scenario: When specifying configurations in managed_modules.yml
-    Given a mocked git configuration
-    And a puppet module "puppet-test" from "fakenamespace"
+    Given a basic setup with a puppet module "puppet-test" from "fakenamespace"
     And a file named "managed_modules.yml" with:
       """
       ---
         puppet-test:
           module_name: test
       """
-    And a file named "modulesync.yml" with:
-      """
-      ---
-      namespace: fakenamespace
-      """
-    And a git_base option appended to "modulesync.yml" for local tests
     And a file named "config_defaults.yml" with:
       """
       ---
@@ -817,19 +570,7 @@ Feature: update
     And the puppet module "puppet-test" from "fakenamespace" should have no commits made by "Aruba"
 
   Scenario: Updating a module with a .sync.yml file
-    Given a mocked git configuration
-    And a puppet module "puppet-test" from "fakenamespace"
-    And a file named "managed_modules.yml" with:
-      """
-      ---
-        - fakenamespace/puppet-test
-      """
-    And a file named "modulesync.yml" with:
-      """
-      ---
-      namespace: fakenamespace
-      """
-    And a git_base option appended to "modulesync.yml" for local tests
+    Given a basic setup with a puppet module "puppet-test" from "fakenamespace"
     And a file named "config_defaults.yml" with:
       """
       ---
@@ -915,19 +656,7 @@ Feature: update
     And the puppet module "puppet-lib-file_concat" from "electrical" should have no commits made by "Aruba"
 
   Scenario: Modifying an existing file with values exposed by the module
-    Given a mocked git configuration
-    And a puppet module "puppet-test" from "fakenamespace"
-    And a file named "managed_modules.yml" with:
-      """
-      ---
-        - puppet-test
-      """
-    And a file named "modulesync.yml" with:
-      """
-      ---
-      namespace: fakenamespace
-      """
-    And a git_base option appended to "modulesync.yml" for local tests
+    Given a basic setup with a puppet module "puppet-test" from "fakenamespace"
     And a file named "config_defaults.yml" with:
       """
       ---
@@ -958,19 +687,7 @@ Feature: update
     And the puppet module "puppet-test" from "fakenamespace" should have no commits made by "Aruba"
 
   Scenario: Running the same update twice and pushing to a remote branch
-    Given a mocked git configuration
-    And a puppet module "puppet-test" from "fakenamespace"
-    And a file named "managed_modules.yml" with:
-      """
-      ---
-        - puppet-test
-      """
-    And a file named "modulesync.yml" with:
-      """
-      ---
-      namespace: fakenamespace
-      """
-    And a git_base option appended to "modulesync.yml" for local tests
+    Given a basic setup with a puppet module "puppet-test" from "fakenamespace"
     And a file named "config_defaults.yml" with:
       """
       ---
@@ -995,19 +712,7 @@ Feature: update
     And the puppet module "puppet-test" from "fakenamespace" should have 1 commit made by "Aruba" in branch "test"
 
   Scenario: Creating a GitHub PR with an update
-    Given a mocked git configuration
-    And a puppet module "puppet-test" from "fakenamespace"
-    And a file named "managed_modules.yml" with:
-      """
-      ---
-        - puppet-test
-      """
-    And a file named "modulesync.yml" with:
-      """
-      ---
-      namespace: fakenamespace
-      """
-    And a git_base option appended to "modulesync.yml" for local tests
+    Given a basic setup with a puppet module "puppet-test" from "fakenamespace"
     And a directory named "moduleroot"
     And I set the environment variables to:
       | variable     | value  |
@@ -1018,19 +723,7 @@ Feature: update
     And the puppet module "puppet-test" from "fakenamespace" should have no commits made by "Aruba"
 
   Scenario: Creating a GitLab MR with an update
-    Given a mocked git configuration
-    And a puppet module "puppet-test" from "fakenamespace"
-    And a file named "managed_modules.yml" with:
-      """
-      ---
-        - puppet-test
-      """
-    And a file named "modulesync.yml" with:
-      """
-      ---
-      namespace: fakenamespace
-      """
-    And a git_base option appended to "modulesync.yml" for local tests
+    Given a basic setup with a puppet module "puppet-test" from "fakenamespace"
     And a directory named "moduleroot"
     And I set the environment variables to:
       | variable     | value  |
@@ -1041,19 +734,7 @@ Feature: update
     And the puppet module "puppet-test" from "fakenamespace" should have no commits made by "Aruba"
 
   Scenario: Repository with a default branch other than master
-    Given a mocked git configuration
-    And a puppet module "puppet-test" from "fakenamespace"
-    And a file named "managed_modules.yml" with:
-      """
-      ---
-        - puppet-test
-      """
-    And a file named "modulesync.yml" with:
-      """
-      ---
-      namespace: fakenamespace
-      """
-    And a git_base option appended to "modulesync.yml" for local tests
+    Given a basic setup with a puppet module "puppet-test" from "fakenamespace"
     And the puppet module "puppet-test" from "fakenamespace" has the default branch named "develop"
     And a file named "config_defaults.yml" with:
       """
@@ -1073,19 +754,7 @@ Feature: update
     And the puppet module "puppet-test" from "fakenamespace" should have 1 commit made by "Aruba" in branch "develop"
 
   Scenario: Adding a new file from a template using metadata
-    Given a mocked git configuration
-    And a puppet module "puppet-test" from "fakenamespace"
-    And a file named "managed_modules.yml" with:
-      """
-      ---
-        - puppet-test
-      """
-    And a file named "modulesync.yml" with:
-      """
-      ---
-      namespace: fakenamespace
-      """
-    And a git_base option appended to "modulesync.yml" for local tests
+    Given a basic setup with a puppet module "puppet-test" from "fakenamespace"
     And a file named "config_defaults.yml" with:
       """
       ---

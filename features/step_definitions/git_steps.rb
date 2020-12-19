@@ -1,5 +1,23 @@
 require_relative '../../spec/helpers/faker/puppet_module_remote_repo'
 
+Given 'a basic setup with a puppet module {string} from {string}' do |name, namespace|
+  steps %(
+    Given a mocked git configuration
+    And a puppet module "#{name}" from "#{namespace}"
+    And a file named "managed_modules.yml" with:
+      """
+      ---
+        - #{name}
+      """
+    And a file named "modulesync.yml" with:
+      """
+      ---
+      namespace: #{namespace}
+      """
+    And a git_base option appended to "modulesync.yml" for local tests
+  )
+end
+
 Given 'a mocked git configuration' do
   steps %(
     Given a mocked home directory
