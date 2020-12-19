@@ -33,8 +33,7 @@ Feature: update
       Files added:
       test
       """
-    Given I run `cat modules/fakenamespace/puppet-test/test`
-    Then the output should contain "aruba"
+    And the file named "modules/fakenamespace/puppet-test/test" should contain "aruba"
 
   Scenario: Using skip_broken option and adding a new file to repo without write access
     Given a mocked git configuration
@@ -132,8 +131,7 @@ Feature: update
       Files added:
       test
       """
-    Given I run `cat modules/fakenamespace/puppet-test/test`
-    Then the output should contain "aruba"
+    And the file named "modules/fakenamespace/puppet-test/test" should contain "aruba"
     And the puppet module "puppet-test" from "fakenamespace" have no commit made by "Aruba"
 
   Scenario: Adding a new file using global values
@@ -168,8 +166,7 @@ Feature: update
       Files added:
       test
       """
-    Given I run `cat modules/fakenamespace/puppet-test/test`
-    Then the output should contain "aruba"
+    And the file named "modules/fakenamespace/puppet-test/test" should contain "aruba"
     And the puppet module "puppet-test" from "fakenamespace" have no commit made by "Aruba"
 
   Scenario: Adding a new file overriding global values
@@ -207,8 +204,7 @@ Feature: update
       Files added:
       test
       """
-    Given I run `cat modules/fakenamespace/puppet-test/test`
-    Then the output should contain "aruba"
+    And the file named "modules/fakenamespace/puppet-test/test" should contain "aruba"
     And the puppet module "puppet-test" from "fakenamespace" have no commit made by "Aruba"
 
   Scenario: Adding a new file ignoring global values
@@ -246,8 +242,7 @@ Feature: update
       Files added:
       test
       """
-    Given I run `cat modules/fakenamespace/puppet-test/test`
-    Then the output should contain "aruba"
+    And the file named "modules/fakenamespace/puppet-test/test" should contain "aruba"
     And the puppet module "puppet-test" from "fakenamespace" have no commit made by "Aruba"
 
   Scenario: Adding a file that ERB can't parse
@@ -379,8 +374,7 @@ Feature: update
       Files changed:
       +diff --git a/Gemfile b/Gemfile
       """
-    Given I run `cat modules/fakenamespace/puppet-test/Gemfile`
-    Then the output should contain:
+    And the file named "modules/fakenamespace/puppet-test/Gemfile" should contain:
       """
       source 'https://somehost.com'
       """
@@ -465,8 +459,7 @@ Feature: update
       Not managing Gemfile in puppet-test
       """
     And the exit status should be 0
-    Given I run `cat modules/fakenamespace/puppet-test/Gemfile`
-    Then the output should contain:
+    And the file named "modules/fakenamespace/puppet-test/Gemfile" should contain:
       """
       source 'https://rubygems.org'
       """
@@ -572,8 +565,7 @@ Feature: update
       Not managing spec/spec_helper.rb in puppet-apache
       """
     And the exit status should be 0
-    Given I run `cat modules/puppetlabs/puppet-apache/spec/spec_helper.rb`
-    Then the output should contain:
+    And the file named "modules/puppetlabs/puppet-apache/spec/spec_helper.rb" should contain:
       """
       This is a fake spec_helper!
       """
@@ -614,8 +606,7 @@ Feature: update
       Files added:
       spec/spec_helper.rb
       """
-    Given I run `cat modules/fakenamespace/puppet-test/spec/spec_helper.rb`
-    Then the output should contain:
+    And the file named "modules/fakenamespace/puppet-test/spec/spec_helper.rb" should contain:
       """
       require 'puppetlabs_spec_helper/module_helper'
       """
@@ -744,8 +735,7 @@ Feature: update
       Files added:
       test
       """
-    Given I run `cat modules/fakenamespace/puppet-test/test`
-    Then the output should contain "aruba"
+    And the file named "modules/fakenamespace/puppet-test/test" should contain "aruba"
     And the puppet module "puppet-test" from "fakenamespace" have no commit made by "Aruba"
 
   Scenario: When specifying configurations in managed_modules.yml and using a filter
@@ -783,8 +773,7 @@ Feature: update
       Files added:
       test
       """
-    Given I run `cat modules/fakenamespace/puppet-test/test`
-    Then the output should contain "aruba"
+    And the file named "modules/fakenamespace/puppet-test/test" should contain "aruba"
     And a directory named "modules/fakenamespace/puppet-blacksmith" should not exist
     And the puppet module "puppet-test" from "fakenamespace" have no commit made by "Aruba"
 
@@ -823,8 +812,7 @@ Feature: update
       Files added:
       test
       """
-    Given I run `cat modules/fakenamespace/puppet-test/test`
-    Then the output should contain "aruba"
+    And the file named "modules/fakenamespace/puppet-test/test" should contain "aruba"
     And a directory named "modules/fakenamespace/puppet-blacksmith" should not exist
     And the puppet module "puppet-test" from "fakenamespace" have no commit made by "Aruba"
 
@@ -879,8 +867,7 @@ Feature: update
       """
       Not managing spec/spec_helper.rb in puppet-test
       """
-    Given I run `cat modules/fakenamespace/puppet-test/global-test.md`
-    Then the output should match:
+    And the file named "modules/fakenamespace/puppet-test/global-test.md" should contain:
       """
       some-default
       it-is-overwritten
@@ -922,10 +909,8 @@ Feature: update
       Files added:
       test
       """
-    Given I run `cat modules/fakenamespace/puppet-test/.git/config`
-    Then the output should match /^\s+url = .*fakenamespace.puppet-test$/
-    Given I run `cat modules/electrical/puppet-lib-file_concat/.git/config`
-    Then the output should match /^\s+url = .*electrical.puppet-lib-file_concat$/
+    And the file named "modules/fakenamespace/puppet-test/.git/config" should match /^\s+url = .*fakenamespace.puppet-test$/
+    And the file named "modules/electrical/puppet-lib-file_concat/.git/config" should match /^\s+url = .*electrical.puppet-lib-file_concat$/
     And the puppet module "puppet-test" from "fakenamespace" have no commit made by "Aruba"
     And the puppet module "puppet-lib-file_concat" from "electrical" have no commit made by "Aruba"
 
@@ -965,8 +950,7 @@ Feature: update
       Files changed:
       +diff --git a/README.md b/README.md
       """
-    Given I run `cat modules/fakenamespace/puppet-test/README.md`
-    Then the output should contain:
+    And the file named "modules/fakenamespace/puppet-test/README.md" should contain:
       """
       module: puppet-test
       namespace: fakenamespace
@@ -1115,8 +1099,7 @@ Feature: update
       """
     When I run `msync update --noop`
     Then the exit status should be 0
-    Given I run `cat modules/fakenamespace/puppet-test/test`
-    Then the output should contain:
+    And the file named "modules/fakenamespace/puppet-test/test" should contain:
       """
       module: puppet-test
       target: modules/fakenamespace/puppet-test/test
