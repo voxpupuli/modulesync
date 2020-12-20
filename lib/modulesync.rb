@@ -148,7 +148,22 @@ module ModuleSync # rubocop:disable Metrics/ModuleLength
     self.class.config_path(file, options)
   end
 
-  def self.update(options)
+  def self.update(cli_options)
+    prepare = lambda { |options|
+      local_template_dir = config_path(MODULE_FILES_DIR, options)
+      local_files = find_template_files(local_template_dir)
+      module_files = relative_names(local_files, local_template_dir)
+      return options.merge(_module_files: module_files)
+    }
+
+    job = lambda { |puppet_module, module_options, defaults, options|
+      manage_module(puppet_module, options[:_module_files], module_options, defaults, options)
+    }
+
+    run(cli_options, job, prepare)
+  end
+
+  def self.run(options, job, prepare = nil)
     options = config_defaults.merge(options)
     defaults = Util.parse_config(config_path(CONF_FILE, options))
     if options[:pr]
@@ -160,9 +175,7 @@ module ModuleSync # rubocop:disable Metrics/ModuleLength
       @pr = create_pr_manager if options[:pr]
     end
 
-    local_template_dir = config_path(MODULE_FILES_DIR, options)
-    local_files = find_template_files(local_template_dir)
-    module_files = relative_names(local_files, local_template_dir)
+    options = prepare.call(options) unless prepare.nil?
 
     managed_modules = self.managed_modules(config_path(options[:managed_modules_conf], options),
                                            options[:filter],
@@ -172,13 +185,13 @@ module ModuleSync # rubocop:disable Metrics/ModuleLength
     # managed_modules is either an array or a hash
     managed_modules.each do |puppet_module, module_options|
       begin
-        mod_options = module_options.nil? ? nil : Util.symbolize_keys(module_options)
-        manage_module(puppet_module, module_files, mod_options, defaults, options)
+        mod_options = module_options.nil? ? {} : Util.symbolize_keys(module_options)
+        job.call(puppet_module, mod_options, defaults, options)
       rescue # rubocop:disable Lint/RescueWithoutErrorClass
-        $stderr.puts "Error while updating #{puppet_module}"
+        $stderr.puts "Error during '#{options[:command]}' command on #{puppet_module}"
         raise unless options[:skip_broken]
         errors = true
-        $stdout.puts "Skipping #{puppet_module} as update process failed"
+        $stdout.puts "Skipping #{puppet_module} as '#{options[:command]}' process failed"
       end
     end
     exit 1 if errors && options[:fail_on_warnings]
