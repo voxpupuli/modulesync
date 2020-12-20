@@ -187,8 +187,10 @@ module ModuleSync # rubocop:disable Metrics/ModuleLength
       begin
         mod_options = module_options.nil? ? {} : Util.symbolize_keys(module_options)
         job.call(puppet_module, mod_options, defaults, options)
-      rescue # rubocop:disable Lint/RescueWithoutErrorClass
-        $stderr.puts "Error during '#{options[:command]}' command on #{puppet_module}"
+      rescue StandardError => e
+        message = e.message || "Error during '#{options[:command]}'"
+        message = "#{puppet_module}: #{message}"
+        $stderr.puts message
         raise unless options[:skip_broken]
         errors = true
         $stdout.puts "Skipping #{puppet_module} as '#{options[:command]}' process failed"
