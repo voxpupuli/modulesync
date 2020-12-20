@@ -174,7 +174,7 @@ module ModuleSync # rubocop:disable Metrics/ModuleLength
   def self.push(cli_options)
     job = lambda { |puppet_module, module_options, _defaults, options|
       default_namespace = module_options[:namespace] || options[:namespace]
-      namespace, module_name = module_name(puppet_module, default_namespace)
+      namespace, module_name = compute_module_naming_attributes(puppet_module, default_namespace)
       repo_dir = File.join(options[:project_root], namespace, module_name)
 
       begin
