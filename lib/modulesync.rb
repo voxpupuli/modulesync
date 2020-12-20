@@ -65,7 +65,7 @@ module ModuleSync # rubocop:disable Metrics/ModuleLength
     managed_modules
   end
 
-  def self.module_name(module_name, default_namespace)
+  def self.compute_module_naming_attributes(module_name, default_namespace)
     return [default_namespace, module_name] unless module_name.include?('/')
     ns, mod = module_name.split('/')
   end
@@ -112,7 +112,7 @@ module ModuleSync # rubocop:disable Metrics/ModuleLength
     if module_options.is_a?(Hash) && module_options.key?(:namespace)
       default_namespace = module_options[:namespace]
     end
-    namespace, module_name = module_name(puppet_module, default_namespace)
+    namespace, module_name = compute_module_naming_attributes(puppet_module, default_namespace)
     git_repo = File.join(namespace, module_name)
     unless options[:offline]
       git_options = {
