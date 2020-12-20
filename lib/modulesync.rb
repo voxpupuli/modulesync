@@ -1,5 +1,6 @@
 require 'fileutils'
 require 'pathname'
+require 'English'
 require 'modulesync/cli'
 require 'modulesync/constants'
 require 'modulesync/git'
@@ -10,6 +11,8 @@ require 'modulesync/util'
 require 'monkey_patches'
 
 module ModuleSync # rubocop:disable Metrics/ModuleLength
+  class Error < StandardError; end
+
   include Constants
 
   def self.config_defaults
@@ -62,9 +65,17 @@ module ModuleSync # rubocop:disable Metrics/ModuleLength
     managed_modules
   end
 
-  def self.module_name(module_name, default_namespace)
-    return [default_namespace, module_name] unless module_name.include?('/')
-    ns, mod = module_name.split('/')
+  def self.compute_module_naming_attributes(module_name, options, module_options)
+    namespace = module_options[:namespace] || options[:namespace]
+    name = module_name
+    namespace, name = module_name.split('/') if module_name.include?('/')
+    fullname = "#{namespace}/#{name}"
+
+    {
+      name: name,
+      namespace: namespace,
+      fullname: fullname,
+    }
   end
 
   def self.hook(options)
@@ -105,26 +116,28 @@ module ModuleSync # rubocop:disable Metrics/ModuleLength
   end
 
   def self.manage_module(puppet_module, module_files, module_options, defaults, options)
-    default_namespace = options[:namespace]
-    if module_options.is_a?(Hash) && module_options.key?(:namespace)
-      default_namespace = module_options[:namespace]
-    end
-    namespace, module_name = module_name(puppet_module, default_namespace)
-    git_repo = File.join(namespace, module_name)
+    git_repo = module_options[:fullname]
+
     unless options[:offline]
-      Git.pull(options[:git_base], git_repo, options[:branch], options[:project_root], module_options || {})
+      git_options = {
+        override_changes: true,
+        remote: module_options[:remote],
+        reset_hard: options[:reset_hard],
+      }
+      Git.pull(options[:git_base], git_repo, options[:branch], options[:project_root], git_options)
     end
 
-    module_configs = Util.parse_config(module_file(options[:project_root], namespace, module_name, MODULE_CONF_FILE))
+    module_configs = Util.parse_config(module_file(options[:project_root], module_options[:namespace], module_options[:name], MODULE_CONF_FILE))
     settings = Settings.new(defaults[GLOBAL_DEFAULTS_KEY] || {},
                             defaults,
                             module_configs[GLOBAL_DEFAULTS_KEY] || {},
                             module_configs,
-                            :puppet_module => module_name,
+                            :puppet_module => module_options[:name],
                             :git_base => options[:git_base],
-                            :namespace => namespace)
+                            :namespace => module_options[:namespace])
+
     settings.unmanaged_files(module_files).each do |filename|
-      $stdout.puts "Not managing #{filename} in #{module_name}"
+      $stdout.puts "Not managing #{filename} in #{module_options[:name]}"
     end
 
     files_to_manage = settings.managed_files(module_files)
@@ -132,10 +145,10 @@ module ModuleSync # rubocop:disable Metrics/ModuleLength
 
     if options[:noop]
       Git.update_noop(git_repo, options)
-      options[:pr] && pr(module_options).manage(namespace, module_name, options)
+      options[:pr] && pr(module_options).manage(module_options[:namespace], module_options[:name], options)
     elsif !options[:offline]
       pushed = Git.update(git_repo, files_to_manage, options)
-      pushed && options[:pr] && pr(module_options).manage(namespace, module_name, options)
+      pushed && options[:pr] && pr(module_options).manage(module_options[:namespace], module_options[:name], options)
     end
   end
 
@@ -148,8 +161,63 @@ module ModuleSync # rubocop:disable Metrics/ModuleLength
     self.class.config_path(file, options)
   end
 
-  def self.update(options)
+  def self.update(cli_options)
+    prepare = lambda { |options|
+      local_template_dir = config_path(MODULE_FILES_DIR, options)
+      local_files = find_template_files(local_template_dir)
+      module_files = relative_names(local_files, local_template_dir)
+      return options.merge(_module_files: module_files)
+    }
+
+    job = lambda { |puppet_module, module_options, defaults, options|
+      manage_module(puppet_module, options[:_module_files], module_options, defaults, options)
+    }
+
+    run(cli_options, job, prepare)
+  end
+
+  def self.push(cli_options)
+    job = lambda { |puppet_module, module_options, _defaults, options|
+      repo_dir = File.join(options[:project_root], module_options[:fullname])
+
+      begin
+        repo = ::Git.open repo_dir
+      rescue ArgumentError => e
+        raise unless e.message == 'path does not exist'
+        raise ModuleSync::Error, 'Repository must be locally available before trying to push'
+      end
+      Git.push(repo, options)
+      options[:pr] && pr(module_options).manage(module_options[:namespace], module_options[:name], options)
+    }
+
+    run(cli_options, job)
+  end
+
+  def self.execute(cli_options)
+    job = lambda { |puppet_module, module_options, _defaults, options|
+      repo_dir = File.join(options[:project_root], module_options[:fullname])
+
+      git_options = {
+        remote: module_options[:remote],
+        reset_hard: options[:reset_hard],
+      }
+      repo = Git.pull(options[:git_base], module_options[:fullname], options[:branch], options[:project_root], git_options)
+
+      FileUtils.chdir(repo_dir) do
+        result = system(options[:script])
+        raise "Error during script execution (#{$CHILD_STATUS})" unless result
+
+        options[:push] && Git.push(repo, options)
+        options[:push] && options[:pr] && pr(module_options).manage(module_options[:namespace], module_options[:name], options)
+      end
+    }
+
+    run(cli_options, job)
+  end
+
+  def self.run(options, job, prepare = nil)
     options = config_defaults.merge(options)
+    options[:remote_branch] ||= options[:branch]
     defaults = Util.parse_config(config_path(CONF_FILE, options))
     if options[:pr]
       unless options[:branch]
@@ -160,9 +228,7 @@ module ModuleSync # rubocop:disable Metrics/ModuleLength
       @pr = create_pr_manager if options[:pr]
     end
 
-    local_template_dir = config_path(MODULE_FILES_DIR, options)
-    local_files = find_template_files(local_template_dir)
-    module_files = relative_names(local_files, local_template_dir)
+    options = prepare.call(options) unless prepare.nil?
 
     managed_modules = self.managed_modules(config_path(options[:managed_modules_conf], options),
                                            options[:filter],
@@ -171,14 +237,19 @@ module ModuleSync # rubocop:disable Metrics/ModuleLength
     errors = false
     # managed_modules is either an array or a hash
     managed_modules.each do |puppet_module, module_options|
+      module_options ||= {}
+      module_options = Util.symbolize_keys(module_options)
+      module_options.merge! compute_module_naming_attributes(puppet_module, options, module_options)
+
       begin
-        mod_options = module_options.nil? ? nil : Util.symbolize_keys(module_options)
-        manage_module(puppet_module, module_files, mod_options, defaults, options)
-      rescue # rubocop:disable Lint/RescueWithoutErrorClass
-        $stderr.puts "Error while updating #{puppet_module}"
+        job.call(puppet_module, module_options, defaults, options)
+      rescue StandardError => e
+        message = e.message || "Error during '#{options[:command]}'"
+        message = "#{puppet_module}: #{message}"
+        $stderr.puts message
         raise unless options[:skip_broken]
         errors = true
-        $stdout.puts "Skipping #{puppet_module} as update process failed"
+        $stdout.puts "Skipping #{puppet_module} as '#{options[:command]}' process failed"
       end
     end
     exit 1 if errors && options[:fail_on_warnings]
