@@ -178,9 +178,7 @@ module ModuleSync # rubocop:disable Metrics/ModuleLength
 
   def self.push(cli_options)
     job = lambda { |puppet_module, module_options, _defaults, options|
-      default_namespace = module_options[:namespace] || options[:namespace]
-      namespace, module_name = compute_module_naming_attributes(puppet_module, default_namespace)
-      repo_dir = File.join(options[:project_root], namespace, module_name)
+      repo_dir = File.join(options[:project_root], module_options[:fullname])
 
       begin
         repo = ::Git.open repo_dir
@@ -189,7 +187,7 @@ module ModuleSync # rubocop:disable Metrics/ModuleLength
         raise ModuleSync::Error, 'Repository must be locally available before trying to push'
       end
       Git.push(repo, options)
-      options[:pr] && pr(module_options).manage(namespace, module_name, options)
+      options[:pr] && pr(module_options).manage(module_options[:namespace], module_options[:name], options)
     }
 
     run(cli_options, job)
