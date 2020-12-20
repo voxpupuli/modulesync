@@ -65,9 +65,17 @@ module ModuleSync # rubocop:disable Metrics/ModuleLength
     managed_modules
   end
 
-  def self.compute_module_naming_attributes(module_name, default_namespace)
-    return [default_namespace, module_name] unless module_name.include?('/')
-    ns, mod = module_name.split('/')
+  def self.compute_module_naming_attributes(module_name, options, module_options)
+    namespace = module_options[:namespace] || options[:namespace]
+    name = module_name
+    namespace, name = module_name.split('/') if module_name.include?('/')
+    fullname = "#{namespace}/#{name}"
+
+    {
+      name: name,
+      namespace: namespace,
+      fullname: fullname,
+    }
   end
 
   def self.hook(options)
@@ -108,12 +116,8 @@ module ModuleSync # rubocop:disable Metrics/ModuleLength
   end
 
   def self.manage_module(puppet_module, module_files, module_options, defaults, options)
-    default_namespace = options[:namespace]
-    if module_options.is_a?(Hash) && module_options.key?(:namespace)
-      default_namespace = module_options[:namespace]
-    end
-    namespace, module_name = compute_module_naming_attributes(puppet_module, default_namespace)
-    git_repo = File.join(namespace, module_name)
+    git_repo = module_options[:fullname]
+
     unless options[:offline]
       git_options = {
         override_changes: true,
@@ -123,16 +127,17 @@ module ModuleSync # rubocop:disable Metrics/ModuleLength
       Git.pull(options[:git_base], git_repo, options[:branch], options[:project_root], git_options)
     end
 
-    module_configs = Util.parse_config(module_file(options[:project_root], namespace, module_name, MODULE_CONF_FILE))
+    module_configs = Util.parse_config(module_file(options[:project_root], module_options[:namespace], module_options[:name], MODULE_CONF_FILE))
     settings = Settings.new(defaults[GLOBAL_DEFAULTS_KEY] || {},
                             defaults,
                             module_configs[GLOBAL_DEFAULTS_KEY] || {},
                             module_configs,
-                            :puppet_module => module_name,
+                            :puppet_module => module_options[:name],
                             :git_base => options[:git_base],
-                            :namespace => namespace)
+                            :namespace => module_options[:namespace])
+
     settings.unmanaged_files(module_files).each do |filename|
-      $stdout.puts "Not managing #{filename} in #{module_name}"
+      $stdout.puts "Not managing #{filename} in #{module_options[:name]}"
     end
 
     files_to_manage = settings.managed_files(module_files)
@@ -140,10 +145,10 @@ module ModuleSync # rubocop:disable Metrics/ModuleLength
 
     if options[:noop]
       Git.update_noop(git_repo, options)
-      options[:pr] && pr(module_options).manage(namespace, module_name, options)
+      options[:pr] && pr(module_options).manage(module_options[:namespace], module_options[:name], options)
     elsif !options[:offline]
       pushed = Git.update(git_repo, files_to_manage, options)
-      pushed && options[:pr] && pr(module_options).manage(namespace, module_name, options)
+      pushed && options[:pr] && pr(module_options).manage(module_options[:namespace], module_options[:name], options)
     end
   end
 
@@ -240,6 +245,8 @@ module ModuleSync # rubocop:disable Metrics/ModuleLength
     managed_modules.each do |puppet_module, module_options|
       module_options ||= {}
       module_options = Util.symbolize_keys(module_options)
+      module_options.merge! compute_module_naming_attributes(puppet_module, options, module_options)
+
       begin
         job.call(puppet_module, module_options, defaults, options)
       rescue StandardError => e
