@@ -195,24 +195,20 @@ module ModuleSync # rubocop:disable Metrics/ModuleLength
 
   def self.execute(cli_options)
     job = lambda { |puppet_module, module_options, _defaults, options|
-      default_namespace = module_options[:namespace] || options[:namespace]
-      namespace, module_name = compute_module_naming_attributes(puppet_module, default_namespace)
-
-      module_fullname = File.join(namespace, module_name)
-      repo_dir = File.join(options[:project_root], module_fullname)
+      repo_dir = File.join(options[:project_root], module_options[:fullname])
 
       git_options = {
         remote: module_options[:remote],
         reset_hard: options[:reset_hard],
       }
-      repo = Git.pull(options[:git_base], module_fullname, options[:branch], options[:project_root], git_options)
+      repo = Git.pull(options[:git_base], module_options[:fullname], options[:branch], options[:project_root], git_options)
 
       FileUtils.chdir(repo_dir) do
         result = system(options[:script])
         raise "Error during script execution (#{$CHILD_STATUS})" unless result
 
         options[:push] && Git.push(repo, options)
-        options[:push] && options[:pr] && pr(module_options).manage(namespace, module_name, options)
+        options[:push] && options[:pr] && pr(module_options).manage(module_options[:namespace], module_options[:name], options)
       end
     }
 
