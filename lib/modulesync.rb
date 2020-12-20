@@ -184,9 +184,10 @@ module ModuleSync # rubocop:disable Metrics/ModuleLength
     errors = false
     # managed_modules is either an array or a hash
     managed_modules.each do |puppet_module, module_options|
+      module_options ||= {}
+      module_options = Util.symbolize_keys(module_options)
       begin
-        mod_options = module_options.nil? ? {} : Util.symbolize_keys(module_options)
-        job.call(puppet_module, mod_options, defaults, options)
+        job.call(puppet_module, module_options, defaults, options)
       rescue StandardError => e
         message = e.message || "Error during '#{options[:command]}'"
         message = "#{puppet_module}: #{message}"
