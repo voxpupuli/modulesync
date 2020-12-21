@@ -430,7 +430,8 @@ Feature: update
 
   Scenario: Pulling a module that already exists in the modules directory
     Given a basic setup with a puppet module "puppet-test" from "fakenamespace"
-    When I run `msync update`
+    And a directory named "moduleroot"
+    When I run `msync update --message "First update run"`
     Then the exit status should be 0
     And the puppet module "puppet-test" from "fakenamespace" should have no commits made by "Aruba"
     Given a file named "config_defaults.yml" with:
@@ -455,10 +456,10 @@ Feature: update
       """
     And the puppet module "puppet-test" from "fakenamespace" should have no commits made by "Aruba"
 
-  Scenario: When running update with no changes
+  Scenario: When running update without changes
     Given a basic setup with a puppet module "puppet-test" from "fakenamespace"
     And a directory named "moduleroot"
-    When I run `msync update`
+    When I run `msync update --message "Running without changes"`
     Then the exit status should be 0
     And the puppet module "puppet-test" from "fakenamespace" should have no commits made by "Aruba"
 
