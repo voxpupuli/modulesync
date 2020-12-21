@@ -1,10 +1,12 @@
 require 'thor'
+
 require 'modulesync'
+require 'modulesync/cli/thor'
 require 'modulesync/constants'
 require 'modulesync/util'
 
 module ModuleSync
-  class CLI
+  module CLI
     def self.defaults
       @defaults ||= Util.symbolize_keys(Util.parse_config(Constants::MODULESYNC_CONF_FILE))
     end
