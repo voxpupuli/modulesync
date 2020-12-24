@@ -1,12 +1,15 @@
 require 'fileutils'
 require 'pathname'
+
 require 'modulesync/cli'
 require 'modulesync/constants'
 require 'modulesync/git'
 require 'modulesync/hook'
+require 'modulesync/puppet_module'
 require 'modulesync/renderer'
 require 'modulesync/settings'
 require 'modulesync/util'
+
 require 'monkey_patches'
 
 module ModuleSync # rubocop:disable Metrics/ModuleLength
@@ -21,12 +24,16 @@ module ModuleSync # rubocop:disable Metrics/ModuleLength
     }
   end
 
+  def self.options
+    @options
+  end
+
   def self.local_file(config_path, file)
     File.join(config_path, MODULE_FILES_DIR, file)
   end
 
-  def self.module_file(project_root, namespace, puppet_module, *parts)
-    File.join(project_root, namespace, puppet_module, *parts)
+  def self.module_file(puppet_module, *parts)
+    File.join(puppet_module.working_directory, *parts)
   end
 
   # List all template files.
@@ -50,7 +57,11 @@ module ModuleSync # rubocop:disable Metrics/ModuleLength
     file_list.map { |file| file.sub(/#{path}/, '') }
   end
 
-  def self.managed_modules(config_file, filter, negative_filter)
+  def self.managed_modules
+    config_file = config_path(options[:managed_modules_conf], options)
+    filter = options[:filter]
+    negative_filter = options[:negative_filter]
+
     managed_modules = Util.parse_config(config_file)
     if managed_modules.empty?
       $stderr.puts "No modules found in #{config_file}." \
@@ -59,12 +70,7 @@ module ModuleSync # rubocop:disable Metrics/ModuleLength
     end
     managed_modules.select! { |m| m =~ Regexp.new(filter) } unless filter.nil?
     managed_modules.reject! { |m| m =~ Regexp.new(negative_filter) } unless negative_filter.nil?
-    managed_modules
-  end
-
-  def self.module_name(module_name, default_namespace)
-    return [default_namespace, module_name] unless module_name.include?('/')
-    ns, mod = module_name.split('/')
+    managed_modules.map { |given_name, options| PuppetModule.new(given_name, options) }
   end
 
   def self.hook(options)
@@ -78,11 +84,11 @@ module ModuleSync # rubocop:disable Metrics/ModuleLength
     end
   end
 
-  def self.manage_file(filename, settings, options)
+  def self.manage_file(puppet_module, filename, settings, options)
     namespace = settings.additional_settings[:namespace]
     module_name = settings.additional_settings[:puppet_module]
     configs = settings.build_file_configs(filename)
-    target_file = module_file(options[:project_root], namespace, module_name, filename)
+    target_file = module_file(puppet_module, filename)
     if configs['delete']
       Renderer.remove(target_file)
     else
@@ -92,7 +98,7 @@ module ModuleSync # rubocop:disable Metrics/ModuleLength
         # Meta data passed to the template as @metadata[:name]
         metadata = {
           :module_name => module_name,
-          :workdir     => module_file(options[:project_root], namespace, module_name),
+          :workdir     => puppet_module.working_directory,
           :target_file => target_file,
         }
         template = Renderer.render(erb, configs, metadata)
@@ -104,38 +110,33 @@ module ModuleSync # rubocop:disable Metrics/ModuleLength
     end
   end
 
-  def self.manage_module(puppet_module, module_files, module_options, defaults, options)
-    default_namespace = options[:namespace]
-    if module_options.is_a?(Hash) && module_options.key?(:namespace)
-      default_namespace = module_options[:namespace]
-    end
-    namespace, module_name = module_name(puppet_module, default_namespace)
-    git_repo = File.join(namespace, module_name)
-    unless options[:offline]
-      Git.pull(options[:git_base], git_repo, options[:branch], options[:project_root], module_options || {})
-    end
+  def self.manage_module(puppet_module, module_files, defaults)
+    Git.pull(puppet_module, options[:branch]) unless options[:offline]
 
-    module_configs = Util.parse_config(module_file(options[:project_root], namespace, module_name, MODULE_CONF_FILE))
+    module_configs = Util.parse_config(module_file(puppet_module, MODULE_CONF_FILE))
     settings = Settings.new(defaults[GLOBAL_DEFAULTS_KEY] || {},
                             defaults,
                             module_configs[GLOBAL_DEFAULTS_KEY] || {},
                             module_configs,
-                            :puppet_module => module_name,
+                            :puppet_module => puppet_module.repository_name,
                             :git_base => options[:git_base],
-                            :namespace => namespace)
+                            :namespace => puppet_module.repository_namespace)
+
     settings.unmanaged_files(module_files).each do |filename|
-      $stdout.puts "Not managing #{filename} in #{module_name}"
+      $stdout.puts "Not managing '#{filename}' in '#{puppet_module.given_name}'"
     end
 
     files_to_manage = settings.managed_files(module_files)
-    files_to_manage.each { |filename| manage_file(filename, settings, options) }
+    files_to_manage.each { |filename| manage_file(puppet_module, filename, settings, options) }
 
     if options[:noop]
-      Git.update_noop(git_repo, options)
-      options[:pr] && pr(module_options).manage(namespace, module_name, options)
+      Git.update_noop(puppet_module.repository_path, options)
+      options[:pr] && \
+        pr(puppet_module).manage(puppet_module.repository_namespace, puppet_module.repository_name, options)
     elsif !options[:offline]
-      pushed = Git.update(git_repo, files_to_manage, options)
-      pushed && options[:pr] && pr(module_options).manage(namespace, module_name, options)
+      pushed = Git.update(puppet_module.repository_path, files_to_manage, options)
+      pushed && options[:pr] && \
+        pr(puppet_module).manage(puppet_module.repository_namespace, puppet_module.repository_name, options)
     end
   end
 
@@ -148,9 +149,10 @@ module ModuleSync # rubocop:disable Metrics/ModuleLength
     self.class.config_path(file, options)
   end
 
-  def self.update(options)
-    options = config_defaults.merge(options)
+  def self.update(cli_options)
+    @options = config_defaults.merge(cli_options)
     defaults = Util.parse_config(config_path(CONF_FILE, options))
+
     if options[:pr]
       unless options[:branch]
         $stderr.puts 'A branch must be specified with --branch to use --pr!'
@@ -164,28 +166,23 @@ module ModuleSync # rubocop:disable Metrics/ModuleLength
     local_files = find_template_files(local_template_dir)
     module_files = relative_names(local_files, local_template_dir)
 
-    managed_modules = self.managed_modules(config_path(options[:managed_modules_conf], options),
-                                           options[:filter],
-                                           options[:negative_filter])
-
     errors = false
     # managed_modules is either an array or a hash
-    managed_modules.each do |puppet_module, module_options|
+    managed_modules.each do |puppet_module|
       begin
-        mod_options = module_options.nil? ? nil : Util.symbolize_keys(module_options)
-        manage_module(puppet_module, module_files, mod_options, defaults, options)
+        manage_module(puppet_module, module_files, defaults)
       rescue # rubocop:disable Lint/RescueWithoutErrorClass
-        $stderr.puts "Error while updating #{puppet_module}"
+        warn "Error while updating '#{puppet_module.given_name}'"
         raise unless options[:skip_broken]
         errors = true
-        $stdout.puts "Skipping #{puppet_module} as update process failed"
+        $stdout.puts "Skipping '#{puppet_module.given_name}' as update process failed"
       end
     end
     exit 1 if errors && options[:fail_on_warnings]
   end
 
-  def self.pr(module_options)
-    module_options ||= {}
+  def self.pr(puppet_module)
+    module_options = puppet_module.options
     github_conf = module_options[:github]
     gitlab_conf = module_options[:gitlab]
 

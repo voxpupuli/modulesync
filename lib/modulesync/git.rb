@@ -45,23 +45,22 @@ module ModuleSync
       end
     end
 
-    def self.pull(git_base, name, branch, project_root, opts)
-      puts "Syncing #{name}"
-      Dir.mkdir(project_root) unless Dir.exist?(project_root)
+    def self.pull(puppet_module, branch)
+      puts "Syncing '#{puppet_module.given_name}'"
 
       # Repo needs to be cloned in the cwd
-      if !Dir.exist?("#{project_root}/#{name}") || !Dir.exist?("#{project_root}/#{name}/.git")
+      if !Dir.exist?("#{puppet_module.working_directory}/.git")
         puts 'Cloning repository fresh'
-        remote = opts[:remote] || (git_base.start_with?('file://') ? "#{git_base}#{name}" : "#{git_base}#{name}.git")
-        local = "#{project_root}/#{name}"
-        puts "Cloning from #{remote}"
+        remote = puppet_module.repository_remote
+        local = puppet_module.working_directory
+        puts "Cloning from '#{remote}'"
         repo = ::Git.clone(remote, local)
         switch_branch(repo, branch)
       # Repo already cloned, check out master and override local changes
       else
         # Some versions of git can't properly handle managing a repo from outside the repo directory
-        Dir.chdir("#{project_root}/#{name}") do
-          puts "Overriding any local changes to repositories in #{project_root}"
+        Dir.chdir(puppet_module.working_directory) do
+          puts "Overriding any local changes to repositories in '#{puppet_module.working_directory}'"
           repo = ::Git.open('.')
           repo.fetch
           repo.reset_hard

@@ -300,7 +300,7 @@ Feature: update
       """
     And the output should match:
       """
-      Not managing Gemfile in puppet-test
+      Not managing 'Gemfile' in 'puppet-test'
       """
     And the exit status should be 0
     And the file named "modules/fakenamespace/puppet-test/Gemfile" should contain:
@@ -370,7 +370,7 @@ Feature: update
     When I run `msync update --offline`
     Then the output should contain:
       """
-      Not managing spec/spec_helper.rb in puppet-apache
+      Not managing 'spec/spec_helper.rb' in 'puppet-apache'
       """
     And the exit status should be 0
     And the file named "modules/puppetlabs/puppet-apache/spec/spec_helper.rb" should contain:
@@ -607,7 +607,7 @@ Feature: update
     Then the exit status should be 0
     And the output should match:
       """
-      Not managing spec/spec_helper.rb in puppet-test
+      Not managing 'spec/spec_helper.rb' in 'puppet-test'
       """
     And the file named "modules/fakenamespace/puppet-test/global-test.md" should contain:
       """
