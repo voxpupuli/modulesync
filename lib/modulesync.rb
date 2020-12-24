@@ -3,7 +3,7 @@ require 'pathname'
 
 require 'modulesync/cli'
 require 'modulesync/constants'
-require 'modulesync/git'
+require 'modulesync/repository'
 require 'modulesync/hook'
 require 'modulesync/puppet_module'
 require 'modulesync/renderer'
@@ -111,7 +111,7 @@ module ModuleSync # rubocop:disable Metrics/ModuleLength
   end
 
   def self.manage_module(puppet_module, module_files, defaults)
-    Git.pull(puppet_module, options[:branch]) unless options[:offline]
+    Repository.pull(puppet_module, options[:branch]) unless options[:offline]
 
     module_configs = Util.parse_config(module_file(puppet_module, MODULE_CONF_FILE))
     settings = Settings.new(defaults[GLOBAL_DEFAULTS_KEY] || {},
@@ -130,11 +130,11 @@ module ModuleSync # rubocop:disable Metrics/ModuleLength
     files_to_manage.each { |filename| manage_file(puppet_module, filename, settings, options) }
 
     if options[:noop]
-      Git.update_noop(puppet_module.repository_path, options)
+      Repository.update_noop(puppet_module.repository_path, options)
       options[:pr] && \
         pr(puppet_module).manage(puppet_module.repository_namespace, puppet_module.repository_name, options)
     elsif !options[:offline]
-      pushed = Git.update(puppet_module.repository_path, files_to_manage, options)
+      pushed = Repository.update(puppet_module.repository_path, files_to_manage, options)
       pushed && options[:pr] && \
         pr(puppet_module).manage(puppet_module.repository_namespace, puppet_module.repository_name, options)
     end
