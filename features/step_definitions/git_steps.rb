@@ -73,3 +73,13 @@ Given 'the puppet module {string} from {string} has the default branch named {st
   pmrr = ModuleSync::Faker::PuppetModuleRemoteRepo.new(name, namespace)
   pmrr.default_branch = default_branch
 end
+
+Then('the puppet module {string} from {string} should have a tag named {string}') do |name, namespace, tag|
+  pmrr = ModuleSync::Faker::PuppetModuleRemoteRepo.new(name, namespace)
+  expect(pmrr.tags).to include(tag)
+end
+
+Then('the puppet module {string} from {string} should not have a tag named {string}') do |name, namespace, tag|
+  pmrr = ModuleSync::Faker::PuppetModuleRemoteRepo.new(name, namespace)
+  expect(pmrr.tags).not_to include(tag)
+end

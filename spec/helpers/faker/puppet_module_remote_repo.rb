@@ -99,6 +99,12 @@ module ModuleSync
         end
       end
 
+      def tags
+        FileUtils.chdir(bare_repo_dir) do
+          return run %w{git tag --list}
+        end
+      end
+
       def remote_url
         "file://#{bare_repo_dir}"
       end
