@@ -5,25 +5,30 @@ module ModuleSync
   module Git # rubocop:disable Metrics/ModuleLength
     include Constants
 
+    # Repository
     def self.remote_branch_exists?(repo, branch)
       repo.branches.remote.collect(&:name).include?(branch)
     end
 
+    # Repository
     def self.local_branch_exists?(repo, branch)
       repo.branches.local.collect(&:name).include?(branch)
     end
 
+    # Repository
     def self.remote_branch_differ?(repo, local_branch, remote_branch)
       !remote_branch_exists?(repo, remote_branch) ||
         repo.diff("#{local_branch}..origin/#{remote_branch}").any?
     end
 
+    # Repository
     def self.default_branch(repo)
       symbolic_ref = repo.branches.find { |b| b.full =~ %r{remotes/origin/HEAD} }
       return unless symbolic_ref
       %r{remotes/origin/HEAD\s+->\s+origin/(?<branch>.+?)$}.match(symbolic_ref.full)[:branch]
     end
 
+    # Repository
     def self.switch_branch(repo, branch)
       unless branch
         branch = default_branch(repo)
@@ -45,6 +50,7 @@ module ModuleSync
       end
     end
 
+    # Repository (renamed to prepare_workspace)
     def self.pull(puppet_module, branch)
       puts "Syncing '#{puppet_module.given_name}'"
 
@@ -70,6 +76,7 @@ module ModuleSync
       end
     end
 
+    # PuppetModule, is it used?
     def self.update_changelog(repo, version, message, module_root)
       changelog = "#{module_root}/CHANGELOG.md"
       if File.exist?(changelog)
@@ -88,6 +95,7 @@ module ModuleSync
       end
     end
 
+    # PuppetModule
     def self.bump(repo, m, message, module_root, changelog = false)
       new = m.bump!
       puts "Bumped to version #{new}"
@@ -98,6 +106,7 @@ module ModuleSync
       new
     end
 
+    # Repository
     def self.tag(repo, version, tag_pattern)
       tag = tag_pattern % version
       puts "Tagging with #{tag}"
@@ -105,6 +114,7 @@ module ModuleSync
       repo.push('origin', tag)
     end
 
+    # Repository
     def self.checkout_branch(repo, branch)
       selected_branch = branch || repo.current_branch || 'master'
       repo.branch(selected_branch).checkout
@@ -112,6 +122,7 @@ module ModuleSync
     end
     private_class_method :checkout_branch
 
+    # Repository (renamed to submit_changes)
     # Git add/rm, git commit, git push
     def self.update(name, files, options)
       module_root = "#{options[:project_root]}/#{name}"
@@ -161,6 +172,7 @@ module ModuleSync
       true
     end
 
+    # Repository
     # Needed because of a bug in the git gem that lists ignored files as
     # untracked under some circumstances
     # https://github.com/schacon/ruby-git/issues/130
@@ -170,6 +182,7 @@ module ModuleSync
       repo.status.untracked.keep_if { |f, _| ignored.none? { |i| File.fnmatch(i, f) } }
     end
 
+    # Repository (renamed to show_changes)
     def self.update_noop(name, options)
       puts "Using no-op. Files in #{name} may be changed but will not be committed."
 
