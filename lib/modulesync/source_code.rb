@@ -1,4 +1,5 @@
 require 'modulesync'
+require 'modulesync/repository'
 require 'modulesync/util'
 
 module ModuleSync
@@ -17,6 +18,10 @@ module ModuleSync
 
       @repository_name = given_name.split('/').last
       @repository_namespace = given_name.split('/')[0...-1].join('/')
+    end
+
+    def repository
+      @repository ||= Repository.new directory: working_directory, remote: repository_remote
     end
 
     def repository_name

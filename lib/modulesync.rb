@@ -3,7 +3,6 @@ require 'pathname'
 
 require 'modulesync/cli'
 require 'modulesync/constants'
-require 'modulesync/repository'
 require 'modulesync/hook'
 require 'modulesync/puppet_module'
 require 'modulesync/renderer'
@@ -111,9 +110,8 @@ module ModuleSync # rubocop:disable Metrics/ModuleLength
   end
 
   def self.manage_module(puppet_module, module_files, defaults)
-    repository = Repository.new directory: puppet_module.working_directory, remote: puppet_module.repository_remote
     puts "Syncing '#{puppet_module.given_name}'"
-    repository.prepare_workspace(options[:branch]) unless options[:offline]
+    puppet_module.repository.prepare_workspace(options[:branch]) unless options[:offline]
 
     module_configs = Util.parse_config(module_file(puppet_module, MODULE_CONF_FILE))
     settings = Settings.new(defaults[GLOBAL_DEFAULTS_KEY] || {},
@@ -133,15 +131,15 @@ module ModuleSync # rubocop:disable Metrics/ModuleLength
 
     if options[:noop]
       puts "Using no-op. Files in '#{puppet_module.given_name}' may be changed but will not be committed."
-      repository.show_changes(options)
+      puppet_module.repository.show_changes(options)
       options[:pr] && \
         pr(puppet_module).manage(puppet_module.repository_namespace, puppet_module.repository_name, options)
     elsif !options[:offline]
-      pushed = repository.submit_changes(files_to_manage, options)
+      pushed = puppet_module.repository.submit_changes(files_to_manage, options)
       # Only bump/tag if pushing didn't fail (i.e. there were changes)
       if pushed && options[:bump]
         new = puppet_module.bump(options[:message], options[:changelog])
-        repository.tag(new, options[:tag_pattern]) if options[:tag]
+        puppet_module.repository.tag(new, options[:tag_pattern]) if options[:tag]
       end
       pushed && options[:pr] && \
         pr(puppet_module).manage(puppet_module.repository_namespace, puppet_module.repository_name, options)
