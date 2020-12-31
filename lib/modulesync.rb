@@ -138,6 +138,11 @@ module ModuleSync # rubocop:disable Metrics/ModuleLength
         pr(puppet_module).manage(puppet_module.repository_namespace, puppet_module.repository_name, options)
     elsif !options[:offline]
       pushed = repository.submit_changes(files_to_manage, options)
+      # Only bump/tag if pushing didn't fail (i.e. there were changes)
+      if pushed && options[:bump]
+        new = puppet_module.bump(options[:message], options[:changelog])
+        repository.tag(new, options[:tag_pattern]) if options[:tag]
+      end
       pushed && options[:pr] && \
         pr(puppet_module).manage(puppet_module.repository_namespace, puppet_module.repository_name, options)
     end
