@@ -2,7 +2,7 @@ require 'spec_helper'
 require 'modulesync/pr/github'
 
 describe ModuleSync::PR::GitHub do
-  context '::manage' do
+  context '::open_pull_request' do
     before(:each) do
       @git_repo = 'test/modulesync'
       @namespace, @repo_name = @git_repo.split('/')
@@ -22,7 +22,7 @@ describe ModuleSync::PR::GitHub do
     it 'submits PR when --pr is set' do
       allow(@client).to receive(:pull_requests).with(@git_repo, :state => 'open', :base => 'master', :head => "#{@namespace}:#{@options[:branch]}").and_return([])
       expect(@client).to receive(:create_pull_request).with(@git_repo, 'master', @options[:branch], @options[:pr_title], @options[:message]).and_return({"html_url" => "http://example.com/pulls/22"})
-      expect { @it.manage(@namespace, @repo_name, @options) }.to output(/Submitted PR/).to_stdout
+      expect { @it.open_pull_request(@namespace, @repo_name, @options) }.to output(/Submitted PR/).to_stdout
     end
 
     it 'skips submitting PR if one has already been issued' do
@@ -33,7 +33,7 @@ describe ModuleSync::PR::GitHub do
       }
 
       expect(@client).to receive(:pull_requests).with(@git_repo, :state => 'open', :base => 'master', :head => "#{@namespace}:#{@options[:branch]}").and_return([pr])
-      expect { @it.manage(@namespace, @repo_name, @options) }.to output(/Skipped! 1 PRs found for branch test/).to_stdout
+      expect { @it.open_pull_request(@namespace, @repo_name, @options) }.to output(/Skipped! 1 PRs found for branch test/).to_stdout
     end
 
     it 'adds labels to PR when --pr-labels is set' do
@@ -43,7 +43,7 @@ describe ModuleSync::PR::GitHub do
       allow(@client).to receive(:pull_requests).with(@git_repo, :state => 'open', :base => 'master', :head => "#{@namespace}:#{@options[:branch]}").and_return([])
 
       expect(@client).to receive(:add_labels_to_an_issue).with(@git_repo, "44", ["HELLO", "WORLD"])
-      expect { @it.manage(@namespace, @repo_name, @options) }.to output(/Attaching the following labels to PR 44: HELLO, WORLD/).to_stdout
+      expect { @it.open_pull_request(@namespace, @repo_name, @options) }.to output(/Attaching the following labels to PR 44: HELLO, WORLD/).to_stdout
     end
   end
 end

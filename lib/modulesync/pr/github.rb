@@ -1,3 +1,5 @@
+require 'modulesync/git_service'
+
 require 'octokit'
 require 'modulesync/util'
 
@@ -13,7 +15,7 @@ module ModuleSync
         @api = Octokit::Client.new(:access_token => token)
       end
 
-      def manage(namespace, module_name, options)
+      def open_pull_request(namespace, module_name, options)
         repo_path = File.join(namespace, module_name)
         branch = options[:remote_branch] || options[:branch]
         head = "#{namespace}:#{branch}"

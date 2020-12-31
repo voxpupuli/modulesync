@@ -1,4 +1,5 @@
 require 'modulesync'
+require 'modulesync/git_service'
 require 'modulesync/repository'
 require 'modulesync/util'
 
@@ -45,6 +46,11 @@ module ModuleSync
 
     def path(*parts)
       File.join(working_directory, *parts)
+    end
+
+    def open_pull_request
+      git_service = GitService.instantiate type: git_service_type, options: @options[git_service_type]
+      git_service.open_pull_request(repository_namespace, repository_name, ModuleSync.options)
     end
 
     private

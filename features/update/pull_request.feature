@@ -1,7 +1,13 @@
 Feature: Create a pull-request/merge-request after update
 
-  Scenario: Creating a GitHub PR with an update
+  Scenario: Run update in no-op mode and ask for GitHub PR
     Given a basic setup with a puppet module "puppet-test" from "fakenamespace"
+    And a file named "managed_modules.yml" with:
+      """
+      ---
+      puppet-test:
+        github: {}
+      """
     And a directory named "moduleroot"
     And I set the environment variables to:
       | variable     | value  |
@@ -11,9 +17,15 @@ Feature: Create a pull-request/merge-request after update
     And the exit status should be 0
     And the puppet module "puppet-test" from "fakenamespace" should have no commits made by "Aruba"
 
-  Scenario: Creating a GitLab MR with an update
+  Scenario: Run update in no-op mode and ask for GitLab MR
     Given a basic setup with a puppet module "puppet-test" from "fakenamespace"
     And a directory named "moduleroot"
+    And a file named "managed_modules.yml" with:
+      """
+      ---
+      puppet-test:
+        gitlab: {}
+      """
     And I set the environment variables to:
       | variable     | value  |
       | GITLAB_TOKEN | foobar |

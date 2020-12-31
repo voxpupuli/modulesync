@@ -2,7 +2,7 @@ require 'spec_helper'
 require 'modulesync/pr/gitlab'
 
 describe ModuleSync::PR::GitLab do
-  context '::manage' do
+  context '::open_pull_request' do
     before(:each) do
       @git_repo = 'test/modulesync'
       @namespace, @repo_name = @git_repo.split('/')
@@ -35,7 +35,7 @@ describe ModuleSync::PR::GitLab do
               :target_branch => 'master',
              ).and_return({"html_url" => "http://example.com/pulls/22"})
 
-      expect { @it.manage(@namespace, @repo_name, @options) }.to output(/Submitted MR/).to_stdout
+      expect { @it.open_pull_request(@namespace, @repo_name, @options) }.to output(/Submitted MR/).to_stdout
     end
 
     it 'skips submitting MR if one has already been issued' do
@@ -52,7 +52,7 @@ describe ModuleSync::PR::GitLab do
               :target_branch => 'master',
              ).and_return([mr])
 
-      expect { @it.manage(@namespace, @repo_name, @options) }.to output(/Skipped! 1 MRs found for branch test/).to_stdout
+      expect { @it.open_pull_request(@namespace, @repo_name, @options) }.to output(/Skipped! 1 MRs found for branch test/).to_stdout
     end
 
     it 'adds labels to MR when --pr-labels is set' do
@@ -75,7 +75,7 @@ describe ModuleSync::PR::GitLab do
               :target_branch => 'master',
              ).and_return([])
 
-      expect { @it.manage(@namespace, @repo_name, @options) }.to output(/Attached the following labels to MR 42: HELLO, WORLD/).to_stdout
+      expect { @it.open_pull_request(@namespace, @repo_name, @options) }.to output(/Attached the following labels to MR 42: HELLO, WORLD/).to_stdout
     end
   end
 end
