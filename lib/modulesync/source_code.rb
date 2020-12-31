@@ -49,7 +49,8 @@ module ModuleSync
     end
 
     def open_pull_request
-      git_service = GitService.instantiate type: git_service_type, options: @options[git_service_type]
+      git_service_options = GitService.configuration_for(sourcecode: self)
+      git_service = GitService.instantiate(**git_service_options)
       git_service.open_pull_request(
         repo_path: repository_path,
         namespace: repository_namespace,
