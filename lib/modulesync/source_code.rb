@@ -2,8 +2,8 @@ require 'modulesync'
 require 'modulesync/util'
 
 module ModuleSync
-  # Provide methods to retrieve puppet module attributes
-  class PuppetModule
+  # Provide methods to retrieve source code attributes
+  class SourceCode
     attr_reader :given_name
     attr_reader :options
 
