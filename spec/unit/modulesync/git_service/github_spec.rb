@@ -5,36 +5,41 @@ require 'modulesync/git_service/github'
 describe ModuleSync::GitService::GitHub do
   context '::open_pull_request' do
     before(:each) do
-      @git_repo = 'test/modulesync'
-      @namespace, @repo_name = @git_repo.split('/')
-      @options = {
-        :pr => true,
-        :pr_title => 'Test PR is submitted',
-        :branch => 'test',
-        :message => 'Hello world',
-        :pr_auto_merge => false,
-      }
-
       @client = double()
       allow(Octokit::Client).to receive(:new).and_return(@client)
       @it = ModuleSync::GitService::GitHub.new('test', 'https://api.github.com')
     end
 
+    let(:args) do
+      {
+        repo_path: 'test/modulesync',
+        namespace: 'test',
+        title: 'Test PR is submitted',
+        message: 'Hello world',
+        source_branch: 'test',
+        target_branch: 'master',
+        labels: labels,
+        noop: false,
+      }
+    end
+
+    let(:labels) { [] }
+
     it 'submits PR when --pr is set' do
       allow(@client).to receive(:pull_requests)
-        .with(@git_repo,
+        .with(args[:repo_path],
               :state => 'open',
               :base => 'master',
-              :head => "#{@namespace}:#{@options[:branch]}"
+              :head => "#{args[:namespace]}:#{args[:source_branch]}"
              ).and_return([])
       expect(@client).to receive(:create_pull_request)
-        .with(@git_repo,
+        .with(args[:repo_path],
               'master',
-              @options[:branch],
-              @options[:pr_title],
-              @options[:message]
+              args[:source_branch],
+              args[:title],
+              args[:message]
              ).and_return({"html_url" => "http://example.com/pulls/22"})
-      expect { @it.open_pull_request(@namespace, @repo_name, @options) }.to output(/Submitted PR/).to_stdout
+      expect { @it.open_pull_request(**args) }.to output(/Submitted PR/).to_stdout
     end
 
     it 'skips submitting PR if one has already been issued' do
@@ -45,32 +50,31 @@ describe ModuleSync::GitService::GitHub do
       }
 
       expect(@client).to receive(:pull_requests)
-        .with(@git_repo,
+        .with(args[:repo_path],
               :state => 'open',
               :base => 'master',
-              :head => "#{@namespace}:#{@options[:branch]}"
+              :head => "#{args[:namespace]}:#{args[:source_branch]}"
              ).and_return([pr])
-      expect { @it.open_pull_request(@namespace, @repo_name, @options) }.to output(/Skipped! 1 PRs found for branch test/).to_stdout
+      expect { @it.open_pull_request(**args) }.to output("Skipped! 1 PRs found for branch 'test'\n").to_stdout
     end
 
     context 'when labels are set' do
-      it 'adds labels to PR' do
-        @options[:pr_labels] = "HELLO,WORLD"
+      let(:labels) { %w{HELLO WORLD} }
 
+      it 'adds labels to PR' do
         allow(@client).to receive(:create_pull_request).and_return({"html_url" => "http://example.com/pulls/22", "number" => "44"})
         allow(@client).to receive(:pull_requests)
-          .with(@git_repo,
+          .with(args[:repo_path],
                 :state => 'open',
                 :base => 'master',
-                :head => "#{@namespace}:#{@options[:branch]}"
+                :head => "#{args[:namespace]}:#{args[:source_branch]}"
                ).and_return([])
-
         expect(@client).to receive(:add_labels_to_an_issue)
-          .with(@git_repo,
+          .with(args[:repo_path],
                 "44",
                 ["HELLO", "WORLD"]
                )
-        expect { @it.open_pull_request(@namespace, @repo_name, @options) }.to output(/Attaching the following labels to PR 44: HELLO, WORLD/).to_stdout
+        expect { @it.open_pull_request(**args) }.to output(/Attaching the following labels to PR 44: HELLO, WORLD/).to_stdout
       end
     end
   end

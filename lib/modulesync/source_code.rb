@@ -50,7 +50,16 @@ module ModuleSync
 
     def open_pull_request
       git_service = GitService.instantiate type: git_service_type, options: @options[git_service_type]
-      git_service.open_pull_request(repository_namespace, repository_name, ModuleSync.options)
+      git_service.open_pull_request(
+        repo_path: repository_path,
+        namespace: repository_namespace,
+        title: ModuleSync.options[:pr_title],
+        message: ModuleSync.options[:message],
+        source_branch: ModuleSync.options[:remote_branch] || ModuleSync.options[:branch] || repository.default_branch,
+        target_branch: ModuleSync.options[:pr_target_branch] || repository.default_branch,
+        labels: ModuleSync::Util.parse_list(ModuleSync.options[:pr_labels]),
+        noop: ModuleSync.options[:noop],
+      )
     end
 
     private

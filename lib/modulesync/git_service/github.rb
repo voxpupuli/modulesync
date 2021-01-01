@@ -1,4 +1,5 @@
 require 'modulesync/git_service'
+require 'modulesync/git_service/base'
 
 require 'octokit'
 require 'modulesync/util'
@@ -7,7 +8,7 @@ module ModuleSync
   module GitService
     # GitHub creates and manages pull requests on github.com or GitHub
     # Enterprise installations.
-    class GitHub
+    class GitHub < Base
       def initialize(token, endpoint)
         Octokit.configure do |c|
           c.api_endpoint = endpoint
@@ -15,16 +16,15 @@ module ModuleSync
         @api = Octokit::Client.new(:access_token => token)
       end
 
-      def open_pull_request(namespace, module_name, options)
-        repo_path = File.join(namespace, module_name)
-        branch = options[:remote_branch] || options[:branch]
-        head = "#{namespace}:#{branch}"
-        target_branch = options[:pr_target_branch] || 'master'
+      private
 
-        if options[:noop]
+      def _open_pull_request(repo_path:, namespace:, title:, message:, source_branch:, target_branch:, labels:, noop:) # rubocop:disable Metrics/ParameterLists, Metrics/LineLength
+        head = "#{namespace}:#{source_branch}"
+
+        if noop
           $stdout.puts \
-            "Using no-op. Would submit PR '#{options[:pr_title]}' to #{repo_path} " \
-            "- merges #{branch} into #{target_branch}"
+            "Using no-op. Would submit PR '#{title}' to '#{repo_path}' " \
+            "- merges '#{source_branch}' into '#{target_branch}'"
           return
         end
 
@@ -34,25 +34,24 @@ module ModuleSync
                                            :head => head)
         unless pull_requests.empty?
           # Skip creating the PR if it exists already.
-          $stdout.puts "Skipped! #{pull_requests.length} PRs found for branch #{branch}"
+          $stdout.puts "Skipped! #{pull_requests.length} PRs found for branch '#{source_branch}'"
           return
         end
 
-        pr_labels = ModuleSync::Util.parse_list(options[:pr_labels])
         pr = @api.create_pull_request(repo_path,
                                       target_branch,
-                                      branch,
-                                      options[:pr_title],
-                                      options[:message])
+                                      source_branch,
+                                      title,
+                                      message)
         $stdout.puts \
-          "Submitted PR '#{options[:pr_title]}' to #{repo_path} " \
-          "- merges #{branch} into #{target_branch}"
+          "Submitted PR '#{title}' to '#{repo_path}' " \
+          "- merges #{source_branch} into #{target_branch}"
 
         # We only assign labels to the PR if we've discovered a list > 1. The labels MUST
         # already exist. We DO NOT create missing labels.
-        return if pr_labels.empty?
-        $stdout.puts "Attaching the following labels to PR #{pr['number']}: #{pr_labels.join(', ')}"
-        @api.add_labels_to_an_issue(repo_path, pr['number'], pr_labels)
+        return if labels.empty?
+        $stdout.puts "Attaching the following labels to PR #{pr['number']}: #{labels.join(', ')}"
+        @api.add_labels_to_an_issue(repo_path, pr['number'], labels)
       end
     end
   end
