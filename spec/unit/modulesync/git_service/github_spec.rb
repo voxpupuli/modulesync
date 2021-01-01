@@ -53,23 +53,25 @@ describe ModuleSync::GitService::GitHub do
       expect { @it.open_pull_request(@namespace, @repo_name, @options) }.to output(/Skipped! 1 PRs found for branch test/).to_stdout
     end
 
-    it 'adds labels to PR when --pr-labels is set' do
-      @options[:pr_labels] = "HELLO,WORLD"
+    context 'when labels are set' do
+      it 'adds labels to PR' do
+        @options[:pr_labels] = "HELLO,WORLD"
 
-      allow(@client).to receive(:create_pull_request).and_return({"html_url" => "http://example.com/pulls/22", "number" => "44"})
-      allow(@client).to receive(:pull_requests)
-        .with(@git_repo,
-              :state => 'open',
-              :base => 'master',
-              :head => "#{@namespace}:#{@options[:branch]}"
-             ).and_return([])
+        allow(@client).to receive(:create_pull_request).and_return({"html_url" => "http://example.com/pulls/22", "number" => "44"})
+        allow(@client).to receive(:pull_requests)
+          .with(@git_repo,
+                :state => 'open',
+                :base => 'master',
+                :head => "#{@namespace}:#{@options[:branch]}"
+               ).and_return([])
 
-      expect(@client).to receive(:add_labels_to_an_issue)
-        .with(@git_repo,
-              "44",
-              ["HELLO", "WORLD"]
-             )
-      expect { @it.open_pull_request(@namespace, @repo_name, @options) }.to output(/Attaching the following labels to PR 44: HELLO, WORLD/).to_stdout
+        expect(@client).to receive(:add_labels_to_an_issue)
+          .with(@git_repo,
+                "44",
+                ["HELLO", "WORLD"]
+               )
+        expect { @it.open_pull_request(@namespace, @repo_name, @options) }.to output(/Attaching the following labels to PR 44: HELLO, WORLD/).to_stdout
+      end
     end
   end
 end

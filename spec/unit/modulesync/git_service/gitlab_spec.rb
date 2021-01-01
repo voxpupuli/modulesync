@@ -56,27 +56,30 @@ describe ModuleSync::GitService::GitLab do
       expect { @it.open_pull_request(@namespace, @repo_name, @options) }.to output(/Skipped! 1 MRs found for branch test/).to_stdout
     end
 
-    it 'adds labels to MR when --pr-labels is set' do
-      @options[:pr_labels] = "HELLO,WORLD"
-      mr = double()
-      allow(mr).to receive(:iid).and_return("42")
 
-      expect(@client).to receive(:create_merge_request)
-        .with(@git_repo,
-              @options[:pr_title],
-              :labels => ["HELLO", "WORLD"],
-              :source_branch => @options[:branch],
-              :target_branch => 'master',
-             ).and_return(mr)
+    context 'when labels are set' do
+      it 'adds labels to MR' do
+        @options[:pr_labels] = "HELLO,WORLD"
+        mr = double()
+        allow(mr).to receive(:iid).and_return("42")
 
-      allow(@client).to receive(:merge_requests)
-        .with(@git_repo,
-              :state => 'opened',
-              :source_branch => "#{@namespace}:#{@options[:branch]}",
-              :target_branch => 'master',
-             ).and_return([])
+        expect(@client).to receive(:create_merge_request)
+          .with(@git_repo,
+                @options[:pr_title],
+                :labels => ["HELLO", "WORLD"],
+                :source_branch => @options[:branch],
+                :target_branch => 'master',
+               ).and_return(mr)
 
-      expect { @it.open_pull_request(@namespace, @repo_name, @options) }.to output(/Attached the following labels to MR 42: HELLO, WORLD/).to_stdout
+        allow(@client).to receive(:merge_requests)
+          .with(@git_repo,
+                :state => 'opened',
+                :source_branch => "#{@namespace}:#{@options[:branch]}",
+                :target_branch => 'master',
+               ).and_return([])
+
+        expect { @it.open_pull_request(@namespace, @repo_name, @options) }.to output(/Attached the following labels to MR 42: HELLO, WORLD/).to_stdout
+      end
     end
   end
 end
