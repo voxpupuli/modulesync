@@ -21,8 +21,19 @@ describe ModuleSync::GitService::GitHub do
     end
 
     it 'submits PR when --pr is set' do
-      allow(@client).to receive(:pull_requests).with(@git_repo, :state => 'open', :base => 'master', :head => "#{@namespace}:#{@options[:branch]}").and_return([])
-      expect(@client).to receive(:create_pull_request).with(@git_repo, 'master', @options[:branch], @options[:pr_title], @options[:message]).and_return({"html_url" => "http://example.com/pulls/22"})
+      allow(@client).to receive(:pull_requests)
+        .with(@git_repo,
+              :state => 'open',
+              :base => 'master',
+              :head => "#{@namespace}:#{@options[:branch]}"
+             ).and_return([])
+      expect(@client).to receive(:create_pull_request)
+        .with(@git_repo,
+              'master',
+              @options[:branch],
+              @options[:pr_title],
+              @options[:message]
+             ).and_return({"html_url" => "http://example.com/pulls/22"})
       expect { @it.open_pull_request(@namespace, @repo_name, @options) }.to output(/Submitted PR/).to_stdout
     end
 
@@ -33,7 +44,12 @@ describe ModuleSync::GitService::GitHub do
         "number" => "44"
       }
 
-      expect(@client).to receive(:pull_requests).with(@git_repo, :state => 'open', :base => 'master', :head => "#{@namespace}:#{@options[:branch]}").and_return([pr])
+      expect(@client).to receive(:pull_requests)
+        .with(@git_repo,
+              :state => 'open',
+              :base => 'master',
+              :head => "#{@namespace}:#{@options[:branch]}"
+             ).and_return([pr])
       expect { @it.open_pull_request(@namespace, @repo_name, @options) }.to output(/Skipped! 1 PRs found for branch test/).to_stdout
     end
 
@@ -41,9 +57,18 @@ describe ModuleSync::GitService::GitHub do
       @options[:pr_labels] = "HELLO,WORLD"
 
       allow(@client).to receive(:create_pull_request).and_return({"html_url" => "http://example.com/pulls/22", "number" => "44"})
-      allow(@client).to receive(:pull_requests).with(@git_repo, :state => 'open', :base => 'master', :head => "#{@namespace}:#{@options[:branch]}").and_return([])
+      allow(@client).to receive(:pull_requests)
+        .with(@git_repo,
+              :state => 'open',
+              :base => 'master',
+              :head => "#{@namespace}:#{@options[:branch]}"
+             ).and_return([])
 
-      expect(@client).to receive(:add_labels_to_an_issue).with(@git_repo, "44", ["HELLO", "WORLD"])
+      expect(@client).to receive(:add_labels_to_an_issue)
+        .with(@git_repo,
+              "44",
+              ["HELLO", "WORLD"]
+             )
       expect { @it.open_pull_request(@namespace, @repo_name, @options) }.to output(/Attaching the following labels to PR 44: HELLO, WORLD/).to_stdout
     end
   end
