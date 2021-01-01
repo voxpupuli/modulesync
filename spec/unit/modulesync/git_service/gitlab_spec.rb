@@ -1,14 +1,15 @@
 require 'spec_helper'
-require 'modulesync/pr/gitlab'
 
-describe ModuleSync::PR::GitLab do
+require 'modulesync/git_service/gitlab'
+
+describe ModuleSync::GitService::GitLab do
   context '::open_pull_request' do
     before(:each) do
       @git_repo = 'test/modulesync'
       @namespace, @repo_name = @git_repo.split('/')
       @options = {
         :pr => true,
-        :pr_title => 'Test PR is submitted',
+        :pr_title => 'Test MR is submitted',
         :branch => 'test',
         :message => 'Hello world',
         :pr_auto_merge => false,
@@ -16,7 +17,7 @@ describe ModuleSync::PR::GitLab do
 
       @client = double()
       allow(Gitlab::Client).to receive(:new).and_return(@client)
-      @it = ModuleSync::PR::GitLab.new('test', 'https://gitlab.com/api/v4')
+      @it = ModuleSync::GitService::GitLab.new('test', 'https://gitlab.com/api/v4')
     end
 
     it 'submits MR when --pr is set' do

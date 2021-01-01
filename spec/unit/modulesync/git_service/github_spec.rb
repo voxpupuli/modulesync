@@ -1,7 +1,8 @@
 require 'spec_helper'
-require 'modulesync/pr/github'
 
-describe ModuleSync::PR::GitHub do
+require 'modulesync/git_service/github'
+
+describe ModuleSync::GitService::GitHub do
   context '::open_pull_request' do
     before(:each) do
       @git_repo = 'test/modulesync'
@@ -16,7 +17,7 @@ describe ModuleSync::PR::GitHub do
 
       @client = double()
       allow(Octokit::Client).to receive(:new).and_return(@client)
-      @it = ModuleSync::PR::GitHub.new('test', 'https://api.github.com')
+      @it = ModuleSync::GitService::GitHub.new('test', 'https://api.github.com')
     end
 
     it 'submits PR when --pr is set' do

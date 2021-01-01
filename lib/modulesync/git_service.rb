@@ -8,14 +8,14 @@ module ModuleSync
         endpoint = options[:base_url] || ENV.fetch('GITHUB_BASE_URL', 'https://api.github.com')
         token = options[:token] || ENV['GITHUB_TOKEN']
         raise ModuleSync::Error, 'No GitHub token specified to create a pull request' if token.nil?
-        require 'modulesync/pr/github'
-        return ModuleSync::PR::GitHub.new(token, endpoint)
+        require 'modulesync/git_service/github'
+        ModuleSync::GitService::GitHub.new(token, endpoint)
       when :gitlab
         endpoint = options[:base_url] || ENV.fetch('GITLAB_BASE_URL', 'https://gitlab.com/api/v4')
         token = options[:token] || ENV['GITLAB_TOKEN']
         raise ModuleSync::Error, 'No GitLab token specified to create a merge request' if token.nil?
-        require 'modulesync/pr/gitlab'
-        return ModuleSync::PR::GitLab.new(token, endpoint)
+        require 'modulesync/git_service/gitlab'
+        ModuleSync::GitService::GitLab.new(token, endpoint)
       else
         raise ModuleSync::Error, "Unable to manage a PR/MR for Git service: '#{type}'"
       end

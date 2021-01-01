@@ -4,7 +4,7 @@ require 'gitlab'
 require 'modulesync/util'
 
 module ModuleSync
-  module PR
+  module GitService
     # GitLab creates and manages merge requests on gitlab.com or private GitLab
     # installations.
     class GitLab

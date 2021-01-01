@@ -4,7 +4,7 @@ require 'octokit'
 require 'modulesync/util'
 
 module ModuleSync
-  module PR
+  module GitService
     # GitHub creates and manages pull requests on github.com or GitHub
     # Enterprise installations.
     class GitHub
