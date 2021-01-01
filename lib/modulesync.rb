@@ -129,8 +129,8 @@ module ModuleSync # rubocop:disable Metrics/ModuleLength
 
     if options[:noop]
       puts "Using no-op. Files in '#{puppet_module.given_name}' may be changed but will not be committed."
-      puppet_module.repository.show_changes(options)
-      options[:pr] && puppet_module.open_pull_request
+      changed = puppet_module.repository.show_changes(options)
+      changed && options[:pr] && puppet_module.open_pull_request
     elsif !options[:offline]
       pushed = puppet_module.repository.submit_changes(files_to_manage, options)
       # Only bump/tag if pushing didn't fail (i.e. there were changes)

@@ -157,6 +157,8 @@ module ModuleSync
 
       puts "\n\n"
       puts '--------------------------------'
+
+      git.diff('HEAD', '--').any? || untracked_unignored_files.any?
     end
   end
 end
