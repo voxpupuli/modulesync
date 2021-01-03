@@ -35,3 +35,24 @@ Feature: Create a pull-request/merge-request after update
     Then the stderr should contain "No GitLab token specified to create a merge request"
     And the exit status should be 1
     And the puppet module "puppet-test" from "fakenamespace" should have no commits made by "Aruba"
+
+  Scenario: Ask for PR/MR with modules from GitHub and from GitLab
+    Given a basic setup with a puppet module "puppet-github" from "fakenamespace"
+    And a basic setup with a puppet module "puppet-gitlab" from "fakenamespace"
+    And a file named "managed_modules.yml" with:
+      """
+      ---
+      puppet-github:
+        github:
+          token: 'secret'
+      puppet-gitlab:
+        gitlab:
+          token: 'secret'
+      """
+    And a directory named "moduleroot"
+    When I run `msync update --noop --branch managed_update --pr`
+    Then the exit status should be 0
+    And the output should contain "Would submit PR "
+    And the output should contain "Would submit MR "
+    And the puppet module "puppet-github" from "fakenamespace" should have no commits made by "Aruba"
+    And the puppet module "puppet-gitlab" from "fakenamespace" should have no commits made by "Aruba"
