@@ -74,7 +74,7 @@ module ModuleSync
         Dir.chdir(@directory) do
           puts "Overriding any local changes to repository in '#{@directory}'"
           @git = Git.open('.')
-          repo.fetch
+          repo.fetch 'origin', prune: true
           repo.reset_hard
           switch_branch(branch)
           git.pull('origin', branch) if remote_branch_exists?(branch)

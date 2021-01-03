@@ -83,3 +83,8 @@ Then('the puppet module {string} from {string} should not have a tag named {stri
   pmrr = ModuleSync::Faker::PuppetModuleRemoteRepo.new(name, namespace)
   expect(pmrr.tags).not_to include(tag)
 end
+
+Given 'the branch {string} of the puppet module {string} from {string} is deleted' do |branch, name, namespace|
+  pmrr = ModuleSync::Faker::PuppetModuleRemoteRepo.new(name, namespace)
+  pmrr.delete_branch(branch)
+end
