@@ -119,9 +119,11 @@ module ModuleSync
         if options[:remote_branch]
           if remote_branch_differ?(branch, options[:remote_branch])
             repo.push('origin', "#{branch}:#{options[:remote_branch]}", opts_push)
+            puts "Changes have been pushed to: '#{branch}:#{options[:remote_branch]}'"
           end
         else
           repo.push('origin', branch, opts_push)
+          puts "Changes have been pushed to: '#{branch}'"
         end
       rescue Git::GitExecuteError => e
         raise unless e.message.match?(/working (directory|tree) clean/)
