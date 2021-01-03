@@ -29,7 +29,7 @@ describe ModuleSync::GitService::GitLab do
       allow(@client).to receive(:merge_requests)
         .with(args[:repo_path],
               :state => 'opened',
-              :source_branch => "#{args[:namespace]}:#{args[:source_branch]}",
+              :source_branch => args[:source_branch],
               :target_branch => 'master',
              ).and_return([])
 
@@ -54,7 +54,7 @@ describe ModuleSync::GitService::GitLab do
       expect(@client).to receive(:merge_requests)
         .with(args[:repo_path],
               :state => 'opened',
-              :source_branch => "#{args[:namespace]}:#{args[:source_branch]}",
+              :source_branch => args[:source_branch],
               :target_branch => 'master',
              ).and_return([mr])
 
@@ -79,7 +79,7 @@ describe ModuleSync::GitService::GitLab do
         allow(@client).to receive(:merge_requests)
           .with(args[:repo_path],
                 :state => 'opened',
-                :source_branch => "#{args[:namespace]}:#{args[:source_branch]}",
+                :source_branch => args[:source_branch],
                 :target_branch => 'master',
                ).and_return([])
 
