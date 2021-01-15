@@ -18,7 +18,8 @@ Feature: CLI
     And the output should match /Commands:/
 
   Scenario: When overriding a setting from the config file on the command line
-    Given a file named "managed_modules.yml" with:
+    Given a puppet module "puppet-test" from "fakenamespace"
+    And a file named "managed_modules.yml" with:
       """
       ---
         - puppet-test
@@ -26,10 +27,10 @@ Feature: CLI
     And a file named "modulesync.yml" with:
       """
       ---
-        namespace: maestrodev
-        git_base: 'git@github.com:'
+      namespace: default
       """
+    And a git_base option appended to "modulesync.yml" for local tests
     And a directory named "moduleroot"
-    When I run `msync update --noop --git-base https://github.com/`
+    When I run `msync update --noop --namespace fakenamespace`
     Then the exit status should be 0
-    And the output should not match /git@github.com:/
+    And the output should match /Syncing fakenamespace/

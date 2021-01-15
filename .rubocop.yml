@@ -25,6 +25,8 @@ Layout/IndentHeredoc:
 # sane line length
 Metrics/LineLength:
   Max: 120
+  Exclude:
+    - 'features/**/*'
 
 Style/FrozenStringLiteralComment:
   Enabled: false
