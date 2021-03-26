@@ -169,7 +169,7 @@ msync hook activate
 ```
 
 If you have activated the hook but want to make changes to the configuration
-directory (such as changes to managed_modules.yml or modulesync.yml) without
+directory (such as changes to `managed_modules.yml` or `modulesync.yml`) without
 touching the modules, you can deactivate the hook.
 
 ```
@@ -191,8 +191,8 @@ or set them per repository in `managed_modules.yml`, using the `github` or
 `gitlab` keys respectively.
 
 For GitHub Enterprise and self-hosted GitLab instances you also need to set the
-`GITHUB_BASE_URL` or `GITLAB_BASE_URL` environment variables, or use the
-`base_url` parameter in `managed_modules.yml`:
+`GITHUB_BASE_URL` or `GITLAB_BASE_URL` environment variables, or specify the
+`base_url` parameter in `modulesync.yml`:
 
 ```yaml
 ---
