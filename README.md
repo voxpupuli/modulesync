@@ -65,7 +65,7 @@ with `.erb.` appended. The templates are
 rendered using values from a file called `config_defaults.yml` in the root (not
 moduleroot) of the configuration directory. The default values can be
 overridden or extended by adding a file called `.sync.yml` to the module itself.
-This allows us to, for example, have a set of "required" gems that are added
+This allows us to, for example, to have a set of "required" gems that are added
 to all Gemfiles, and a set of "optional" gems that a single module might add.
 
 Within the templates, values can be accessed in the `@configs` hash, which is
@@ -214,7 +214,7 @@ Then:
 * Assign labels to the PR/MR with `--pr-labels` or in `modulesync.yml` with
   the `pr_labels` attribute. **NOTE:** `pr_labels` should be a list. When
   using the `--pr-labels` CLI option, you should use a comma separated list.
-* Set the target branch with `--pr_target_branch` or in `modulesync.yml` with
+* Set the target branch with `--pr-target-branch` or in `modulesync.yml` with
   the `pr_target_branch` attribute.
 
 More details for GitHub:
