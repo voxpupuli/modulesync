@@ -214,7 +214,7 @@ Then:
 * Assign labels to the PR/MR with `--pr-labels` or in `modulesync.yml` with
   the `pr_labels` attribute. **NOTE:** `pr_labels` should be a list. When
   using the `--pr-labels` CLI option, you should use a comma separated list.
-* Set the target branch with `--pr_target_branch` or in `modulesync.yml` with
+* Set the target branch with `--pr-target-branch` or in `modulesync.yml` with
   the `pr_target_branch` attribute.
 
 More details for GitHub:
