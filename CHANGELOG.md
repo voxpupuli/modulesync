@@ -2,6 +2,28 @@
 
 All notable changes to this project will be documented in this file.
 
+## [2.0.2](https://github.com/voxpupuli/modulesync/tree/2.0.2) (2021-04-03)
+
+[Full Changelog](https://github.com/voxpupuli/modulesync/compare/2.0.1...2.0.2)
+
+**Fixed bugs:**
+
+- Fix language-dependent Git output handling [\#200](https://github.com/voxpupuli/modulesync/pull/200) ([neomilium](https://github.com/neomilium))
+
+**Closed issues:**
+
+- Add linting \(rubocop\) to Travis CI configuration [\#153](https://github.com/voxpupuli/modulesync/issues/153)
+- Language sensitive GIT handling [\#85](https://github.com/voxpupuli/modulesync/issues/85)
+
+**Merged pull requests:**
+
+- Fix spelling of PR CLI option \(kebab-case\) [\#209](https://github.com/voxpupuli/modulesync/pull/209) ([bittner](https://github.com/bittner))
+- Correctly state which config file to update [\#208](https://github.com/voxpupuli/modulesync/pull/208) ([bittner](https://github.com/bittner))
+- Fix exit status code on failures [\#204](https://github.com/voxpupuli/modulesync/pull/204) ([neomilium](https://github.com/neomilium))
+- Remove monkey patches [\#203](https://github.com/voxpupuli/modulesync/pull/203) ([neomilium](https://github.com/neomilium))
+- Improve tests capabilities by using local/fake remote repositories [\#202](https://github.com/voxpupuli/modulesync/pull/202) ([neomilium](https://github.com/neomilium))
+- Minor modernization and cosmetic fix [\#201](https://github.com/voxpupuli/modulesync/pull/201) ([neomilium](https://github.com/neomilium))
+
 ## [2.0.1](https://github.com/voxpupuli/modulesync/tree/2.0.1) (2020-10-06)
 
 [Full Changelog](https://github.com/voxpupuli/modulesync/compare/2.0.0...2.0.1)
