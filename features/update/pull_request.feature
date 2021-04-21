@@ -9,8 +9,9 @@ Feature: Create a pull-request/merge-request after update
         github: {}
       """
     And I set the environment variables to:
-      | variable     | value  |
-      | GITHUB_TOKEN | foobar |
+      | variable        | value                    |
+      | GITHUB_TOKEN    | foobar                   |
+      | GITHUB_BASE_URL | https://github.faker.com |
     And a file named "config_defaults.yml" with:
       """
       ---
@@ -32,7 +33,9 @@ Feature: Create a pull-request/merge-request after update
       """
       ---
       puppet-test:
-        gitlab: {}
+        gitlab: {
+          base_url: 'https://gitlab.faker.com'
+      }
       """
     And I set the environment variables to:
       | variable     | value  |
@@ -59,7 +62,9 @@ Feature: Create a pull-request/merge-request after update
       """
       ---
       puppet-test:
-        gitlab: {}
+        gitlab: {
+          base_url: 'https://gitlab.faker.com'
+        }
       """
     And I set the environment variables to:
       | variable     | value  |
@@ -75,7 +80,9 @@ Feature: Create a pull-request/merge-request after update
       """
       ---
       puppet-test:
-        gitlab: {}
+        gitlab: {
+          base_url: https://gitlab.faker.com
+        }
       """
     And a file named "config_defaults.yml" with:
       """
@@ -100,9 +107,11 @@ Feature: Create a pull-request/merge-request after update
       ---
       puppet-github:
         github:
+          base_url: https://github.faker.com
           token: 'secret'
       puppet-gitlab:
         gitlab:
+          base_url: https://gitlab.faker.com
           token: 'secret'
       """
     And a file named "config_defaults.yml" with:
@@ -130,6 +139,7 @@ Feature: Create a pull-request/merge-request after update
       puppet-test:
         gitlab:
           token: 'secret'
+          base_url: 'https://gitlab.faker.com'
       """
     And a file named "config_defaults.yml" with:
       """
@@ -155,6 +165,7 @@ Feature: Create a pull-request/merge-request after update
       puppet-test:
         github:
           token: 'secret'
+          base_url: 'https://gitlab.faker.com'
       """
     And a file named "config_defaults.yml" with:
       """
