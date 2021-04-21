@@ -31,10 +31,6 @@ module ModuleSync # rubocop:disable Metrics/ModuleLength
     File.join(config_path, MODULE_FILES_DIR, file)
   end
 
-  def self.module_file(puppet_module, *parts)
-    File.join(puppet_module.working_directory, *parts)
-  end
-
   # List all template files.
   #
   # Only select *.erb files, and strip the extension. This way all the code will only have to handle bare paths,
@@ -87,7 +83,7 @@ module ModuleSync # rubocop:disable Metrics/ModuleLength
     namespace = settings.additional_settings[:namespace]
     module_name = settings.additional_settings[:puppet_module]
     configs = settings.build_file_configs(filename)
-    target_file = module_file(puppet_module, filename)
+    target_file = puppet_module.path filename
     if configs['delete']
       Renderer.remove(target_file)
     else
@@ -113,7 +109,7 @@ module ModuleSync # rubocop:disable Metrics/ModuleLength
     puts "Syncing '#{puppet_module.given_name}'"
     puppet_module.repository.prepare_workspace(options[:branch]) unless options[:offline]
 
-    module_configs = Util.parse_config(module_file(puppet_module, MODULE_CONF_FILE))
+    module_configs = Util.parse_config puppet_module.path(MODULE_CONF_FILE)
     settings = Settings.new(defaults[GLOBAL_DEFAULTS_KEY] || {},
                             defaults,
                             module_configs[GLOBAL_DEFAULTS_KEY] || {},

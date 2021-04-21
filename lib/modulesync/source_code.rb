@@ -43,6 +43,10 @@ module ModuleSync
       @working_directory ||= File.join(ModuleSync.options[:project_root], repository_path)
     end
 
+    def path(*parts)
+      File.join(working_directory, *parts)
+    end
+
     private
 
     def _repository_remote
