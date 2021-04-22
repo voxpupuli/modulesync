@@ -3,7 +3,7 @@ require 'pathname'
 
 require 'modulesync/cli'
 require 'modulesync/constants'
-require 'modulesync/git'
+require 'modulesync/repository'
 require 'modulesync/hook'
 require 'modulesync/puppet_module'
 require 'modulesync/renderer'
@@ -111,7 +111,9 @@ module ModuleSync # rubocop:disable Metrics/ModuleLength
   end
 
   def self.manage_module(puppet_module, module_files, defaults)
-    Git.pull(puppet_module, options[:branch]) unless options[:offline]
+    repository = Repository.new directory: puppet_module.working_directory, remote: puppet_module.repository_remote
+    puts "Syncing '#{puppet_module.given_name}'"
+    repository.prepare_workspace(options[:branch]) unless options[:offline]
 
     module_configs = Util.parse_config(module_file(puppet_module, MODULE_CONF_FILE))
     settings = Settings.new(defaults[GLOBAL_DEFAULTS_KEY] || {},
@@ -130,11 +132,12 @@ module ModuleSync # rubocop:disable Metrics/ModuleLength
     files_to_manage.each { |filename| manage_file(puppet_module, filename, settings, options) }
 
     if options[:noop]
-      Git.update_noop(puppet_module.repository_path, options)
+      puts "Using no-op. Files in '#{puppet_module.given_name}' may be changed but will not be committed."
+      repository.show_changes(options)
       options[:pr] && \
         pr(puppet_module).manage(puppet_module.repository_namespace, puppet_module.repository_name, options)
     elsif !options[:offline]
-      pushed = Git.update(puppet_module.repository_path, files_to_manage, options)
+      pushed = repository.submit_changes(files_to_manage, options)
       pushed && options[:pr] && \
         pr(puppet_module).manage(puppet_module.repository_namespace, puppet_module.repository_name, options)
     end
