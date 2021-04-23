@@ -9,8 +9,7 @@ module ModuleSync
     attr_reader :options
 
     def initialize(given_name, options)
-      options ||= {}
-      @options = Util.symbolize_keys(options)
+      @options = Util.symbolize_keys(options || {})
 
       @given_name = given_name
 
