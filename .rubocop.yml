@@ -14,16 +14,17 @@ AllCops:
 Style/HashSyntax:
   Enabled: false
 
-# dealbreaker:
-Style/TrailingCommaInLiteral:
+Style/TrailingCommaInArrayLiteral:
   Enabled: false
 
-# would require external library
-Layout/IndentHeredoc:
+Style/TrailingCommaInHashLiteral:
+  Enabled: false
+
+Layout/HeredocIndentation:
   Enabled: false
 
 # sane line length
-Metrics/LineLength:
+Layout/LineLength:
   Max: 120
   Exclude:
     - 'features/**/*'
