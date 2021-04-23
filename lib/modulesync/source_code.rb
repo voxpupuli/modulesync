@@ -7,8 +7,7 @@ require 'modulesync/util'
 module ModuleSync
   # Provide methods to retrieve source code attributes
   class SourceCode
-    attr_reader :given_name
-    attr_reader :options
+    attr_reader :given_name, :options
 
     def initialize(given_name, options)
       @options = Util.symbolize_keys(options || {})

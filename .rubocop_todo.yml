@@ -58,14 +58,6 @@ Metrics/MethodLength:
 Metrics/PerceivedComplexity:
   Max: 16
 
-# Offense count: 2
-# Cop supports --auto-correct.
-# Configuration parameters: EnforcedStyle.
-# SupportedStyles: separated, grouped
-Style/AccessorGrouping:
-  Exclude:
-    - 'lib/modulesync/source_code.rb'
-
 # Offense count: 1
 # Cop supports --auto-correct.
 Style/CaseLikeIf:
