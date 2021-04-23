@@ -104,12 +104,6 @@ Style/GlobalStdStream:
     - 'lib/modulesync/renderer.rb'
 
 # Offense count: 1
-# Cop supports --auto-correct.
-Style/NegatedIfElseCondition:
-  Exclude:
-    - 'lib/modulesync/repository.rb'
-
-# Offense count: 1
 # Configuration parameters: AllowedMethods.
 # AllowedMethods: respond_to_missing?
 Style/OptionalBooleanParameter:
