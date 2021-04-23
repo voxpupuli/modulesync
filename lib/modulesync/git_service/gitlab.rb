@@ -10,7 +10,7 @@ module ModuleSync
       def initialize(token, endpoint)
         @api = Gitlab::Client.new(
           :endpoint => endpoint,
-          :private_token => token
+          :private_token => token,
         )
       end
 

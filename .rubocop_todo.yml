@@ -128,12 +128,3 @@ Style/StderrPuts:
   Exclude:
     - 'lib/modulesync.rb'
     - 'lib/modulesync/renderer.rb'
-
-# Offense count: 2
-# Cop supports --auto-correct.
-# Configuration parameters: EnforcedStyleForMultiline.
-# SupportedStylesForMultiline: comma, consistent_comma, no_comma
-Style/TrailingCommaInArguments:
-  Exclude:
-    - 'lib/modulesync/git_service/base.rb'
-    - 'lib/modulesync/source_code.rb'
