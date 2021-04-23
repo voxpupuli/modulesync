@@ -12,6 +12,8 @@ require 'modulesync/util'
 require 'monkey_patches'
 
 module ModuleSync # rubocop:disable Metrics/ModuleLength
+  class Error < StandardError; end
+
   include Constants
 
   def self.config_defaults
@@ -98,8 +100,8 @@ module ModuleSync # rubocop:disable Metrics/ModuleLength
         }
         template = Renderer.render(erb, configs, metadata)
         Renderer.sync(template, target_file)
-      rescue # rubocop:disable Lint/RescueWithoutErrorClass
-        $stderr.puts "Error while rendering #{filename}"
+      rescue StandardError => e
+        $stderr.puts "#{puppet_module.given_name}: Error while rendering file: '#{filename}'"
         raise
       end
     end
@@ -173,8 +175,13 @@ module ModuleSync # rubocop:disable Metrics/ModuleLength
     managed_modules.each do |puppet_module|
       begin
         manage_module(puppet_module, module_files, defaults)
-      rescue # rubocop:disable Lint/RescueWithoutErrorClass
-        warn "Error while updating '#{puppet_module.given_name}'"
+      rescue ModuleSync::Error, Git::GitExecuteError => e
+        message = e.message || "Error during '#{options[:command]}'"
+        $stderr.puts "#{puppet_module.given_name}: #{message}"
+        exit 1 unless options[:skip_broken]
+        errors = true
+        $stdout.puts "Skipping '#{puppet_module.given_name}' as update process failed"
+      rescue StandardError => e
         raise unless options[:skip_broken]
         errors = true
         $stdout.puts "Skipping '#{puppet_module.given_name}' as update process failed"

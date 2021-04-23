@@ -120,13 +120,10 @@ module ModuleSync
           repo.push('origin', branch, opts_push)
         end
       rescue Git::GitExecuteError => e
-        if e.message.match?(/working (directory|tree) clean/)
-          puts "There were no changes in '#{@directory}'. Not committing."
-          return false
-        else
-          puts e
-          raise
-        end
+        raise unless e.message.match?(/working (directory|tree) clean/)
+
+        puts "There were no changes in '#{@directory}'. Not committing."
+        return false
       end
 
       true
