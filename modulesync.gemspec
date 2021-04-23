@@ -19,10 +19,10 @@ Gem::Specification.new do |spec|
 
   spec.add_development_dependency 'aruba', '>= 0.14', '< 2'
   spec.add_development_dependency 'bundler'
+  spec.add_development_dependency 'cucumber'
   spec.add_development_dependency 'rake'
   spec.add_development_dependency 'rspec'
-  spec.add_development_dependency 'rubocop', '~> 0.50.0'
-  spec.add_development_dependency 'cucumber'
+  spec.add_development_dependency 'rubocop'
   spec.add_development_dependency 'simplecov'
 
   spec.add_runtime_dependency 'git', '~>1.7'
