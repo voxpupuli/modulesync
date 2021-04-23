@@ -22,9 +22,6 @@ Style/TrailingCommaInArrayLiteral:
 Style/TrailingCommaInHashLiteral:
   Enabled: false
 
-Layout/HeredocIndentation:
-  Enabled: false
-
 # sane line length
 Layout/LineLength:
   Max: 120
