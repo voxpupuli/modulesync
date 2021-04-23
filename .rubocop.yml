@@ -17,10 +17,10 @@ Style/HashSyntax:
   Enabled: false
 
 Style/TrailingCommaInArrayLiteral:
-  Enabled: false
+  EnforcedStyleForMultiline: comma
 
 Style/TrailingCommaInHashLiteral:
-  Enabled: false
+  EnforcedStyleForMultiline: comma
 
 # sane line length
 Layout/LineLength:
