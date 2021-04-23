@@ -29,14 +29,6 @@ Lint/MissingSuper:
     - 'lib/modulesync/git_service/gitlab.rb'
 
 # Offense count: 3
-# Cop supports --auto-correct.
-Lint/RedundantCopDisableDirective:
-  Exclude:
-    - 'lib/modulesync/git_service/base.rb'
-    - 'lib/modulesync/git_service/github.rb'
-    - 'lib/modulesync/git_service/gitlab.rb'
-
-# Offense count: 3
 Lint/UselessAssignment:
   Exclude:
     - 'lib/modulesync.rb'
