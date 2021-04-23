@@ -83,7 +83,7 @@ module ModuleSync # rubocop:disable Metrics/ModuleLength
     namespace = settings.additional_settings[:namespace]
     module_name = settings.additional_settings[:puppet_module]
     configs = settings.build_file_configs(filename)
-    target_file = puppet_module.path filename
+    target_file = puppet_module.path(filename)
     if configs['delete']
       Renderer.remove(target_file)
     else

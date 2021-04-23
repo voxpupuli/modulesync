@@ -6,7 +6,7 @@ module ModuleSync
   # Provide methods to manipulate puppet module code
   class PuppetModule < SourceCode
     def update_changelog(version, message)
-      changelog = "#{working_directory}/CHANGELOG.md"
+      changelog = path('CHANGELOG.md')
       if File.exist?(changelog)
         puts "Updating #{changelog} for version #{version}"
         changes = File.readlines(changelog)
@@ -24,7 +24,7 @@ module ModuleSync
     end
 
     def bump(message, changelog = false)
-      m = Blacksmith::Modulefile.new("#{working_directory}/metadata.json")
+      m = Blacksmith::Modulefile.new path('metadata.json')
       new = m.bump!
       puts "Bumped to version #{new}"
       repository.git.add('metadata.json')
