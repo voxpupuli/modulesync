@@ -90,13 +90,6 @@ Style/EachWithObject:
   Exclude:
     - 'lib/modulesync/util.rb'
 
-# Offense count: 2
-# Cop supports --auto-correct.
-Style/ExpandPathArguments:
-  Exclude:
-    - 'bin/msync'
-    - 'modulesync.gemspec'
-
 # Offense count: 1
 # Cop supports --auto-correct.
 Style/GlobalStdStream:
