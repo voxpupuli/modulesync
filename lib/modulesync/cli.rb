@@ -139,6 +139,7 @@ module ModuleSync
         raise Thor::Error, 'No value provided for required option "--message"' unless config[:noop] \
                                                                                       || config[:message] \
                                                                                       || config[:offline]
+
         config[:git_opts] = { 'amend' => config[:amend], 'force' => config[:force] }
         ModuleSync.update(config)
       end

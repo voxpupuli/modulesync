@@ -144,6 +144,7 @@ module ModuleSync # rubocop:disable Metrics/ModuleLength
 
   def self.config_path(file, options)
     return file if Pathname.new(file).absolute?
+
     File.join(options[:configs], file)
   end
 
@@ -172,6 +173,7 @@ module ModuleSync # rubocop:disable Metrics/ModuleLength
         $stdout.puts "Skipping '#{puppet_module.given_name}' as update process failed"
       rescue StandardError => e
         raise unless options[:skip_broken]
+
         errors = true
         $stdout.puts "Skipping '#{puppet_module.given_name}' as update process failed"
       end

@@ -44,6 +44,7 @@ module ModuleSync
           "- merges '#{source_branch}' into '#{target_branch}'"
 
         return if labels.empty?
+
         $stdout.puts "Attached the following labels to MR #{mr.iid}: #{labels.join(', ')}"
       end
     end

@@ -48,6 +48,7 @@ module ModuleSync
         # We only assign labels to the PR if we've discovered a list > 1. The labels MUST
         # already exist. We DO NOT create missing labels.
         return if labels.empty?
+
         $stdout.puts "Attaching the following labels to PR #{pr['number']}: #{labels.join(', ')}"
         @api.add_labels_to_an_issue(repo_path, pr['number'], labels)
       end
