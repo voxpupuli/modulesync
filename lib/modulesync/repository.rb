@@ -1,5 +1,4 @@
 require 'git'
-require 'puppet_blacksmith'
 
 module ModuleSync
   # Wrapper for Git in ModuleSync context
@@ -79,37 +78,6 @@ module ModuleSync
       end
     end
 
-    # PuppetModule, is it used?
-    def update_changelog(version, message)
-      changelog = "#{@directory}/CHANGELOG.md"
-      if File.exist?(changelog)
-        puts "Updating #{changelog} for version #{version}"
-        changes = File.readlines(changelog)
-        File.open(changelog, 'w') do |f|
-          date = Time.now.strftime('%Y-%m-%d')
-          f.puts "## #{date} - Release #{version}\n\n"
-          f.puts "#{message}\n\n"
-          # Add old lines again
-          f.puts changes
-        end
-        repo.add('CHANGELOG.md')
-      else
-        puts 'No CHANGELOG.md file found, not updating.'
-      end
-    end
-
-    # PuppetModule
-    def bump(message, changelog = false)
-      m = Blacksmith::Modulefile.new("#{@directory}/metadata.json")
-      new = m.bump!
-      puts "Bumped to version #{new}"
-      repo.add('metadata.json')
-      update_changelog(new, message) if changelog
-      repo.commit("Release version #{new}")
-      repo.push
-      new
-    end
-
     def tag(version, tag_pattern)
       tag = tag_pattern % version
       puts "Tagging with #{tag}"
@@ -150,11 +118,6 @@ module ModuleSync
           end
         else
           repo.push('origin', branch, opts_push)
-        end
-        # Only bump/tag if pushing didn't fail (i.e. there were changes)
-        if options[:bump]
-          new = bump(message, options[:changelog])
-          tag(new, options[:tag_pattern]) if options[:tag]
         end
       rescue Git::GitExecuteError => e
         if e.message.match?(/working (directory|tree) clean/)

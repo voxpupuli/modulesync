@@ -3,7 +3,6 @@ require 'pathname'
 
 require 'modulesync/cli'
 require 'modulesync/constants'
-require 'modulesync/repository'
 require 'modulesync/hook'
 require 'modulesync/puppet_module'
 require 'modulesync/renderer'
@@ -30,10 +29,6 @@ module ModuleSync # rubocop:disable Metrics/ModuleLength
 
   def self.local_file(config_path, file)
     File.join(config_path, MODULE_FILES_DIR, file)
-  end
-
-  def self.module_file(puppet_module, *parts)
-    File.join(puppet_module.working_directory, *parts)
   end
 
   # List all template files.
@@ -88,7 +83,7 @@ module ModuleSync # rubocop:disable Metrics/ModuleLength
     namespace = settings.additional_settings[:namespace]
     module_name = settings.additional_settings[:puppet_module]
     configs = settings.build_file_configs(filename)
-    target_file = module_file(puppet_module, filename)
+    target_file = puppet_module.path(filename)
     if configs['delete']
       Renderer.remove(target_file)
     else
@@ -111,11 +106,10 @@ module ModuleSync # rubocop:disable Metrics/ModuleLength
   end
 
   def self.manage_module(puppet_module, module_files, defaults)
-    repository = Repository.new directory: puppet_module.working_directory, remote: puppet_module.repository_remote
     puts "Syncing '#{puppet_module.given_name}'"
-    repository.prepare_workspace(options[:branch]) unless options[:offline]
+    puppet_module.repository.prepare_workspace(options[:branch]) unless options[:offline]
 
-    module_configs = Util.parse_config(module_file(puppet_module, MODULE_CONF_FILE))
+    module_configs = Util.parse_config puppet_module.path(MODULE_CONF_FILE)
     settings = Settings.new(defaults[GLOBAL_DEFAULTS_KEY] || {},
                             defaults,
                             module_configs[GLOBAL_DEFAULTS_KEY] || {},
@@ -133,11 +127,16 @@ module ModuleSync # rubocop:disable Metrics/ModuleLength
 
     if options[:noop]
       puts "Using no-op. Files in '#{puppet_module.given_name}' may be changed but will not be committed."
-      repository.show_changes(options)
+      puppet_module.repository.show_changes(options)
       options[:pr] && \
         pr(puppet_module).manage(puppet_module.repository_namespace, puppet_module.repository_name, options)
     elsif !options[:offline]
-      pushed = repository.submit_changes(files_to_manage, options)
+      pushed = puppet_module.repository.submit_changes(files_to_manage, options)
+      # Only bump/tag if pushing didn't fail (i.e. there were changes)
+      if pushed && options[:bump]
+        new = puppet_module.bump(options[:message], options[:changelog])
+        puppet_module.repository.tag(new, options[:tag_pattern]) if options[:tag]
+      end
       pushed && options[:pr] && \
         pr(puppet_module).manage(puppet_module.repository_namespace, puppet_module.repository_name, options)
     end
