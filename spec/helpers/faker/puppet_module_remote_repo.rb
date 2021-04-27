@@ -111,6 +111,14 @@ module ModuleSync
         end
       end
 
+      def create_branch(branch, from = nil)
+        from ||= default_branch
+        FileUtils.chdir(tmp_repo_dir) do
+          run %W{git branch -c #{from} #{branch}}
+          run %W{git push --set-upstream origin #{branch}}
+        end
+      end
+
       def remote_url
         "file://#{bare_repo_dir}"
       end

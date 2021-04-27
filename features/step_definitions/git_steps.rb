@@ -64,6 +64,16 @@ Given 'the puppet module {string} from {string} has a file named {string} with:'
   pmrr.add_file(filename, content)
 end
 
+Given 'the puppet module {string} from {string} has, in branch {string}, a file named {string} with:' do |name, namespace, branch, filename, content|
+  pmrr = ModuleSync::Faker::PuppetModuleRemoteRepo.new(name, namespace)
+  pmrr.add_file(filename, content, branch)
+end
+
+Given 'the puppet module {string} from {string} has a branch named {string}' do |name, namespace, branch|
+  pmrr = ModuleSync::Faker::PuppetModuleRemoteRepo.new(name, namespace)
+  pmrr.create_branch(branch)
+end
+
 Then 'the puppet module {string} from {string} should have a branch {string} with a file named {string} which contains:' do |name, namespace, branch, filename, content|
   pmrr = ModuleSync::Faker::PuppetModuleRemoteRepo.new(name, namespace)
   expect(pmrr.read_file(filename, branch)).to include(content)
