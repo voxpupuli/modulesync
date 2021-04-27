@@ -77,6 +77,7 @@ module ModuleSync
         branch ||= default_branch
         FileUtils.chdir(tmp_repo_dir) do
           run %W[git checkout #{branch}]
+          run %w[git pull --force --prune]
           File.write filename, content
           run %W[git add #{filename}]
           run %w[git commit --message] << "Add file: '#{filename}'"
