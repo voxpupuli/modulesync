@@ -33,6 +33,7 @@ module ModuleSync
     def default_branch
       symbolic_ref = repo.branches.find { |b| b.full =~ %r{remotes/origin/HEAD} }
       return unless symbolic_ref
+
       %r{remotes/origin/HEAD\s+->\s+origin/(?<branch>.+?)$}.match(symbolic_ref.full)[:branch]
     end
 
@@ -58,23 +59,23 @@ module ModuleSync
     end
 
     def prepare_workspace(branch)
-      # Repo needs to be cloned in the cwd
-      if !Dir.exist?("#{@directory}/.git")
-        puts 'Cloning repository fresh'
-        puts "Cloning from '#{@remote}'"
-        @git = Git.clone(@remote, @directory)
-        switch_branch(branch)
       # Repo already cloned, check out master and override local changes
-      else
+      if Dir.exist?("#{@directory}/.git")
         # Some versions of git can't properly handle managing a repo from outside the repo directory
         Dir.chdir(@directory) do
           puts "Overriding any local changes to repository in '#{@directory}'"
           @git = Git.open('.')
-          repo.fetch
+          repo.fetch 'origin', prune: true
           repo.reset_hard
           switch_branch(branch)
           git.pull('origin', branch) if remote_branch_exists?(branch)
         end
+      # Repo needs to be cloned in the cwd
+      else
+        puts 'Cloning repository fresh'
+        puts "Cloning from '#{@remote}'"
+        @git = Git.clone(@remote, @directory)
+        switch_branch(branch)
       end
     end
 
@@ -115,9 +116,11 @@ module ModuleSync
         if options[:remote_branch]
           if remote_branch_differ?(branch, options[:remote_branch])
             repo.push('origin', "#{branch}:#{options[:remote_branch]}", opts_push)
+            puts "Changes have been pushed to: '#{branch}:#{options[:remote_branch]}'"
           end
         else
           repo.push('origin', branch, opts_push)
+          puts "Changes have been pushed to: '#{branch}'"
         end
       rescue Git::GitExecuteError => e
         raise unless e.message.match?(/working (directory|tree) clean/)
@@ -153,6 +156,8 @@ module ModuleSync
 
       puts "\n\n"
       puts '--------------------------------'
+
+      git.diff('HEAD', '--').any? || untracked_unignored_files.any?
     end
   end
 end

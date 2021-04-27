@@ -104,7 +104,7 @@ module ModuleSync
              :default => CLI.defaults[:pr_labels] || []
       option :pr_target_branch,
              :desc => 'Target branch for the pull/merge request',
-             :default => CLI.defaults[:pr_target_branch] || 'master'
+             :default => CLI.defaults[:pr_target_branch]
       option :offline,
              :type => :boolean,
              :desc => 'Do not run any Git commands. Allows the user to manage Git outside of ModuleSync.',
@@ -139,6 +139,7 @@ module ModuleSync
         raise Thor::Error, 'No value provided for required option "--message"' unless config[:noop] \
                                                                                       || config[:message] \
                                                                                       || config[:offline]
+
         config[:git_opts] = { 'amend' => config[:amend], 'force' => config[:force] }
         ModuleSync.update(config)
       end
