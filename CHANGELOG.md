@@ -2,6 +2,20 @@
 
 All notable changes to this project will be documented in this file.
 
+## [2.1.0](https://github.com/voxpupuli/modulesync/tree/2.1.0) (2021-06-15)
+
+[Full Changelog](https://github.com/voxpupuli/modulesync/compare/2.0.2...2.1.0)
+
+**Merged pull requests:**
+
+- publish to github packages + test on ruby 3 [\#222](https://github.com/voxpupuli/modulesync/pull/222) ([bastelfreak](https://github.com/bastelfreak))
+- Rework exception handling [\#217](https://github.com/voxpupuli/modulesync/pull/217) ([neomilium](https://github.com/neomilium))
+- Split generic and specific code [\#215](https://github.com/voxpupuli/modulesync/pull/215) ([neomilium](https://github.com/neomilium))
+- Refactor repository related code [\#214](https://github.com/voxpupuli/modulesync/pull/214) ([neomilium](https://github.com/neomilium))
+- Tests: Add tests for bump feature [\#213](https://github.com/voxpupuli/modulesync/pull/213) ([neomilium](https://github.com/neomilium))
+- Refactor puppet modules properties [\#212](https://github.com/voxpupuli/modulesync/pull/212) ([neomilium](https://github.com/neomilium))
+- Switch from Travis CI to GitHub Actions [\#205](https://github.com/voxpupuli/modulesync/pull/205) ([neomilium](https://github.com/neomilium))
+
 ## [2.0.2](https://github.com/voxpupuli/modulesync/tree/2.0.2) (2021-04-03)
 
 [Full Changelog](https://github.com/voxpupuli/modulesync/compare/2.0.1...2.0.2)
