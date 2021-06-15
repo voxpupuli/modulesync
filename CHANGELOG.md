@@ -2,6 +2,12 @@
 
 All notable changes to this project will be documented in this file.
 
+## [2.1.1](https://github.com/voxpupuli/modulesync/tree/2.1.1) (2021-06-15)
+
+[Full Changelog](https://github.com/voxpupuli/modulesync/compare/2.1.0...2.1.1)
+
+The 2.1.0 release didn't make it to github packages. 2.1.1 is a new release with identical code.
+
 ## [2.1.0](https://github.com/voxpupuli/modulesync/tree/2.1.0) (2021-06-15)
 
 [Full Changelog](https://github.com/voxpupuli/modulesync/compare/2.0.2...2.1.0)
