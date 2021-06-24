@@ -8,7 +8,7 @@ Gem::Specification.new do |spec|
   spec.email                 = ['voxpupuli@groups.io']
   spec.summary               = 'Puppet Module Synchronizer'
   spec.description           = 'Utility to synchronize common files across puppet modules in Github.'
-  spec.homepage              = 'http://github.com/voxpupuli/modulesync'
+  spec.homepage              = 'https://github.com/voxpupuli/modulesync'
   spec.license               = 'Apache-2.0'
   spec.required_ruby_version = '>= 2.5.0'
 
