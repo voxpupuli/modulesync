@@ -104,7 +104,7 @@ module ModuleSync
              :default => CLI.defaults[:pr_labels] || []
       option :pr_target_branch,
              :desc => 'Target branch for the pull/merge request',
-             :default => CLI.defaults[:pr_target_branch] || 'master'
+             :default => CLI.defaults[:pr_target_branch]
       option :offline,
              :type => :boolean,
              :desc => 'Do not run any Git commands. Allows the user to manage Git outside of ModuleSync.',

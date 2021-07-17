@@ -129,9 +129,8 @@ module ModuleSync # rubocop:disable Metrics/ModuleLength
 
     if options[:noop]
       puts "Using no-op. Files in '#{puppet_module.given_name}' may be changed but will not be committed."
-      puppet_module.repository.show_changes(options)
-      options[:pr] && \
-        pr(puppet_module).manage(puppet_module.repository_namespace, puppet_module.repository_name, options)
+      changed = puppet_module.repository.show_changes(options)
+      changed && options[:pr] && puppet_module.open_pull_request
     elsif !options[:offline]
       pushed = puppet_module.repository.submit_changes(files_to_manage, options)
       # Only bump/tag if pushing didn't fail (i.e. there were changes)
@@ -139,8 +138,7 @@ module ModuleSync # rubocop:disable Metrics/ModuleLength
         new = puppet_module.bump(options[:message], options[:changelog])
         puppet_module.repository.tag(new, options[:tag_pattern]) if options[:tag]
       end
-      pushed && options[:pr] && \
-        pr(puppet_module).manage(puppet_module.repository_namespace, puppet_module.repository_name, options)
+      pushed && options[:pr] && puppet_module.open_pull_request
     end
   end
 
@@ -156,15 +154,6 @@ module ModuleSync # rubocop:disable Metrics/ModuleLength
   def self.update(cli_options)
     @options = config_defaults.merge(cli_options)
     defaults = Util.parse_config(config_path(CONF_FILE, options))
-
-    if options[:pr]
-      unless options[:branch]
-        $stderr.puts 'A branch must be specified with --branch to use --pr!'
-        raise
-      end
-
-      @pr = create_pr_manager if options[:pr]
-    end
 
     local_template_dir = config_path(MODULE_FILES_DIR, options)
     local_files = find_template_files(local_template_dir)
@@ -188,41 +177,5 @@ module ModuleSync # rubocop:disable Metrics/ModuleLength
       end
     end
     exit 1 if errors && options[:fail_on_warnings]
-  end
-
-  def self.pr(puppet_module)
-    module_options = puppet_module.options
-    github_conf = module_options[:github]
-    gitlab_conf = module_options[:gitlab]
-
-    if !github_conf.nil?
-      base_url = github_conf[:base_url] || ENV.fetch('GITHUB_BASE_URL', 'https://api.github.com')
-      require 'modulesync/pr/github'
-      ModuleSync::PR::GitHub.new(github_conf[:token], base_url)
-    elsif !gitlab_conf.nil?
-      base_url = gitlab_conf[:base_url] || ENV.fetch('GITLAB_BASE_URL', 'https://gitlab.com/api/v4')
-      require 'modulesync/pr/gitlab'
-      ModuleSync::PR::GitLab.new(gitlab_conf[:token], base_url)
-    elsif @pr.nil?
-      $stderr.puts 'No GitHub or GitLab token specified for --pr!'
-      raise
-    else
-      @pr
-    end
-  end
-
-  def self.create_pr_manager
-    github_token = ENV.fetch('GITHUB_TOKEN', '')
-    gitlab_token = ENV.fetch('GITLAB_TOKEN', '')
-
-    if !github_token.empty?
-      require 'modulesync/pr/github'
-      ModuleSync::PR::GitHub.new(github_token, ENV.fetch('GITHUB_BASE_URL', 'https://api.github.com'))
-    elsif !gitlab_token.empty?
-      require 'modulesync/pr/gitlab'
-      ModuleSync::PR::GitLab.new(gitlab_token, ENV.fetch('GITLAB_BASE_URL', 'https://gitlab.com/api/v4'))
-    else
-      warn '--pr specified without environment variables GITHUB_TOKEN or GITLAB_TOKEN'
-    end
   end
 end
