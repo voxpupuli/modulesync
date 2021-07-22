@@ -51,7 +51,11 @@ module ModuleSync
         repo.checkout("origin/#{branch}")
         repo.branch(branch).checkout
       else
-        repo.checkout('origin/master')
+        if remote_branch_exists?('main')
+          repo.checkout('origin/main')
+        else
+          repo.checkout('origin/master')
+        end
         puts "Creating new branch #{branch}"
         repo.branch(branch).checkout
       end
