@@ -1,6 +1,14 @@
 ModuleSync
 ===========
 
+[![License](https://img.shields.io/github/license/voxpupuli/modulesync.svg)](https://github.com/voxpupuli/modulesync/blob/master/LICENSE)
+[![Test](https://github.com/voxpupuli/modulesync/actions/workflows/ci.yml/badge.svg)](https://github.com/voxpupuli/modulesync/actions/workflows/ci.yml)
+[![codecov](https://codecov.io/gh/voxpupuli/modulesync/branch/master/graph/badge.svg?token=Mypkl78hvK)](https://codecov.io/gh/voxpupuli/modulesync)
+[![Release](https://github.com/voxpupuli/modulesync/actions/workflows/release.yml/badge.svg)](https://github.com/voxpupuli/modulesync/actions/workflows/release.yml)
+[![RubyGem Version](https://img.shields.io/gem/v/modulesync.svg)](https://rubygems.org/gems/modulesync)
+[![RubyGem Downloads](https://img.shields.io/gem/dt/modulesync.svg)](https://rubygems.org/gems/modulesync)
+[![Donated by Puppet Inc](https://img.shields.io/badge/donated%20by-Puppet%20Inc-fb7047.svg)](#transfer-notice)
+
 Table of Contents
 -----------------
 
@@ -436,3 +444,25 @@ The Templates
 
 See [Puppet's modulesync\_configs](https://github.com/puppetlabs/modulesync_configs) and [Vox Pupuli's modulesync\_config](https://github.com/voxpupuli/modulesync_config)
 repositories for different templates currently in use.
+
+## Transfer Notice
+
+This plugin was originally authored by [Puppet Inc](http://puppet.com).
+The maintainer preferred that Vox Pupuli take ownership of the module for future improvement and maintenance.
+Existing pull requests and issues were transferred over, please fork and continue to contribute at https://github.com/voxpupuli/modulesync.
+
+Previously: https://github.com/puppetlabs/modulesync
+
+## License
+
+This gem is licensed under the Apache-2 license.
+
+## Release information
+
+To make a new release, please do:
+* update the version in the gemspec file
+* Install gems with `bundle install --with release --path .vendor`
+* generate the changelog with `bundle exec rake changelog`
+* Check if the new version matches the closed issues/PRs in the changelog
+* Create a PR with it
+* After it got merged, push a tag. GitHub actions will do the actual release to rubygems and GitHub Packages
