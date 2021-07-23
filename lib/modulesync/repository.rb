@@ -51,8 +51,13 @@ module ModuleSync
         repo.checkout("origin/#{branch}")
         repo.branch(branch).checkout
       else
-        repo.checkout('origin/master')
-        puts "Creating new branch #{branch}"
+        base_branch = default_branch
+        unless base_branch
+          puts "Couldn't detect default branch. Falling back to assuming 'master'"
+          base_branch = 'master'
+        end
+        puts "Creating new branch #{branch} from #{base_branch}"
+        repo.checkout("origin/#{base_branch}")
         repo.branch(branch).checkout
       end
     end
@@ -60,8 +65,7 @@ module ModuleSync
     def prepare_workspace(branch)
       # Repo needs to be cloned in the cwd
       if !Dir.exist?("#{@directory}/.git")
-        puts 'Cloning repository fresh'
-        puts "Cloning from '#{@remote}'"
+        puts "Cloning repository fresh from '#{@remote}'"
         @git = Git.clone(@remote, @directory)
         switch_branch(branch)
       # Repo already cloned, check out master and override local changes
