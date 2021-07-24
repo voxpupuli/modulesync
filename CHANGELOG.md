@@ -2,6 +2,26 @@
 
 All notable changes to this project will be documented in this file.
 
+## [2.2.0](https://github.com/voxpupuli/modulesync/tree/2.2.0) (2021-07-24)
+
+[Full Changelog](https://github.com/voxpupuli/modulesync/compare/2.1.1...2.2.0)
+
+**Implemented enhancements:**
+
+- Implement codecov/update README.md [\#234](https://github.com/voxpupuli/modulesync/pull/234) ([bastelfreak](https://github.com/bastelfreak))
+- Checkout default\_branch and not hardcoded `master` [\#233](https://github.com/voxpupuli/modulesync/pull/233) ([alexjfisher](https://github.com/alexjfisher))
+
+**Fixed bugs:**
+
+- Fix condition for triggering the release workflow [\#232](https://github.com/voxpupuli/modulesync/pull/232) ([smortex](https://github.com/smortex))
+
+**Merged pull requests:**
+
+- Move cucumber from Gemfile to gemspec [\#230](https://github.com/voxpupuli/modulesync/pull/230) ([bastelfreak](https://github.com/bastelfreak))
+- switch to https link in gemspec [\#228](https://github.com/voxpupuli/modulesync/pull/228) ([bastelfreak](https://github.com/bastelfreak))
+- dont install octokit via Gemfile [\#227](https://github.com/voxpupuli/modulesync/pull/227) ([bastelfreak](https://github.com/bastelfreak))
+- Allow latest aruba dependency [\#226](https://github.com/voxpupuli/modulesync/pull/226) ([bastelfreak](https://github.com/bastelfreak))
+
 ## [2.1.1](https://github.com/voxpupuli/modulesync/tree/2.1.1) (2021-06-15)
 
 [Full Changelog](https://github.com/voxpupuli/modulesync/compare/2.1.0...2.1.1)
