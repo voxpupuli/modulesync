@@ -11,13 +11,13 @@ describe ModuleSync::GitService do
 
   context 'when instantiate a GitHub service without credentials' do
     it 'raises an error' do
-      expect { ModuleSync::GitService.instantiate(type: :github, endpoint: nil, token: nil) }.to raise_error(ModuleSync::Error, 'No GitHub token specified to create a pull request')
+      expect { ModuleSync::GitService.instantiate(type: :github, endpoint: nil, token: nil) }.to raise_error(ModuleSync::GitService::MissingCredentialsError)
     end
   end
 
   context 'when instantiate a GitLab service without credentials' do
     it 'raises an error' do
-      expect { ModuleSync::GitService.instantiate(type: :gitlab, endpoint: nil, token: nil) }.to raise_error(ModuleSync::Error, 'No GitLab token specified to create a merge request')
+      expect { ModuleSync::GitService.instantiate(type: :gitlab, endpoint: nil, token: nil) }.to raise_error(ModuleSync::GitService::MissingCredentialsError)
     end
   end
 
@@ -90,9 +90,12 @@ describe ModuleSync::GitService do
       end
 
       context 'without any environment variable sets' do
-        it 'raises an error about missing credential' do
-          expect{ModuleSync::GitService.configuration_for(sourcecode: sourcecode)}
-            .to raise_error ModuleSync::GitService::MissingCredentialsError
+        it 'returns a nil token' do
+          expect(ModuleSync::GitService.configuration_for(sourcecode: sourcecode)).to eq({
+            type: :gitlab,
+            endpoint: 'https://git.example.com/api/v4',
+            token: nil,
+          })
         end
       end
     end
@@ -120,9 +123,12 @@ describe ModuleSync::GitService do
         end
 
         context 'without a GITLAB_TOKEN environment variable sets' do
-          it 'raise an error about missing credential' do
-            expect{ModuleSync::GitService.configuration_for(sourcecode: sourcecode)}
-              .to raise_error ModuleSync::Error
+          it 'returns a nil token' do
+            expect(ModuleSync::GitService.configuration_for(sourcecode: sourcecode)).to eq({
+              type: :gitlab,
+              endpoint: 'https://gitlab.example.com/api/v4',
+              token: nil,
+            })
           end
         end
       end

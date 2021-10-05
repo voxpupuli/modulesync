@@ -6,13 +6,16 @@ module ModuleSync
     class MissingCredentialsError < Error; end
 
     def self.instantiate(type:, endpoint:, token:)
+      raise MissingCredentialsError, <<~MESSAGE if token.nil?
+        A token is required to use services from #{type}:
+          Please set environment variable: "#{type.upcase}_TOKEN" or set the token entry in module options.
+      MESSAGE
+
       case type
       when :github
-        raise ModuleSync::Error, 'No GitHub token specified to create a pull request' if token.nil?
         require 'modulesync/git_service/github'
         ModuleSync::GitService::GitHub.new(token, endpoint)
       when :gitlab
-        raise ModuleSync::Error, 'No GitLab token specified to create a merge request' if token.nil?
         require 'modulesync/git_service/gitlab'
         ModuleSync::GitService::GitLab.new(token, endpoint)
       else
@@ -112,11 +115,6 @@ module ModuleSync
                 when :gitlab
                   ENV['GITLAB_TOKEN']
                 end
-
-      raise MissingCredentialsError, <<~MESSAGE if token.nil?
-        A token is require to use services from #{type}:
-          Please set environment variable: "#{type.upcase}_TOKEN" or set the token entry in module options.
-        MESSAGE
 
       token
     end
