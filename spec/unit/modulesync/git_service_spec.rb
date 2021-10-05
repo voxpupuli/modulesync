@@ -1,3 +1,4 @@
+require 'modulesync'
 require 'modulesync/git_service'
 
 describe ModuleSync::GitService do
@@ -162,6 +163,45 @@ describe ModuleSync::GitService do
           end
         end
       end
+    end
+  end
+
+  RSpec.shared_examples 'hostname_extractor' do |url, hostname|
+    context "with '#{url}' URL" do
+      subject { ModuleSync::GitService.extract_hostname(url) }
+      it "should extract '#{hostname}' as hostname" do
+        expect(subject).to eq(hostname)
+      end
+    end
+  end
+
+  context '#extract_hostname' do
+    [
+      %w[ssh://user@host.xz:4444/path/to/repo.git/ host.xz],
+      %w[ssh://user@host.xz:/path/to/repo.git/     host.xz],
+      %w[ssh://host.xz/path/to/repo.git/           host.xz],
+
+      %w[git://host.xz/path/to/repo.git/           host.xz],
+      %w[git://host.xz/path/to/repo/               host.xz],
+      %w[git://host.xz/path/to/repo                host.xz],
+
+      %w[user@host.xz:path/to/repo.git/            host.xz],
+      %w[user@host.xz:path/to/repo.git             host.xz],
+      %w[user@host.xz:path/to/repo                 host.xz],
+      %w[host.xz:path/to/repo.git/                 host.xz],
+
+      %w[https://host.xz:8443/path/to/repo.git/    host.xz],
+      %w[https://host.xz/path/to/repo.git/         host.xz],
+
+      %w[ftp://host.xz/path/to/repo/               host.xz],
+
+      ['/path/to/repo.git/',                       nil],
+
+      ['file:///path/to/repo.git/',                nil],
+
+      ['something-invalid',                        nil],
+    ].each do |url, hostname|
+      it_should_behave_like 'hostname_extractor', url, hostname
     end
   end
 end

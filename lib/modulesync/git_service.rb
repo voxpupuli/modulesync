@@ -89,12 +89,11 @@ module ModuleSync
     end
 
     # This method attempts to guess the git service endpoint based on remote and type
-    # FIXME: It only supports "git@hostname:repo_path" scheme
     def self.guess_endpoint_from(remote:, type:)
-      pattern = /^git@(.*):(.*)(\.git)*$/
-      return nil unless remote.match?(pattern)
+      hostname = extract_hostname(remote)
+      return nil if hostname.nil?
 
-      endpoint = remote.sub(pattern, 'https://\1')
+      endpoint = "https://#{hostname}"
       endpoint += '/api/v4' if type == :gitlab
       endpoint
     end
@@ -120,6 +119,32 @@ module ModuleSync
         MESSAGE
 
       token
+    end
+
+    # This method extracts hostname from URL like:
+    #
+    # - ssh://[user@]host.xz[:port]/path/to/repo.git/
+    # - git://host.xz[:port]/path/to/repo.git/
+    # - [user@]host.xz:path/to/repo.git/
+    # - http[s]://host.xz[:port]/path/to/repo.git/
+    # - ftp[s]://host.xz[:port]/path/to/repo.git/
+    #
+    # Returns nil if
+    # - /path/to/repo.git/
+    # - file:///path/to/repo.git/
+    # - any invalid URL
+    def self.extract_hostname(url)
+      #pattern = /^((?<user>.*)@)*(?<hostname>.*):(?<path>[a-zA-Z].*)*$/
+      return nil if url.start_with?('/') || url.start_with?('file://') # local path (e.g. file:///path/to/repo)
+
+      unless url.start_with?(/[a-z]+:\/\//) # SSH notation does not contain protocol (e.g. user@server:path/to/repo/)
+        pattern = /^(.*@)?(?<hostname>[\w|.]*):(.*)$/ # SSH path (e.g. user@server:repo)
+        return url.match(pattern)[:hostname] if url.match?(pattern)
+      end
+
+      return URI.parse(url).host
+    rescue URI::InvalidURIError => e
+      return nil
     end
   end
 end

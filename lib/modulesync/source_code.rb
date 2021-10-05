@@ -48,9 +48,15 @@ module ModuleSync
       File.join(working_directory, *parts)
     end
 
+    def git_service
+      @git_service ||= GitService.instantiate(**git_service_configuration)
+    end
+
+    def git_service_configuration
+      @git_service_configuration ||= GitService.configuration_for(sourcecode: self)
+    end
+
     def open_pull_request
-      git_service_options = GitService.configuration_for(sourcecode: self)
-      git_service = GitService.instantiate(**git_service_options)
       git_service.open_pull_request(
         repo_path: repository_path,
         namespace: repository_namespace,
