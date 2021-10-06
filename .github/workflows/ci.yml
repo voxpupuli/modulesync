@@ -28,7 +28,9 @@ jobs:
         with:
           ruby-version: ${{ matrix.ruby }}
           bundler-cache: true
-      - name: Run tests
+      - name: Run unit tests
         run: bundle exec rake spec
+      - name: Run behavior tests
+        run: bundle exec cucumber
       - name: Build gem
         run: gem build *.gemspec
