@@ -1,3 +1,7 @@
+require 'simplecov'
+
+SimpleCov.command_name 'Cucumber'
+
 require 'aruba/cucumber'
 
 require_relative '../../spec/helpers/faker'
