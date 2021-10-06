@@ -1,5 +1,6 @@
 require 'modulesync'
 require 'modulesync/git_service'
+require 'modulesync/git_service/factory'
 require 'modulesync/repository'
 require 'modulesync/util'
 
@@ -49,7 +50,7 @@ module ModuleSync
     end
 
     def git_service
-      @git_service ||= GitService.instantiate(**git_service_configuration)
+      @git_service ||= GitService::Factory.instantiate(**git_service_configuration)
     end
 
     def git_service_configuration

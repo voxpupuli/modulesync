@@ -9,18 +9,6 @@ describe ModuleSync::GitService do
     ModuleSync.instance_variable_set '@options', options
   end
 
-  context 'when instantiate a GitHub service without credentials' do
-    it 'raises an error' do
-      expect { ModuleSync::GitService.instantiate(type: :github, endpoint: nil, token: nil) }.to raise_error(ModuleSync::GitService::MissingCredentialsError)
-    end
-  end
-
-  context 'when instantiate a GitLab service without credentials' do
-    it 'raises an error' do
-      expect { ModuleSync::GitService.instantiate(type: :gitlab, endpoint: nil, token: nil) }.to raise_error(ModuleSync::GitService::MissingCredentialsError)
-    end
-  end
-
   context 'when guessing the git service configuration' do
     before do
       allow(ENV).to receive(:[])
