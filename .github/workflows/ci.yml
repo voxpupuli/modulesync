@@ -18,9 +18,9 @@ jobs:
           - ruby: "2.6"
           - ruby: "2.7"
           - ruby: "3.0"
-            coverage: "yes"
+            codecov: "yes"
     env:
-      COVERAGE: ${{ matrix.coverage }}
+      CODECOV: ${{ matrix.codecov }}
     steps:
       - uses: actions/checkout@v2
       - name: Install Ruby ${{ matrix.ruby }}
