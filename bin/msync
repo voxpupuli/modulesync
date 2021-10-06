@@ -1,5 +1,37 @@
 #!/usr/bin/env ruby
 
+if ENV['COVERAGE']
+  # This block allow us to grab code coverage when running this script.
+  # Note: This environment variable is set in Cucumber/Aruba configuration to collect reports'
+  require 'simplecov'
+
+  # https://github.com/simplecov-ruby/simplecov/issues/234
+  # As described in the issue, every process must have an unique name:
+  SimpleCov.command_name "#{File.basename $PROGRAM_NAME} (pid: #{Process.pid})"
+
+  # When running with aruba simplecov was using /tmp/aruba as the root folder.
+  # This is to force using the project folder
+  SimpleCov.root(File.join(File.expand_path(File.dirname(__FILE__)), '..'))
+
+  SimpleCov.start do
+    filters.clear # This will remove the :root_filter and :bundler_filter that come via simplecov's defaults
+
+    # Because simplecov filters everything outside of the SimpleCov.root
+    # This should be added, cf.
+    # https://github.com/colszowka/simplecov#default-root-filter-and-coverage-for-things-outside-of-it
+    add_filter do |src|
+      !(src.filename =~ /^#{SimpleCov.root}/) unless src.filename =~ /project/
+    end
+
+    # Ignoring test folders and tmp for Aruba
+    add_filter '/spec/'
+    add_filter '/test/'
+    add_filter '/features/'
+    add_filter '/tmp/'
+    add_filter '/vendor/'
+  end
+end
+
 lib = File.expand_path('../../lib', __FILE__)
 $LOAD_PATH.unshift(lib) unless $LOAD_PATH.include?(lib)
 
