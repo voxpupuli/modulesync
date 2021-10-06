@@ -11,7 +11,7 @@ Feature: Create a pull-request/merge-request after update
     And I set the environment variables to:
       | variable        | value                    |
       | GITHUB_TOKEN    | foobar                   |
-      | GITHUB_BASE_URL | https://github.faker.com |
+      | GITHUB_BASE_URL | https://github.example.com |
     And a file named "config_defaults.yml" with:
       """
       ---
@@ -34,7 +34,7 @@ Feature: Create a pull-request/merge-request after update
       ---
       puppet-test:
         gitlab: {
-          base_url: 'https://gitlab.faker.com'
+          base_url: 'https://gitlab.example.com'
       }
       """
     And I set the environment variables to:
@@ -63,7 +63,7 @@ Feature: Create a pull-request/merge-request after update
       ---
       puppet-test:
         gitlab: {
-          base_url: 'https://gitlab.faker.com'
+          base_url: 'https://gitlab.example.com'
         }
       """
     And I set the environment variables to:
@@ -81,7 +81,7 @@ Feature: Create a pull-request/merge-request after update
       ---
       puppet-test:
         gitlab: {
-          base_url: https://gitlab.faker.com
+          base_url: https://gitlab.example.com
         }
       """
     And a file named "config_defaults.yml" with:
@@ -107,11 +107,11 @@ Feature: Create a pull-request/merge-request after update
       ---
       puppet-github:
         github:
-          base_url: https://github.faker.com
+          base_url: https://github.example.com
           token: 'secret'
       puppet-gitlab:
         gitlab:
-          base_url: https://gitlab.faker.com
+          base_url: https://gitlab.example.com
           token: 'secret'
       """
     And a file named "config_defaults.yml" with:
@@ -139,7 +139,7 @@ Feature: Create a pull-request/merge-request after update
       puppet-test:
         gitlab:
           token: 'secret'
-          base_url: 'https://gitlab.faker.com'
+          base_url: 'https://gitlab.example.com'
       """
     And a file named "config_defaults.yml" with:
       """
@@ -165,7 +165,7 @@ Feature: Create a pull-request/merge-request after update
       puppet-test:
         github:
           token: 'secret'
-          base_url: 'https://gitlab.faker.com'
+          base_url: 'https://gitlab.example.com'
       """
     And a file named "config_defaults.yml" with:
       """
