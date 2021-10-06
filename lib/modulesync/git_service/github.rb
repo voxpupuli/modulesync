@@ -1,8 +1,6 @@
 require 'modulesync/git_service'
 require 'modulesync/git_service/base'
-
 require 'octokit'
-require 'modulesync/util'
 
 module ModuleSync
   module GitService

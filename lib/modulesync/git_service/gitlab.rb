@@ -1,8 +1,6 @@
+require 'gitlab'
 require 'modulesync/git_service'
 require 'modulesync/git_service/base'
-
-require 'gitlab'
-require 'modulesync/util'
 
 module ModuleSync
   module GitService
