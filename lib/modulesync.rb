@@ -18,10 +18,10 @@ module ModuleSync # rubocop:disable Metrics/ModuleLength
 
   def self.config_defaults
     {
-      :project_root         => 'modules/',
+      :project_root => 'modules/',
       :managed_modules_conf => 'managed_modules.yml',
-      :configs              => '.',
-      :tag_pattern          => '%s',
+      :configs => '.',
+      :tag_pattern => '%s',
     }
   end
 
@@ -94,7 +94,7 @@ module ModuleSync # rubocop:disable Metrics/ModuleLength
         # Meta data passed to the template as @metadata[:name]
         metadata = {
           :module_name => module_name,
-          :workdir     => puppet_module.working_directory,
+          :workdir => puppet_module.working_directory,
           :target_file => target_file,
         }
         template = Renderer.render(erb, configs, metadata)
