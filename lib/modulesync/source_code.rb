@@ -1,4 +1,6 @@
 require 'modulesync'
+require 'modulesync/git_service'
+require 'modulesync/git_service/factory'
 require 'modulesync/repository'
 require 'modulesync/util'
 
@@ -45,6 +47,27 @@ module ModuleSync
 
     def path(*parts)
       File.join(working_directory, *parts)
+    end
+
+    def git_service
+      @git_service ||= GitService::Factory.instantiate(**git_service_configuration)
+    end
+
+    def git_service_configuration
+      @git_service_configuration ||= GitService.configuration_for(sourcecode: self)
+    end
+
+    def open_pull_request
+      git_service.open_pull_request(
+        repo_path: repository_path,
+        namespace: repository_namespace,
+        title: ModuleSync.options[:pr_title],
+        message: ModuleSync.options[:message],
+        source_branch: ModuleSync.options[:remote_branch] || ModuleSync.options[:branch] || repository.default_branch,
+        target_branch: ModuleSync.options[:pr_target_branch] || repository.default_branch,
+        labels: ModuleSync::Util.parse_list(ModuleSync.options[:pr_labels]),
+        noop: ModuleSync.options[:noop],
+      )
     end
 
     private
