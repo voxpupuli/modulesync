@@ -163,7 +163,7 @@ describe ModuleSync::GitService do
   RSpec.shared_examples 'hostname_extractor' do |url, hostname|
     context "with '#{url}' URL" do
       subject { ModuleSync::GitService.extract_hostname(url) }
-      it "should extract '#{hostname}' as hostname" do
+      it "should extract #{hostname.nil? ? 'nil' : "'#{hostname}'"} as hostname" do
         expect(subject).to eq(hostname)
       end
     end
