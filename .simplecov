@@ -1,4 +1,17 @@
 SimpleCov.start do
+  if ENV['SIMPLECOV_ROOT']
+    SimpleCov.root(ENV['SIMPLECOV_ROOT'])
+
+    filters.clear # This will remove the :root_filter and :bundler_filter that come via simplecov's defaults
+
+    # Because simplecov filters everything outside of the SimpleCov.root
+    # This should be added, cf.
+    # https://github.com/colszowka/simplecov#default-root-filter-and-coverage-for-things-outside-of-it
+    add_filter do |src|
+      !(src.filename =~ /^#{SimpleCov.root}/)
+    end
+  end
+
   add_group 'Source code', 'lib'
 
   add_group 'Unit tests', 'spec'
