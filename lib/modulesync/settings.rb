@@ -1,4 +1,3 @@
-
 module ModuleSync
   # Encapsulate a configs for a module, providing easy access to its parts
   # All configs MUST be keyed by the relative target filename
