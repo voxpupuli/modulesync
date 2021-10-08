@@ -45,12 +45,6 @@ Style/Documentation:
 
 # Offense count: 1
 # Cop supports --auto-correct.
-Style/EachWithObject:
-  Exclude:
-    - 'lib/modulesync/util.rb'
-
-# Offense count: 1
-# Cop supports --auto-correct.
 Style/GlobalStdStream:
   Exclude:
     - 'lib/modulesync/renderer.rb'

@@ -3,9 +3,8 @@ require 'yaml'
 module ModuleSync
   module Util
     def self.symbolize_keys(hash)
-      hash.inject({}) do |memo, (k, v)|
+      hash.each_with_object({}) do |(k, v), memo|
         memo[k.to_sym] = v.is_a?(Hash) ? symbolize_keys(v) : v
-        memo
       end
     end
 
