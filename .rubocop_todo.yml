@@ -22,12 +22,6 @@ Layout/LeadingEmptyLines:
   Exclude:
     - 'lib/modulesync/settings.rb'
 
-# Offense count: 2
-Lint/MissingSuper:
-  Exclude:
-    - 'lib/modulesync/git_service/github.rb'
-    - 'lib/modulesync/git_service/gitlab.rb'
-
 # Offense count: 3
 Lint/UselessAssignment:
   Exclude:

@@ -8,6 +8,8 @@ module ModuleSync
     # installations.
     class GitLab < Base
       def initialize(token, endpoint)
+        super()
+
         @api = Gitlab::Client.new(
           :endpoint => endpoint,
           :private_token => token,

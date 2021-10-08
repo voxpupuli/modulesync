@@ -8,6 +8,8 @@ module ModuleSync
     # Enterprise installations.
     class GitHub < Base
       def initialize(token, endpoint)
+        super()
+
         Octokit.configure do |c|
           c.api_endpoint = endpoint
         end
