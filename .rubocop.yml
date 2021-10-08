@@ -33,3 +33,7 @@ Layout/LineLength:
 
 Style/FrozenStringLiteralComment:
   Enabled: false
+
+# We explicitly prefer $stderr.puts over #warn
+Style/StderrPuts:
+  Enabled: false

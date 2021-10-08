@@ -49,10 +49,3 @@ Style/Documentation:
 Style/OptionalBooleanParameter:
   Exclude:
     - 'lib/modulesync/puppet_module.rb'
-
-# Offense count: 5
-# Cop supports --auto-correct.
-Style/StderrPuts:
-  Exclude:
-    - 'lib/modulesync.rb'
-    - 'lib/modulesync/renderer.rb'
