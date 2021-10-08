@@ -114,7 +114,6 @@ module ModuleSync
     # - file:///path/to/repo.git/
     # - any invalid URL
     def self.extract_hostname(url)
-      #pattern = /^((?<user>.*)@)*(?<hostname>.*):(?<path>[a-zA-Z].*)*$/
       return nil if url.start_with?('/') || url.start_with?('file://') # local path (e.g. file:///path/to/repo)
 
       unless url.start_with?(/[a-z]+:\/\//) # SSH notation does not contain protocol (e.g. user@server:path/to/repo/)
