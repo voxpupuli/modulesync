@@ -19,9 +19,10 @@ module ModuleSync
     end
 
     def self.parse_list(option_value)
-      if option_value.is_a? String
+      case option_value
+      when String
         option_value.split(',')
-      elsif option_value.is_a? Array
+      when Array
         option_value
       else
         []

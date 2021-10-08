@@ -31,12 +31,6 @@ Metrics/MethodLength:
 Metrics/PerceivedComplexity:
   Max: 16
 
-# Offense count: 1
-# Cop supports --auto-correct.
-Style/CaseLikeIf:
-  Exclude:
-    - 'lib/modulesync/util.rb'
-
 # Offense count: 8
 # Configuration parameters: AllowedConstants.
 Style/Documentation:
