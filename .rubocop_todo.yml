@@ -22,11 +22,6 @@ Layout/LeadingEmptyLines:
   Exclude:
     - 'lib/modulesync/settings.rb'
 
-# Offense count: 3
-Lint/UselessAssignment:
-  Exclude:
-    - 'lib/modulesync.rb'
-
 # Offense count: 10
 # Configuration parameters: IgnoredMethods, CountRepeatedAttributes.
 Metrics/AbcSize:

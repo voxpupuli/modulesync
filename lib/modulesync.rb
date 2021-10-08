@@ -82,7 +82,6 @@ module ModuleSync # rubocop:disable Metrics/ModuleLength
   end
 
   def self.manage_file(puppet_module, filename, settings, options)
-    namespace = settings.additional_settings[:namespace]
     module_name = settings.additional_settings[:puppet_module]
     configs = settings.build_file_configs(filename)
     target_file = puppet_module.path(filename)
@@ -100,7 +99,7 @@ module ModuleSync # rubocop:disable Metrics/ModuleLength
         }
         template = Renderer.render(erb, configs, metadata)
         Renderer.sync(template, target_file)
-      rescue StandardError => e
+      rescue StandardError
         $stderr.puts "#{puppet_module.given_name}: Error while rendering file: '#{filename}'"
         raise
       end
@@ -171,7 +170,7 @@ module ModuleSync # rubocop:disable Metrics/ModuleLength
         exit 1 unless options[:skip_broken]
         errors = true
         $stdout.puts "Skipping '#{puppet_module.given_name}' as update process failed"
-      rescue StandardError => e
+      rescue StandardError
         raise unless options[:skip_broken]
 
         errors = true
