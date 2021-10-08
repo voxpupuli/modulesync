@@ -755,3 +755,25 @@ Feature: update
       workdir: modules/fakenamespace/puppet-test
       """
     And the puppet module "puppet-test" from "fakenamespace" should have no commits made by "Aruba"
+
+  # This reproduces the issue: https://github.com/voxpupuli/modulesync/issues/81
+  Scenario: Resync repositories after upstream branch deletion
+    Given a basic setup with a puppet module "puppet-test" from "fakenamespace"
+    And a file named "config_defaults.yml" with:
+      """
+      ---
+      test:
+        name: aruba
+      """
+    And a directory named "moduleroot"
+    And a file named "moduleroot/test.erb" with:
+      """
+      <%= @configs['name'] %>
+      """
+    When I run `msync update -m "No changes!" --branch delete-me`
+    Then the exit status should be 0
+    And the puppet module "puppet-test" from "fakenamespace" should have 1 commit made by "Aruba" in branch "delete-me"
+    When the branch "delete-me" of the puppet module "puppet-test" from "fakenamespace" is deleted
+    And I run `msync update -m "No changes!" --branch delete-me`
+    Then the exit status should be 0
+    And the puppet module "puppet-test" from "fakenamespace" should have no commits made by "Aruba"

@@ -105,6 +105,12 @@ module ModuleSync
         end
       end
 
+      def delete_branch(branch)
+        FileUtils.chdir(bare_repo_dir) do
+          run %W{git branch -D #{branch}}
+        end
+      end
+
       def remote_url
         "file://#{bare_repo_dir}"
       end
