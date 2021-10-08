@@ -121,9 +121,9 @@ module ModuleSync
         return url.match(pattern)[:hostname] if url.match?(pattern)
       end
 
-      return URI.parse(url).host
+      URI.parse(url).host
     rescue URI::InvalidURIError => e
-      return nil
+      nil
     end
   end
 end
