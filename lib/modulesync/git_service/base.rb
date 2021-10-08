@@ -22,7 +22,7 @@ module ModuleSync
 
       protected
 
-      def _open_pull_request(repo_path:, namespace:, title:, message:, source_branch:, target_branch:, labels:, noop:) # rubocop:disable Metrics/ParameterLists, Metrics/LineLength
+      def _open_pull_request(repo_path:, namespace:, title:, message:, source_branch:, target_branch:, labels:, noop:) # rubocop:disable Metrics/ParameterLists
         raise NotImplementedError
       end
     end
