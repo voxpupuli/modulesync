@@ -12,7 +12,7 @@ module ModuleSync
 
     def self.build(target_name)
       template_file = if !File.exist?("#{target_name}.erb") && File.exist?(target_name)
-                        STDERR.puts "Warning: using '#{target_name}' as template without '.erb' suffix"
+                        $stderr.puts "Warning: using '#{target_name}' as template without '.erb' suffix"
                         target_name
                       else
                         "#{target_name}.erb"
