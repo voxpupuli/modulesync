@@ -50,12 +50,6 @@ Style/OptionalBooleanParameter:
   Exclude:
     - 'lib/modulesync/puppet_module.rb'
 
-# Offense count: 1
-# Cop supports --auto-correct.
-Style/RedundantBegin:
-  Exclude:
-    - 'lib/modulesync.rb'
-
 # Offense count: 5
 # Cop supports --auto-correct.
 Style/StderrPuts:

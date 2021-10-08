@@ -162,20 +162,18 @@ module ModuleSync # rubocop:disable Metrics/ModuleLength
     errors = false
     # managed_modules is either an array or a hash
     managed_modules.each do |puppet_module|
-      begin
-        manage_module(puppet_module, module_files, defaults)
-      rescue ModuleSync::Error, Git::GitExecuteError => e
-        message = e.message || "Error during '#{options[:command]}'"
-        $stderr.puts "#{puppet_module.given_name}: #{message}"
-        exit 1 unless options[:skip_broken]
-        errors = true
-        $stdout.puts "Skipping '#{puppet_module.given_name}' as update process failed"
-      rescue StandardError
-        raise unless options[:skip_broken]
+      manage_module(puppet_module, module_files, defaults)
+    rescue ModuleSync::Error, Git::GitExecuteError => e
+      message = e.message || "Error during '#{options[:command]}'"
+      $stderr.puts "#{puppet_module.given_name}: #{message}"
+      exit 1 unless options[:skip_broken]
+      errors = true
+      $stdout.puts "Skipping '#{puppet_module.given_name}' as update process failed"
+    rescue StandardError
+      raise unless options[:skip_broken]
 
-        errors = true
-        $stdout.puts "Skipping '#{puppet_module.given_name}' as update process failed"
-      end
+      errors = true
+      $stdout.puts "Skipping '#{puppet_module.given_name}' as update process failed"
     end
     exit 1 if errors && options[:fail_on_warnings]
   end
