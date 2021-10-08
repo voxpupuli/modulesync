@@ -117,7 +117,7 @@ module ModuleSync
       return nil if url.start_with?('/') || url.start_with?('file://') # local path (e.g. file:///path/to/repo)
 
       unless url.start_with?(/[a-z]+:\/\//) # SSH notation does not contain protocol (e.g. user@server:path/to/repo/)
-        pattern = /^(.*@)?(?<hostname>[\w|.]*):(.*)$/ # SSH path (e.g. user@server:repo)
+        pattern = /^(?<user>.*@)?(?<hostname>[\w|.]*):(?<repo>.*)$/ # SSH path (e.g. user@server:repo)
         return url.match(pattern)[:hostname] if url.match?(pattern)
       end
 
