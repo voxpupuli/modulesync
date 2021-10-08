@@ -122,7 +122,7 @@ module ModuleSync
       end
 
       URI.parse(url).host
-    rescue URI::InvalidURIError => e
+    rescue URI::InvalidURIError
       nil
     end
   end
