@@ -44,8 +44,8 @@ module ModuleSync # rubocop:disable Metrics/ModuleLength
           .to_a
     else
       $stderr.puts "#{local_template_dir} does not exist." \
-        ' Check that you are working in your module configs directory or' \
-        ' that you have passed in the correct directory with -c.'
+                   ' Check that you are working in your module configs directory or' \
+                   ' that you have passed in the correct directory with -c.'
       exit 1
     end
   end
@@ -62,7 +62,7 @@ module ModuleSync # rubocop:disable Metrics/ModuleLength
     managed_modules = Util.parse_config(config_file)
     if managed_modules.empty?
       $stderr.puts "No modules found in #{config_file}." \
-        ' Check that you specified the right :configs directory and :managed_modules_conf file.'
+                   ' Check that you specified the right :configs directory and :managed_modules_conf file.'
       exit 1
     end
     managed_modules.select! { |m| m =~ Regexp.new(filter) } unless filter.nil?

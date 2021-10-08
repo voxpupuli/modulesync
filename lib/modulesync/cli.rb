@@ -56,7 +56,7 @@ module ModuleSync
       class_option :branch,
                    :aliases => '-b',
                    :desc => 'Branch name to make the changes in.' \
-                              ' Defaults to the default branch of the upstream repository, but falls back to "master".',
+                            ' Defaults to the default branch of the upstream repository, but falls back to "master".',
                    :default => CLI.defaults[:branch]
 
       desc 'update', 'Update the modules in managed_modules.yml'
@@ -67,7 +67,7 @@ module ModuleSync
       option :configs,
              :aliases => '-c',
              :desc => 'The local directory or remote repository to define the list of managed modules,' \
-                        ' the file templates, and the default values for template variables.'
+                      ' the file templates, and the default values for template variables.'
       option :managed_modules_conf,
              :desc => 'The file name to define the list of managed modules'
       option :remote_branch,
@@ -130,7 +130,7 @@ module ModuleSync
              :type => :boolean,
              :aliases => '-F',
              :desc => 'Produce a failure exit code when there are warnings' \
-                        ' (only has effect when --skip_broken is enabled)',
+                      ' (only has effect when --skip_broken is enabled)',
              :default => false
 
       def update
