@@ -1,5 +1,6 @@
 module ModuleSync
   module GitService
+    # Git service's factory
     module Factory
       def self.instantiate(type:, endpoint:, token:)
         raise MissingCredentialsError, <<~MESSAGE if token.nil?
