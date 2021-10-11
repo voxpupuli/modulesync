@@ -17,8 +17,6 @@ module ModuleSync
       private
 
       def _open_pull_request(repo_path:, namespace:, title:, message:, source_branch:, target_branch:, labels:, noop:) # rubocop:disable Metrics/ParameterLists, Lint/UnusedMethodArgument, Metrics/LineLength
-        head = "#{namespace}:#{source_branch}"
-
         if noop
           $stdout.puts \
             "Using no-op. Would submit MR '#{title}' to '#{repo_path}' " \
@@ -28,7 +26,7 @@ module ModuleSync
 
         merge_requests = @api.merge_requests(repo_path,
                                              :state => 'opened',
-                                             :source_branch => head,
+                                             :source_branch => source_branch,
                                              :target_branch => target_branch)
         unless merge_requests.empty?
           # Skip creating the MR if it exists already.
