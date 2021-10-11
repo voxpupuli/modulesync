@@ -65,7 +65,7 @@ module ModuleSync
 
     def prepare_workspace(branch)
       # Repo already cloned, check out master and override local changes
-      if Dir.exist?("#{@directory}/.git")
+      if Dir.exist? File.join(@directory, '.git')
         # Some versions of git can't properly handle managing a repo from outside the repo directory
         Dir.chdir(@directory) do
           puts "Overriding any local changes to repository in '#{@directory}'"
@@ -103,7 +103,7 @@ module ModuleSync
       files.each do |file|
         if repo.status.deleted.include?(file)
           repo.remove(file)
-        elsif File.exist?("#{@directory}/#{file}")
+        elsif File.exist? File.join(@directory, file)
           repo.add(file)
         end
       end
@@ -140,7 +140,7 @@ module ModuleSync
     # untracked under some circumstances
     # https://github.com/schacon/ruby-git/issues/130
     def untracked_unignored_files
-      ignore_path = "#{@directory}/.gitignore"
+      ignore_path = File.join @directory, '.gitignore'
       ignored = File.exist?(ignore_path) ? File.read(ignore_path).split : []
       repo.status.untracked.keep_if { |f, _| ignored.none? { |i| File.fnmatch(i, f) } }
     end
