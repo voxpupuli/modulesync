@@ -1,3 +1,4 @@
+require 'English'
 require 'fileutils'
 require 'pathname'
 
@@ -181,5 +182,30 @@ module ModuleSync # rubocop:disable Metrics/ModuleLength
       $stdout.puts "Skipping '#{puppet_module.given_name}' as update process failed"
     end
     exit 1 if errors && options[:fail_on_warnings]
+  end
+
+  def self.execute(cli_options)
+    @options = config_defaults.merge(cli_options)
+
+    managed_modules.each do |puppet_module|
+      $stdout.puts "#{puppet_module.given_name}:"
+
+      puppet_module.repository.clone unless puppet_module.repository.cloned?
+      puppet_module.repository.switch branch: @options[:branch]
+
+      command_args = cli_options[:command_args]
+      local_script = File.expand_path command_args[0]
+      command_args[0] = local_script if File.exist?(local_script)
+
+      FileUtils.chdir(puppet_module.working_directory) do
+        result = system(*command_args)
+        unless result
+          raise Thor::Error,
+                "Error during script execution ('#{@options[:command_args].join ' '}': #{$CHILD_STATUS})"
+        end
+      end
+
+      $stdout.puts ''
+    end
   end
 end

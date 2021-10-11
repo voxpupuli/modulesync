@@ -148,6 +148,27 @@ module ModuleSync
         ModuleSync.update(config)
       end
 
+      desc 'execute COMMAND', 'Execute the command in each managed modules'
+      option :configs,
+             :aliases => '-c',
+             :desc => 'The local directory or remote repository to define the list of managed modules,' \
+                      ' the file templates, and the default values for template variables.'
+      option :managed_modules_conf,
+             :desc => 'The file name to define the list of managed modules'
+      option :branch,
+             :aliases => '-b',
+             :desc => 'Branch name to make the changes in.',
+             :default => CLI.defaults[:branch]
+
+      def execute(*command_args)
+        config = {
+          :command => 'execute',
+          :command_args => command_args,
+        }.merge(options)
+        config = Util.symbolize_keys(config)
+        ModuleSync.execute(config)
+      end
+
       desc 'hook', 'Activate or deactivate a git hook.'
       subcommand 'hook', ModuleSync::CLI::Hook
     end
