@@ -459,7 +459,7 @@ Feature: update
   Scenario: When running update without changes
     Given a basic setup with a puppet module "puppet-test" from "fakenamespace"
     And a directory named "moduleroot"
-    When I run `msync update --message "Running without changes"`
+    When I run `msync update --verbose --message "Running without changes"`
     Then the exit status should be 0
     And the stdout should contain "There were no changes in 'modules/fakenamespace/puppet-test'. Not committing."
     And the puppet module "puppet-test" from "fakenamespace" should have no commits made by "Aruba"
@@ -727,7 +727,7 @@ Feature: update
       """
       source '<%= @configs['gem_source'] %>'
       """
-    When I run `msync update -m "Update Gemfile"`
+    When I run `msync update --verbose -m "Update Gemfile"`
     Then the exit status should be 0
     And the output should contain "Using repository's default branch: develop"
     And the puppet module "puppet-test" from "fakenamespace" should have only 1 commit made by "Aruba"

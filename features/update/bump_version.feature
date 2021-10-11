@@ -16,7 +16,7 @@ Feature: Bump a new version after an update
       """
       <%= @configs['content'] %>
       """
-    When I run `msync update --message "Add new-file" --bump --changelog --tag`
+    When I run `msync update --verbose --message "Add new-file" --bump --changelog --tag`
     Then the exit status should be 0
     And the file named "modules/fakenamespace/puppet-test/new-file" should contain "aruba"
     And the stdout should contain:

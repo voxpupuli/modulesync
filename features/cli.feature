@@ -35,7 +35,7 @@ Feature: CLI
       """
     And a git_base option appended to "modulesync.yml" for local tests
     And a directory named "moduleroot"
-    When I run `msync update --noop --namespace fakenamespace --branch command-line-branch`
+    When I run `msync update --verbose --noop --namespace fakenamespace --branch command-line-branch`
     Then the exit status should be 0
     And the output should contain:
       """

@@ -148,20 +148,24 @@ module ModuleSync
     def show_changes(options)
       checkout_branch(options[:branch])
 
-      puts 'Files changed:'
+      $stdout.puts 'Files changed:'
       repo.diff('HEAD', '--').each do |diff|
-        puts diff.patch
+        $stdout.puts diff.patch
       end
 
-      puts 'Files added:'
+      $stdout.puts 'Files added:'
       untracked_unignored_files.each_key do |file|
-        puts file
+        $stdout.puts file
       end
 
-      puts "\n\n"
-      puts '--------------------------------'
+      $stdout.puts "\n\n"
+      $stdout.puts '--------------------------------'
 
       git.diff('HEAD', '--').any? || untracked_unignored_files.any?
+    end
+
+    def puts(*args)
+      $stdout.puts(*args) if ModuleSync.options[:verbose]
     end
   end
 end

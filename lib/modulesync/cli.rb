@@ -58,6 +58,11 @@ module ModuleSync
                    :desc => 'Branch name to make the changes in.' \
                             ' Defaults to the default branch of the upstream repository, but falls back to "master".',
                    :default => CLI.defaults[:branch]
+      class_option :verbose,
+                   :aliases => '-v',
+                   :desc => 'Verbose mode',
+                   :type => :boolean,
+                   :default => false
 
       desc 'update', 'Update the modules in managed_modules.yml'
       option :message,
