@@ -211,4 +211,20 @@ module ModuleSync # rubocop:disable Metrics/ModuleLength
       $stdout.puts ''
     end
   end
+
+  def self.reset(cli_options)
+    @options = config_defaults.merge(cli_options)
+    if @options[:branch].nil?
+      raise Thor::Error,
+            "Error: 'branch' option is missing, please set it in configuration or in command line."
+    end
+
+    managed_modules.each do |puppet_module|
+      puppet_module.repository.reset_workspace(
+        branch: @options[:branch],
+        source_branch: @options[:source_branch],
+        operate_offline: @options[:offline],
+      )
+    end
+  end
 end

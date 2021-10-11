@@ -87,6 +87,29 @@ module ModuleSync
       end
     end
 
+    def default_reset_branch(branch)
+      remote_branch_exists?(branch) ? branch : default_branch
+    end
+
+    def reset_workspace(branch:, operate_offline:, source_branch: nil)
+      raise if branch.nil?
+
+      if cloned?
+        source_branch ||= "origin/#{default_reset_branch branch}"
+        puts "Hard-resetting any local changes to repository in '#{@directory}' from branch '#{source_branch}'"
+        switch(branch: branch)
+        git.fetch 'origin', prune: true unless operate_offline
+
+        git.reset_hard source_branch
+        git.clean(d: true, force: true)
+      else
+        raise ModuleSync::Error, 'Unable to clone in offline mode.' if operate_offline
+
+        clone
+        switch(branch: branch)
+      end
+    end
+
     def tag(version, tag_pattern)
       tag = tag_pattern % version
       puts "Tagging with #{tag}"

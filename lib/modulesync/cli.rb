@@ -169,6 +169,43 @@ module ModuleSync
         ModuleSync.execute(config)
       end
 
+      desc 'reset', 'Reset local repositories to a well-known state'
+      long_desc <<~DESC
+        Reset local repository to a well-known state:
+        \x5  * Switch local repositories to specified branch
+        \x5  * Fetch and prune repositories unless running with `--offline` option
+        \x5  * Hard-reset any changes to specified source branch, technically any git refs, e.g. `main`, `origin/wip`
+        \x5  * Clean all extra local files
+
+        Note: If a repository is not already cloned, it will operate the following to reach to well-known state:
+        \x5  * Clone the repository
+        \x5  * Switch to specified branch
+      DESC
+      option :configs,
+             :aliases => '-c',
+             :desc => 'The local directory or remote repository to define the list of managed modules,' \
+                      ' the file templates, and the default values for template variables.'
+      option :managed_modules_conf,
+             :desc => 'The file name to define the list of managed modules'
+      option :branch,
+             :aliases => '-b',
+             :desc => 'Branch name to make the changes in.',
+             :default => CLI.defaults[:branch]
+      option :offline,
+             :type => :boolean,
+             :desc => 'Only proceed local operations',
+             :default => false
+      option :source_branch,
+             :desc => 'Branch to reset from (e.g. origin/wip)'
+
+      def reset
+        config = {
+          :command => 'reset',
+        }.merge(options)
+        config = Util.symbolize_keys(config)
+        ModuleSync.reset(config)
+      end
+
       desc 'hook', 'Activate or deactivate a git hook.'
       subcommand 'hook', ModuleSync::CLI::Hook
     end
