@@ -63,22 +63,24 @@ module ModuleSync
       end
     end
 
+    def cloned?
+      Dir.exist? File.join(@directory, '.git')
+    end
+
+    def clone
+      puts "Cloning from '#{@remote}'"
+      @git = Git.clone(@remote, @directory)
+    end
+
     def prepare_workspace(branch)
-      # Repo already cloned, check out master and override local changes
-      if Dir.exist? File.join(@directory, '.git')
-        # Some versions of git can't properly handle managing a repo from outside the repo directory
-        Dir.chdir(@directory) do
-          puts "Overriding any local changes to repository in '#{@directory}'"
-          @git = Git.open('.')
-          repo.fetch 'origin', prune: true
-          repo.reset_hard
-          switch_branch(branch)
-          git.pull('origin', branch) if remote_branch_exists?(branch)
-        end
-      # Repo needs to be cloned in the cwd
+      if cloned?
+        puts "Overriding any local changes to repository in '#{@directory}'"
+        git.fetch 'origin', prune: true
+        git.reset_hard
+        switch_branch(branch)
+        git.pull('origin', branch) if remote_branch_exists?(branch)
       else
-        puts "Cloning from '#{@remote}'"
-        @git = Git.clone(@remote, @directory)
+        clone
         switch_branch(branch)
       end
     end
