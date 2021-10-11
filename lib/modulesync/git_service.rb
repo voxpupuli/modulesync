@@ -5,6 +5,8 @@ module ModuleSync
   module GitService
     class MissingCredentialsError < Error; end
 
+    class UnguessableTypeError < Error; end
+
     def self.configuration_for(sourcecode:)
       type = type_for(sourcecode: sourcecode)
 
@@ -28,13 +30,13 @@ module ModuleSync
       return :gitlab if sourcecode.repository_remote.include? 'gitlab'
 
       if ENV['GITLAB_TOKEN'].nil? && ENV['GITHUB_TOKEN'].nil?
-        raise ModuleSync::Error, <<~MESSAGE
+        raise UnguessableTypeError, <<~MESSAGE
           Unable to guess Git service type without GITLAB_TOKEN or GITHUB_TOKEN sets.
         MESSAGE
       end
 
       unless ENV['GITLAB_TOKEN'].nil? || ENV['GITHUB_TOKEN'].nil?
-        raise ModuleSync::Error, <<~MESSAGE
+        raise UnguessableTypeError, <<~MESSAGE
           Unable to guess Git service type with both GITLAB_TOKEN and GITHUB_TOKEN sets.
 
           Please set the wanted one in configuration (ie. add `gitlab:` or `github:` key)
