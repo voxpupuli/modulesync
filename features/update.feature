@@ -14,9 +14,8 @@ Feature: update
       """
       <%= @configs['name'] %>
       """
-    When I run `msync update --noop`
-    Then the exit status should be 0
-    And the output should match:
+    When I successfully run `msync update --noop`
+    Then the output should match:
       """
       Files added:
       test
@@ -37,9 +36,8 @@ Feature: update
       """
       <%= @configs['name'] %>
       """
-    When I run `msync update -s -m "Add test"`
-    Then the exit status should be 0
-    And the puppet module "puppet-test" from "fakenamespace" should have no commits made by "Aruba"
+    When I successfully run `msync update -s -m "Add test"`
+    Then the puppet module "puppet-test" from "fakenamespace" should have no commits made by "Aruba"
 
   Scenario: Adding a new file to repo without write access
     Given a basic setup with a puppet module "puppet-test" from "fakenamespace"
@@ -72,9 +70,8 @@ Feature: update
       """
       <%= @configs['name'] %>
       """
-    When I run `msync update --noop`
-    Then the exit status should be 0
-    And the output should match:
+    When I successfully run `msync update --noop`
+    Then the output should match:
       """
       Warning: using './moduleroot/test' as template without '.erb' suffix
       """
@@ -99,9 +96,8 @@ Feature: update
       """
       <%= @configs['name'] %>
       """
-    When I run `msync update --noop`
-    Then the exit status should be 0
-    And the output should match:
+    When I successfully run `msync update --noop`
+    Then the output should match:
       """
       Files added:
       test
@@ -125,9 +121,8 @@ Feature: update
       """
       <%= @configs['name'] %>
       """
-    When I run `msync update --noop`
-    Then the exit status should be 0
-    And the output should match:
+    When I successfully run `msync update --noop`
+    Then the output should match:
       """
       Files added:
       test
@@ -151,9 +146,8 @@ Feature: update
       """
       <%= @configs['name'] %>
       """
-    When I run `msync update --noop`
-    Then the exit status should be 0
-    And the output should match:
+    When I successfully run `msync update --noop`
+    Then the output should match:
       """
       Files added:
       test
@@ -195,9 +189,8 @@ Feature: update
         <%= c['name'] %>
       <% end %>
       """
-    When I run `msync update --noop -s`
-    Then the exit status should be 0
-    And the puppet module "puppet-test" from "fakenamespace" should have no commits made by "Aruba"
+    When I successfully run `msync update --noop -s`
+    Then the puppet module "puppet-test" from "fakenamespace" should have no commits made by "Aruba"
 
   Scenario: Using skip_broken and fail_on_warnings options with invalid files
     Given a basic setup with a puppet module "puppet-test" from "fakenamespace"
@@ -235,9 +228,8 @@ Feature: update
       """
       source '<%= @configs['gem_source'] %>'
       """
-    When I run `msync update --noop`
-    Then the exit status should be 0
-    And the output should match:
+    When I successfully run `msync update --noop`
+    Then the output should match:
       """
       Files changed:
       +diff --git a/Gemfile b/Gemfile
@@ -265,9 +257,8 @@ Feature: update
       """
       source '<%= @configs['gem_source'] %>'
       """
-    When I run `msync update -m "Update Gemfile" -r test`
-    Then the exit status should be 0
-    And the puppet module "puppet-test" from "fakenamespace" should have only 1 commit made by "Aruba"
+    When I successfully run `msync update -m "Update Gemfile" -r test`
+    Then the puppet module "puppet-test" from "fakenamespace" should have only 1 commit made by "Aruba"
     And the puppet module "puppet-test" from "fakenamespace" should have 1 commit made by "Aruba" in branch "test"
     And the puppet module "puppet-test" from "fakenamespace" should have a branch "test" with a file named "Gemfile" which contains:
       """
@@ -292,7 +283,7 @@ Feature: update
       """
       source '<%= @configs['gem_source'] %>'
       """
-    When I run `msync update --noop`
+    When I successfully run `msync update --noop`
     Then the output should not match:
       """
       Files changed:
@@ -302,7 +293,6 @@ Feature: update
       """
       Not managing 'Gemfile' in 'puppet-test'
       """
-    And the exit status should be 0
     And the file named "modules/fakenamespace/puppet-test/Gemfile" should contain:
       """
       source 'https://rubygems.org'
@@ -326,14 +316,13 @@ Feature: update
       """
       source 'https://rubygems.org'
       """
-    When I run `msync update --noop`
+    When I successfully run `msync update --noop`
     Then the output should match:
       """
       Files changed:
       diff --git a/Gemfile b/Gemfile
       deleted file mode 100644
       """
-    And the exit status should be 0
     And the puppet module "puppet-test" from "fakenamespace" should have no commits made by "Aruba"
 
   Scenario: Setting a non-existent file to deleted
@@ -345,9 +334,8 @@ Feature: update
         delete: true
       """
     And a directory named "moduleroot"
-    When I run `msync update -m 'deletes a file that doesnt exist!' -f puppet-test`
-    And the exit status should be 0
-    And the puppet module "puppet-test" from "fakenamespace" should have no commits made by "Aruba"
+    When I successfully run `msync update -m 'deletes a file that doesnt exist!' -f puppet-test`
+    Then the puppet module "puppet-test" from "fakenamespace" should have no commits made by "Aruba"
 
   Scenario: Setting a directory to unmanaged
     Given a basic setup with a puppet module "puppet-apache" from "puppetlabs"
@@ -367,17 +355,15 @@ Feature: update
       """
       This is a fake spec_helper!
       """
-    When I run `msync update --offline`
+    When I successfully run `msync update --offline`
     Then the output should contain:
       """
       Not managing 'spec/spec_helper.rb' in 'puppet-apache'
       """
-    And the exit status should be 0
     And the file named "modules/puppetlabs/puppet-apache/spec/spec_helper.rb" should contain:
       """
       This is a fake spec_helper!
       """
-    And the exit status should be 0
     And the puppet module "puppet-apache" from "puppetlabs" should have no commits made by "Aruba"
 
   Scenario: Adding a new file in a new subdirectory
@@ -395,9 +381,8 @@ Feature: update
         require '<%= required %>'
       <% end %>
       """
-    When I run `msync update --noop`
-    Then the exit status should be 0
-    And the output should match:
+    When I successfully run `msync update --noop`
+    Then the output should match:
       """
       Files added:
       spec/spec_helper.rb
@@ -423,17 +408,15 @@ Feature: update
         require '<%= required %>'
       <% end %>
       """
-    When I run `msync update --offline`
-    Then the exit status should be 0
-    And the output should not match /Files (changed|added|deleted):/
+    When I successfully run `msync update --offline`
+    Then the output should not match /Files (changed|added|deleted):/
     And the puppet module "puppet-test" from "fakenamespace" should have no commits made by "Aruba"
 
   Scenario: Pulling a module that already exists in the modules directory
     Given a basic setup with a puppet module "puppet-test" from "fakenamespace"
     And a directory named "moduleroot"
-    When I run `msync update --message "First update run"`
-    Then the exit status should be 0
-    And the puppet module "puppet-test" from "fakenamespace" should have no commits made by "Aruba"
+    When I successfully run `msync update --message "First update run"`
+    Then the puppet module "puppet-test" from "fakenamespace" should have no commits made by "Aruba"
     Given a file named "config_defaults.yml" with:
       """
       ---
@@ -447,9 +430,8 @@ Feature: update
         require '<%= required %>'
       <% end %>
       """
-    When I run `msync update --noop`
-    Then the exit status should be 0
-    And the output should match:
+    When I successfully run `msync update --noop`
+    Then the output should match:
       """
       Files added:
       spec/spec_helper.rb
@@ -459,9 +441,8 @@ Feature: update
   Scenario: When running update without changes
     Given a basic setup with a puppet module "puppet-test" from "fakenamespace"
     And a directory named "moduleroot"
-    When I run `msync update --verbose --message "Running without changes"`
-    Then the exit status should be 0
-    And the stdout should contain "There were no changes in 'modules/fakenamespace/puppet-test'. Not committing."
+    When I successfully run `msync update --verbose --message "Running without changes"`
+    Then the stdout should contain "There were no changes in 'modules/fakenamespace/puppet-test'. Not committing."
     And the puppet module "puppet-test" from "fakenamespace" should have no commits made by "Aruba"
 
   Scenario: When specifying configurations in managed_modules.yml
@@ -483,9 +464,8 @@ Feature: update
       """
       <%= @configs['name'] %>
       """
-    When I run `msync update --noop`
-    Then the exit status should be 0
-    And the output should match:
+    When I successfully run `msync update --noop`
+    Then the output should match:
       """
       Files added:
       test
@@ -521,9 +501,8 @@ Feature: update
       """
       <%= @configs['name'] %>
       """
-    When I run `msync update --noop -f puppet-test`
-    Then the exit status should be 0
-    And the output should match:
+    When I successfully run `msync update --noop -f puppet-test`
+    Then the output should match:
       """
       Files added:
       test
@@ -560,9 +539,8 @@ Feature: update
       """
       <%= @configs['name'] %>
       """
-    When I run `msync update --noop -x puppet-blacksmith`
-    Then the exit status should be 0
-    And the output should match:
+    When I successfully run `msync update --noop -x puppet-blacksmith`
+    Then the output should match:
       """
       Files added:
       test
@@ -604,9 +582,8 @@ Feature: update
       spec/spec_helper.rb:
         unmanaged: true
       """
-    When I run `msync update --noop`
-    Then the exit status should be 0
-    And the output should match:
+    When I successfully run `msync update --noop`
+    Then the output should match:
       """
       Not managing 'spec/spec_helper.rb' in 'puppet-test'
       """
@@ -645,9 +622,8 @@ Feature: update
       """
       <%= @configs['name'] %>
       """
-    When I run `msync update --noop`
-    Then the exit status should be 0
-    And the output should match:
+    When I successfully run `msync update --noop`
+    Then the output should match:
       """
       Files added:
       test
@@ -674,9 +650,8 @@ Feature: update
       """
       Hello world!
       """
-    When I run `msync update --noop`
-    Then the exit status should be 0
-    And the output should match:
+    When I successfully run `msync update --noop`
+    Then the output should match:
       """
       Files changed:
       +diff --git a/README.md b/README.md
@@ -701,13 +676,11 @@ Feature: update
       """
       source '<%= @configs['gem_source'] %>'
       """
-    When I run `msync update -m "Update Gemfile" -r test`
-    Then the exit status should be 0
-    And the puppet module "puppet-test" from "fakenamespace" should have only 1 commit made by "Aruba"
+    When I successfully run `msync update -m "Update Gemfile" -r test`
+    Then the puppet module "puppet-test" from "fakenamespace" should have only 1 commit made by "Aruba"
     And the puppet module "puppet-test" from "fakenamespace" should have 1 commit made by "Aruba" in branch "test"
     Given I remove the directory "modules"
-    When I run `msync update -m "Update Gemfile" -r test`
-    Then the exit status should be 0
+    When I successfully run `msync update -m "Update Gemfile" -r test`
     Then the output should not contain "error"
     Then the output should not contain "rejected"
     And the puppet module "puppet-test" from "fakenamespace" should have only 1 commit made by "Aruba"
@@ -727,9 +700,8 @@ Feature: update
       """
       source '<%= @configs['gem_source'] %>'
       """
-    When I run `msync update --verbose -m "Update Gemfile"`
-    Then the exit status should be 0
-    And the output should contain "Using repository's default branch: develop"
+    When I successfully run `msync update --verbose -m "Update Gemfile"`
+    Then the output should contain "Using repository's default branch: develop"
     And the puppet module "puppet-test" from "fakenamespace" should have only 1 commit made by "Aruba"
     And the puppet module "puppet-test" from "fakenamespace" should have 1 commit made by "Aruba" in branch "develop"
 
@@ -746,9 +718,8 @@ Feature: update
       target: <%= @metadata[:target_file] %>
       workdir: <%= @metadata[:workdir] %>
       """
-    When I run `msync update --noop`
-    Then the exit status should be 0
-    And the file named "modules/fakenamespace/puppet-test/test" should contain:
+    When I successfully run `msync update --noop`
+    Then the file named "modules/fakenamespace/puppet-test/test" should contain:
       """
       module: puppet-test
       target: modules/fakenamespace/puppet-test/test
@@ -770,10 +741,8 @@ Feature: update
       """
       <%= @configs['name'] %>
       """
-    When I run `msync update -m "No changes!" --branch delete-me`
-    Then the exit status should be 0
-    And the puppet module "puppet-test" from "fakenamespace" should have 1 commit made by "Aruba" in branch "delete-me"
+    When I successfully run `msync update -m "No changes!" --branch delete-me`
+    Then the puppet module "puppet-test" from "fakenamespace" should have 1 commit made by "Aruba" in branch "delete-me"
     When the branch "delete-me" of the puppet module "puppet-test" from "fakenamespace" is deleted
-    And I run `msync update -m "No changes!" --branch delete-me`
-    Then the exit status should be 0
-    And the puppet module "puppet-test" from "fakenamespace" should have no commits made by "Aruba"
+    And I successfully run `msync update -m "No changes!" --branch delete-me`
+    Then the puppet module "puppet-test" from "fakenamespace" should have no commits made by "Aruba"

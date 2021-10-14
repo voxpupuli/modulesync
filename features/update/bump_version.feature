@@ -16,9 +16,8 @@ Feature: Bump a new version after an update
       """
       <%= @configs['content'] %>
       """
-    When I run `msync update --verbose --message "Add new-file" --bump --changelog --tag`
-    Then the exit status should be 0
-    And the file named "modules/fakenamespace/puppet-test/new-file" should contain "aruba"
+    When I successfully run `msync update --verbose --message "Add new-file" --bump --changelog --tag`
+    Then the file named "modules/fakenamespace/puppet-test/new-file" should contain "aruba"
     And the stdout should contain:
       """
       Bumped to version 0.4.3
@@ -44,9 +43,8 @@ Feature: Bump a new version after an update
       """
       <%= @configs['content'] %>
       """
-    When I run `msync update --message "Add new-file" --bump`
-    Then the exit status should be 0
-    And the file named "modules/fakenamespace/puppet-test/new-file" should contain "aruba"
+    When I successfully run `msync update --message "Add new-file" --bump`
+    Then the file named "modules/fakenamespace/puppet-test/new-file" should contain "aruba"
     And the stdout should contain:
       """
       Bumped to version 0.4.3
@@ -67,9 +65,8 @@ Feature: Bump a new version after an update
       """
       <%= @configs['content'] %>
       """
-    When I run `msync update --message "Add new-file" --bump --changelog`
-    Then the exit status should be 0
-    And the file named "modules/fakenamespace/puppet-test/new-file" should contain "aruba"
+    When I successfully run `msync update --message "Add new-file" --bump --changelog`
+    Then the file named "modules/fakenamespace/puppet-test/new-file" should contain "aruba"
     And the stdout should contain:
       """
       Bumped to version 0.4.3
@@ -81,7 +78,6 @@ Feature: Bump a new version after an update
   Scenario: Dont bump the module version after an update that produces no changes
     Given a basic setup with a puppet module "puppet-test" from "fakenamespace"
     And a directory named "moduleroot"
-    When I run `msync update --message "Add new-file" --bump --tag`
-    Then the exit status should be 0
-    And the puppet module "puppet-test" from "fakenamespace" should have no commits made by "Aruba"
+    When I successfully run `msync update --message "Add new-file" --bump --tag`
+    Then the puppet module "puppet-test" from "fakenamespace" should have no commits made by "Aruba"
     And the puppet module "puppet-test" from "fakenamespace" should not have a tag named "0.4.3"

@@ -22,9 +22,8 @@ Feature: Create a pull-request/merge-request after update
       """
       <%= @configs['name'] %>
       """
-    When I run `msync update --noop --branch managed_update --pr`
+    When I successfully run `msync update --noop --branch managed_update --pr`
     Then the output should contain "Would submit PR "
-    And the exit status should be 0
     And the puppet module "puppet-test" from "fakenamespace" should have no commits made by "Aruba"
 
   Scenario: Run update in no-op mode and ask for GitLab MR
@@ -50,9 +49,8 @@ Feature: Create a pull-request/merge-request after update
       """
       <%= @configs['name'] %>
       """
-    When I run `msync update --noop --branch managed_update --pr`
+    When I successfully run `msync update --noop --branch managed_update --pr`
     Then the output should contain "Would submit MR "
-    And the exit status should be 0
     And the puppet module "puppet-test" from "fakenamespace" should have no commits made by "Aruba"
 
   Scenario: Run update without changes in no-op mode and ask for GitLab MR
@@ -69,9 +67,8 @@ Feature: Create a pull-request/merge-request after update
     And I set the environment variables to:
       | variable     | value  |
       | GITLAB_TOKEN | foobar |
-    When I run `msync update --noop --branch managed_update --pr`
+    When I successfully run `msync update --noop --branch managed_update --pr`
     Then the output should not contain "Would submit MR "
-    And the exit status should be 0
     And the puppet module "puppet-test" from "fakenamespace" should have no commits made by "Aruba"
 
   Scenario: Ask for PR without credentials
@@ -124,9 +121,8 @@ Feature: Create a pull-request/merge-request after update
       """
       <%= @configs['name'] %>
       """
-    When I run `msync update --noop --branch managed_update --pr`
-    Then the exit status should be 0
-    And the output should contain "Would submit PR "
+    When I successfully run `msync update --noop --branch managed_update --pr`
+    Then the output should contain "Would submit PR "
     And the output should contain "Would submit MR "
     And the puppet module "puppet-github" from "fakenamespace" should have no commits made by "Aruba"
     And the puppet module "puppet-gitlab" from "fakenamespace" should have no commits made by "Aruba"
