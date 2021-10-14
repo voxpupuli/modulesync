@@ -227,4 +227,19 @@ module ModuleSync # rubocop:disable Metrics/ModuleLength
       )
     end
   end
+
+  def self.push(cli_options)
+    @options = config_defaults.merge(cli_options)
+
+    if @options[:branch].nil?
+      raise Thor::Error,
+            "Error: 'branch' option is missing, please set it in configuration or in command line."
+    end
+
+    managed_modules.each do |puppet_module|
+      puppet_module.repository.push branch: @options[:branch], remote_branch: @options[:remote_branch]
+    rescue ModuleSync::Error => e
+      raise Thor::Error, "#{puppet_module.given_name}: #{e.message}"
+    end
+  end
 end

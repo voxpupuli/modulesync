@@ -163,6 +163,16 @@ module ModuleSync
       true
     end
 
+    def push(branch:, remote_branch:, remote_name: 'origin')
+      raise ModuleSync::Error, 'Repository must be locally available before trying to push' unless cloned?
+
+      remote_url = git.remote(remote_name).url
+      remote_branch ||= branch
+      puts "Push branch '#{branch}' to '#{remote_url}' (#{remote_name}/#{remote_branch})"
+
+      git.push(remote_name, "#{branch}:#{remote_branch}", force: true)
+    end
+
     # Needed because of a bug in the git gem that lists ignored files as
     # untracked under some circumstances
     # https://github.com/schacon/ruby-git/issues/130

@@ -206,6 +206,28 @@ module ModuleSync
         ModuleSync.reset(config)
       end
 
+      desc 'push', 'Push all available commits from branch to remote'
+      option :configs,
+             :aliases => '-c',
+             :desc => 'The local directory or remote repository to define the list of managed modules,' \
+                      ' the file templates, and the default values for template variables.'
+      option :managed_modules_conf,
+             :desc => 'The file name to define the list of managed modules'
+      option :branch,
+             :aliases => '-b',
+             :desc => 'Branch name to push',
+             :default => CLI.defaults[:branch]
+      option :remote_branch,
+             :desc => 'Remote branch to push to (e.g. maintenance)'
+
+      def push
+        config = {
+          :command => 'push',
+        }.merge(options)
+        config = Util.symbolize_keys(config)
+        ModuleSync.push(config)
+      end
+
       desc 'hook', 'Activate or deactivate a git hook.'
       subcommand 'hook', ModuleSync::CLI::Hook
     end
