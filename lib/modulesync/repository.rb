@@ -37,7 +37,7 @@ module ModuleSync
       %r{remotes/origin/HEAD\s+->\s+origin/(?<branch>.+?)$}.match(symbolic_ref.full)[:branch]
     end
 
-    def switch_branch(branch)
+    def switch(branch:)
       unless branch
         branch = default_branch
         puts "Using repository's default branch: #{branch}"
@@ -77,11 +77,11 @@ module ModuleSync
         puts "Overriding any local changes to repository in '#{@directory}'"
         git.fetch 'origin', prune: true
         git.reset_hard
-        switch_branch(branch)
+        switch(branch: branch)
         git.pull('origin', branch) if remote_branch_exists?(branch)
       else
         clone
-        switch_branch(branch)
+        switch(branch: branch)
       end
     end
 
