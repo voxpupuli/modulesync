@@ -1,10 +1,11 @@
 module ModuleSync
   module GitService
+    # Git service's factory
     module Factory
       def self.instantiate(type:, endpoint:, token:)
         raise MissingCredentialsError, <<~MESSAGE if token.nil?
-        A token is required to use services from #{type}:
-          Please set environment variable: "#{type.upcase}_TOKEN" or set the token entry in module options.
+          A token is required to use services from #{type}:
+            Please set environment variable: "#{type.upcase}_TOKEN" or set the token entry in module options.
         MESSAGE
 
         case type

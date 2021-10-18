@@ -8,7 +8,19 @@ env:
   BUNDLE_WITHOUT: release
 
 jobs:
+  rubocop:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+      - name: Setup ruby
+        uses: ruby/setup-ruby@v1
+        with:
+          ruby-version: '3.0'
+          bundler-cache: true
+      - name: Run linter
+        run: bundle exec rubocop --format github
   test:
+    needs: rubocop
     runs-on: ubuntu-latest
     strategy:
       fail-fast: false

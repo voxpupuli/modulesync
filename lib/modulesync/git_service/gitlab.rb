@@ -8,15 +8,17 @@ module ModuleSync
     # installations.
     class GitLab < Base
       def initialize(token, endpoint)
+        super()
+
         @api = Gitlab::Client.new(
           :endpoint => endpoint,
-          :private_token => token
+          :private_token => token,
         )
       end
 
       private
 
-      def _open_pull_request(repo_path:, namespace:, title:, message:, source_branch:, target_branch:, labels:, noop:) # rubocop:disable Metrics/ParameterLists, Lint/UnusedMethodArgument, Metrics/LineLength
+      def _open_pull_request(repo_path:, namespace:, title:, message:, source_branch:, target_branch:, labels:, noop:) # rubocop:disable Metrics/ParameterLists, Lint/UnusedMethodArgument
         if noop
           $stdout.puts \
             "Using no-op. Would submit MR '#{title}' to '#{repo_path}' " \
@@ -44,6 +46,7 @@ module ModuleSync
           "- merges '#{source_branch}' into '#{target_branch}'"
 
         return if labels.empty?
+
         $stdout.puts "Attached the following labels to MR #{mr.iid}: #{labels.join(', ')}"
       end
     end

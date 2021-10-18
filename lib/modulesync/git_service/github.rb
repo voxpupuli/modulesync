@@ -8,6 +8,8 @@ module ModuleSync
     # Enterprise installations.
     class GitHub < Base
       def initialize(token, endpoint)
+        super()
+
         Octokit.configure do |c|
           c.api_endpoint = endpoint
         end
@@ -16,7 +18,7 @@ module ModuleSync
 
       private
 
-      def _open_pull_request(repo_path:, namespace:, title:, message:, source_branch:, target_branch:, labels:, noop:) # rubocop:disable Metrics/ParameterLists, Metrics/LineLength
+      def _open_pull_request(repo_path:, namespace:, title:, message:, source_branch:, target_branch:, labels:, noop:) # rubocop:disable Metrics/ParameterLists
         head = "#{namespace}:#{source_branch}"
 
         if noop
@@ -48,6 +50,7 @@ module ModuleSync
         # We only assign labels to the PR if we've discovered a list > 1. The labels MUST
         # already exist. We DO NOT create missing labels.
         return if labels.empty?
+
         $stdout.puts "Attaching the following labels to PR #{pr['number']}: #{labels.join(', ')}"
         @api.add_labels_to_an_issue(repo_path, pr['number'], labels)
       end

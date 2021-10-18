@@ -18,10 +18,10 @@ module ModuleSync # rubocop:disable Metrics/ModuleLength
 
   def self.config_defaults
     {
-      :project_root         => 'modules/',
+      :project_root => 'modules/',
       :managed_modules_conf => 'managed_modules.yml',
-      :configs              => '.',
-      :tag_pattern          => '%s'
+      :configs => '.',
+      :tag_pattern => '%s',
     }
   end
 
@@ -44,8 +44,8 @@ module ModuleSync # rubocop:disable Metrics/ModuleLength
           .to_a
     else
       $stderr.puts "#{local_template_dir} does not exist." \
-        ' Check that you are working in your module configs directory or' \
-        ' that you have passed in the correct directory with -c.'
+                   ' Check that you are working in your module configs directory or' \
+                   ' that you have passed in the correct directory with -c.'
       exit 1
     end
   end
@@ -62,7 +62,7 @@ module ModuleSync # rubocop:disable Metrics/ModuleLength
     managed_modules = Util.parse_config(config_file)
     if managed_modules.empty?
       $stderr.puts "No modules found in #{config_file}." \
-        ' Check that you specified the right :configs directory and :managed_modules_conf file.'
+                   ' Check that you specified the right :configs directory and :managed_modules_conf file.'
       exit 1
     end
     managed_modules.select! { |m| m =~ Regexp.new(filter) } unless filter.nil?
@@ -82,7 +82,6 @@ module ModuleSync # rubocop:disable Metrics/ModuleLength
   end
 
   def self.manage_file(puppet_module, filename, settings, options)
-    namespace = settings.additional_settings[:namespace]
     module_name = settings.additional_settings[:puppet_module]
     configs = settings.build_file_configs(filename)
     target_file = puppet_module.path(filename)
@@ -95,12 +94,12 @@ module ModuleSync # rubocop:disable Metrics/ModuleLength
         # Meta data passed to the template as @metadata[:name]
         metadata = {
           :module_name => module_name,
-          :workdir     => puppet_module.working_directory,
+          :workdir => puppet_module.working_directory,
           :target_file => target_file,
         }
         template = Renderer.render(erb, configs, metadata)
         Renderer.sync(template, target_file)
-      rescue StandardError => e
+      rescue StandardError
         $stderr.puts "#{puppet_module.given_name}: Error while rendering file: '#{filename}'"
         raise
       end
@@ -144,6 +143,7 @@ module ModuleSync # rubocop:disable Metrics/ModuleLength
 
   def self.config_path(file, options)
     return file if Pathname.new(file).absolute?
+
     File.join(options[:configs], file)
   end
 
@@ -162,19 +162,18 @@ module ModuleSync # rubocop:disable Metrics/ModuleLength
     errors = false
     # managed_modules is either an array or a hash
     managed_modules.each do |puppet_module|
-      begin
-        manage_module(puppet_module, module_files, defaults)
-      rescue ModuleSync::Error, Git::GitExecuteError => e
-        message = e.message || "Error during '#{options[:command]}'"
-        $stderr.puts "#{puppet_module.given_name}: #{message}"
-        exit 1 unless options[:skip_broken]
-        errors = true
-        $stdout.puts "Skipping '#{puppet_module.given_name}' as update process failed"
-      rescue StandardError => e
-        raise unless options[:skip_broken]
-        errors = true
-        $stdout.puts "Skipping '#{puppet_module.given_name}' as update process failed"
-      end
+      manage_module(puppet_module, module_files, defaults)
+    rescue ModuleSync::Error, Git::GitExecuteError => e
+      message = e.message || "Error during '#{options[:command]}'"
+      $stderr.puts "#{puppet_module.given_name}: #{message}"
+      exit 1 unless options[:skip_broken]
+      errors = true
+      $stdout.puts "Skipping '#{puppet_module.given_name}' as update process failed"
+    rescue StandardError
+      raise unless options[:skip_broken]
+
+      errors = true
+      $stdout.puts "Skipping '#{puppet_module.given_name}' as update process failed"
     end
     exit 1 if errors && options[:fail_on_warnings]
   end

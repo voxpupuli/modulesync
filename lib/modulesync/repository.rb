@@ -33,6 +33,7 @@ module ModuleSync
     def default_branch
       symbolic_ref = repo.branches.find { |b| b.full =~ %r{remotes/origin/HEAD} }
       return unless symbolic_ref
+
       %r{remotes/origin/HEAD\s+->\s+origin/(?<branch>.+?)$}.match(symbolic_ref.full)[:branch]
     end
 
@@ -63,13 +64,8 @@ module ModuleSync
     end
 
     def prepare_workspace(branch)
-      # Repo needs to be cloned in the cwd
-      if !Dir.exist?("#{@directory}/.git")
-        puts "Cloning repository fresh from '#{@remote}'"
-        @git = Git.clone(@remote, @directory)
-        switch_branch(branch)
       # Repo already cloned, check out master and override local changes
-      else
+      if Dir.exist? File.join(@directory, '.git')
         # Some versions of git can't properly handle managing a repo from outside the repo directory
         Dir.chdir(@directory) do
           puts "Overriding any local changes to repository in '#{@directory}'"
@@ -79,6 +75,11 @@ module ModuleSync
           switch_branch(branch)
           git.pull('origin', branch) if remote_branch_exists?(branch)
         end
+      # Repo needs to be cloned in the cwd
+      else
+        puts "Cloning from '#{@remote}'"
+        @git = Git.clone(@remote, @directory)
+        switch_branch(branch)
       end
     end
 
@@ -102,7 +103,7 @@ module ModuleSync
       files.each do |file|
         if repo.status.deleted.include?(file)
           repo.remove(file)
-        elsif File.exist?("#{@directory}/#{file}")
+        elsif File.exist? File.join(@directory, file)
           repo.add(file)
         end
       end
@@ -139,7 +140,7 @@ module ModuleSync
     # untracked under some circumstances
     # https://github.com/schacon/ruby-git/issues/130
     def untracked_unignored_files
-      ignore_path = "#{@directory}/.gitignore"
+      ignore_path = File.join @directory, '.gitignore'
       ignored = File.exist?(ignore_path) ? File.read(ignore_path).split : []
       repo.status.untracked.keep_if { |f, _| ignored.none? { |i| File.fnmatch(i, f) } }
     end

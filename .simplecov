@@ -8,7 +8,7 @@ SimpleCov.start do
     # This should be added, cf.
     # https://github.com/colszowka/simplecov#default-root-filter-and-coverage-for-things-outside-of-it
     add_filter do |src|
-      !(src.filename =~ /^#{SimpleCov.root}/)
+      src.filename !~ /^#{SimpleCov.root}/
     end
   end
 
@@ -27,7 +27,7 @@ SimpleCov.start do
 
   # exclude anything that is not in lib, spec or features directories
   add_filter do |src|
-    !(src.filename =~ /^#{SimpleCov.root}\/(lib|spec|features)/)
+    src.filename !~ %r{^#{SimpleCov.root}/(lib|spec|features)}
   end
 
   track_files '**/*.rb'

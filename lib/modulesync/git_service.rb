@@ -30,7 +30,7 @@ module ModuleSync
       if ENV['GITLAB_TOKEN'].nil? && ENV['GITHUB_TOKEN'].nil?
         raise ModuleSync::Error, <<~MESSAGE
           Unable to guess Git service type without GITLAB_TOKEN or GITHUB_TOKEN sets.
-          MESSAGE
+        MESSAGE
       end
 
       unless ENV['GITLAB_TOKEN'].nil? || ENV['GITHUB_TOKEN'].nil?
@@ -38,7 +38,7 @@ module ModuleSync
           Unable to guess Git service type with both GITLAB_TOKEN and GITHUB_TOKEN sets.
 
           Please set the wanted one in configuration (ie. add `gitlab:` or `github:` key)
-          MESSAGE
+        MESSAGE
       end
 
       return :github unless ENV['GITHUB_TOKEN'].nil?
@@ -114,17 +114,16 @@ module ModuleSync
     # - file:///path/to/repo.git/
     # - any invalid URL
     def self.extract_hostname(url)
-      #pattern = /^((?<user>.*)@)*(?<hostname>.*):(?<path>[a-zA-Z].*)*$/
       return nil if url.start_with?('/') || url.start_with?('file://') # local path (e.g. file:///path/to/repo)
 
-      unless url.start_with?(/[a-z]+:\/\//) # SSH notation does not contain protocol (e.g. user@server:path/to/repo/)
-        pattern = /^(.*@)?(?<hostname>[\w|.]*):(.*)$/ # SSH path (e.g. user@server:repo)
+      unless url.start_with?(%r{[a-z]+://}) # SSH notation does not contain protocol (e.g. user@server:path/to/repo/)
+        pattern = /^(?<user>.*@)?(?<hostname>[\w|.]*):(?<repo>.*)$/ # SSH path (e.g. user@server:repo)
         return url.match(pattern)[:hostname] if url.match?(pattern)
       end
 
-      return URI.parse(url).host
-    rescue URI::InvalidURIError => e
-      return nil
+      URI.parse(url).host
+    rescue URI::InvalidURIError
+      nil
     end
   end
 end
