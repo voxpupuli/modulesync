@@ -108,7 +108,12 @@ module ModuleSync # rubocop:disable Metrics/ModuleLength
 
   def self.manage_module(puppet_module, module_files, defaults)
     puts "Syncing '#{puppet_module.given_name}'"
-    puppet_module.repository.prepare_workspace(options[:branch]) unless options[:offline]
+    # NOTE: #prepare_workspace now supports to execute only offline operations
+    # but we totally skip the workspace preparation to keep the current behavior
+    unless options[:offline]
+      puppet_module.repository.prepare_workspace(branch: options[:branch],
+                                                 operate_offline: false)
+    end
 
     module_configs = Util.parse_config puppet_module.path(MODULE_CONF_FILE)
     settings = Settings.new(defaults[GLOBAL_DEFAULTS_KEY] || {},

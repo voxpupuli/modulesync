@@ -72,14 +72,16 @@ module ModuleSync
       @git = Git.clone(@remote, @directory)
     end
 
-    def prepare_workspace(branch)
+    def prepare_workspace(branch:, operate_offline:)
       if cloned?
         puts "Overriding any local changes to repository in '#{@directory}'"
-        git.fetch 'origin', prune: true
+        git.fetch 'origin', prune: true unless operate_offline
         git.reset_hard
         switch(branch: branch)
-        git.pull('origin', branch) if remote_branch_exists?(branch)
+        git.pull('origin', branch) if !operate_offline && remote_branch_exists?(branch)
       else
+        raise ModuleSync::Error, 'Unable to clone in offline mode.' if operate_offline
+
         clone
         switch(branch: branch)
       end
