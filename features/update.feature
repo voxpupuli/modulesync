@@ -339,6 +339,7 @@ Feature: update
 
   Scenario: Setting a directory to unmanaged
     Given a basic setup with a puppet module "puppet-apache" from "puppetlabs"
+    And I successfully run `msync clone`
     And a file named "config_defaults.yml" with:
       """
       ---
@@ -395,6 +396,7 @@ Feature: update
 
   Scenario: Updating offline
     Given a basic setup with a puppet module "puppet-test" from "fakenamespace"
+    And I successfully run `msync clone`
     And a file named "config_defaults.yml" with:
       """
       ---

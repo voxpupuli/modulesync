@@ -184,6 +184,14 @@ module ModuleSync # rubocop:disable Metrics/ModuleLength
     exit 1 if errors && options[:fail_on_warnings]
   end
 
+  def self.clone(cli_options)
+    @options = config_defaults.merge(cli_options)
+
+    managed_modules.each do |puppet_module|
+      puppet_module.repository.clone unless puppet_module.repository.cloned?
+    end
+  end
+
   def self.execute(cli_options)
     @options = config_defaults.merge(cli_options)
 

@@ -228,6 +228,15 @@ module ModuleSync
         ModuleSync.push(config)
       end
 
+      desc 'clone', 'Clone repositories that need to'
+      def clone
+        config = {
+          :command => 'clone',
+        }.merge(options)
+        config = Util.symbolize_keys(config)
+        ModuleSync.clone(config)
+      end
+
       desc 'hook', 'Activate or deactivate a git hook.'
       subcommand 'hook', ModuleSync::CLI::Hook
     end
