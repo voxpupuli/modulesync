@@ -195,6 +195,7 @@ module ModuleSync # rubocop:disable Metrics/ModuleLength
   def self.execute(cli_options)
     @options = config_defaults.merge(cli_options)
 
+    errors = {}
     managed_modules.each do |puppet_module|
       $stdout.puts "#{puppet_module.given_name}:"
 
@@ -208,16 +209,28 @@ module ModuleSync # rubocop:disable Metrics/ModuleLength
       # Remove bundler-related env vars to allow the subprocess to run `bundle`
       command_env = ENV.reject { |k, _v| k.match?(/(^BUNDLE|^SOURCE_DATE_EPOCH$|^GEM_|RUBY)/) }
 
-      FileUtils.chdir(puppet_module.working_directory) do
-        result = system command_env, *command_args, unsetenv_others: true
-        unless result
-          raise Thor::Error,
-                "Error during script execution ('#{@options[:command_args].join ' '}': #{$CHILD_STATUS})"
-        end
+      result = system command_env, *command_args, unsetenv_others: true, chdir: puppet_module.working_directory
+      unless result
+        message = "Command execution failed ('#{@options[:command_args].join ' '}': #{$CHILD_STATUS})"
+        raise Thor::Error, message if @options[:fail_fast]
+
+        errors.merge!(
+          puppet_module.given_name => message,
+        )
+        $stderr.puts message
       end
 
       $stdout.puts ''
     end
+
+    unless errors.empty?
+      raise Thor::Error, <<~MSG
+        Error(s) during `execute` command:
+        #{errors.map { |name, message| "  * #{name}: #{message}" }.join "\n"}
+      MSG
+    end
+
+    exit 1 unless errors.empty?
   end
 
   def self.reset(cli_options)

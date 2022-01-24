@@ -42,7 +42,7 @@ module ModuleSync
       class_option :project_root,
                    :aliases => '-c',
                    :desc => 'Path used by git to clone modules into.',
-                   :default => CLI.defaults[:project_root] || 'modules'
+                   :default => CLI.defaults[:project_root]
       class_option :git_base,
                    :desc => 'Specify the base part of a git URL to pull from',
                    :default => CLI.defaults[:git_base] || 'git@github.com:'
@@ -149,7 +149,7 @@ module ModuleSync
         ModuleSync.update config
       end
 
-      desc 'execute COMMAND', 'Execute the command in each managed modules'
+      desc 'execute [OPTIONS] -- COMMAND..', 'Execute the command in each managed modules'
       option :configs,
              :aliases => '-c',
              :desc => 'The local directory or remote repository to define the list of managed modules,' \
@@ -160,8 +160,13 @@ module ModuleSync
              :aliases => '-b',
              :desc => 'Branch name to make the changes in.',
              :default => CLI.defaults[:branch]
-
+      option :fail_fast,
+             :type => :boolean,
+             :desc => 'Abort the run after a command execution failure',
+             :default => CLI.defaults[:fail_fast].nil? ? true : CLI.defaults[:fail_fast]
       def execute(*command_args)
+        raise Thor::Error, 'COMMAND is a required argument' if command_args.empty?
+
         ModuleSync.execute CLI.prepare_options(options, command_args: command_args)
       end
 
