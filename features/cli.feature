@@ -17,9 +17,8 @@ Feature: CLI
     Then the exit status should be 1
 
   Scenario: When running the help command
-    When I run `msync help`
-    And the output should match /Commands:/
-    Then the exit status should be 0
+    When I successfully run `msync help`
+    Then the output should match /Commands:/
 
   Scenario: When overriding a setting from the config file on the command line
     Given a puppet module "puppet-test" from "fakenamespace"
@@ -35,9 +34,8 @@ Feature: CLI
       """
     And a git_base option appended to "modulesync.yml" for local tests
     And a directory named "moduleroot"
-    When I run `msync update --noop --namespace fakenamespace --branch command-line-branch`
-    Then the exit status should be 0
-    And the output should contain:
+    When I successfully run `msync update --verbose --noop --namespace fakenamespace --branch command-line-branch`
+    Then the output should contain:
       """
       Creating new branch command-line-branch
       """

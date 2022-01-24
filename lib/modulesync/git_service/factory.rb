@@ -8,15 +8,19 @@ module ModuleSync
             Please set environment variable: "#{type.upcase}_TOKEN" or set the token entry in module options.
         MESSAGE
 
+        klass(type: type).new token, endpoint
+      end
+
+      def self.klass(type:)
         case type
         when :github
           require 'modulesync/git_service/github'
-          ModuleSync::GitService::GitHub.new(token, endpoint)
+          ModuleSync::GitService::GitHub
         when :gitlab
           require 'modulesync/git_service/gitlab'
-          ModuleSync::GitService::GitLab.new(token, endpoint)
+          ModuleSync::GitService::GitLab
         else
-          raise NotImplementedError, "Unable to manage a PR/MR for Git service: '#{type}'"
+          raise NotImplementedError, "Unknown git service: '#{type}'"
         end
       end
     end

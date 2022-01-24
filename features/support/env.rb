@@ -13,4 +13,6 @@ Before do
 
   # This enables coverage when aruba runs `msync` executable (cf. `bin/msync`)
   set_environment_variable('COVERAGE', '1')
+
+  aruba.config.activate_announcer_on_command_failure = %i[stdout stderr]
 end

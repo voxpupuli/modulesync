@@ -49,11 +49,15 @@ module ModuleSync
     end
 
     def git_service
+      return nil if git_service_configuration.nil?
+
       @git_service ||= GitService::Factory.instantiate(**git_service_configuration)
     end
 
     def git_service_configuration
       @git_service_configuration ||= GitService.configuration_for(sourcecode: self)
+    rescue GitService::UnguessableTypeError
+      nil
     end
 
     def open_pull_request

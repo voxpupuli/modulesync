@@ -16,6 +16,14 @@ module ModuleSync
         )
       end
 
+      def self.guess_endpoint_from(remote:)
+        endpoint = super
+        return nil if endpoint.nil?
+
+        endpoint += '/api/v4'
+        endpoint
+      end
+
       private
 
       def _open_pull_request(repo_path:, namespace:, title:, message:, source_branch:, target_branch:, labels:, noop:) # rubocop:disable Metrics/ParameterLists, Lint/UnusedMethodArgument

@@ -95,7 +95,7 @@ module ModuleSync
       def commit_count_by(author, commit = nil)
         FileUtils.chdir(bare_repo_dir) do
           commit ||= '--all'
-          stdout = run %W[git rev-list #{commit} --author #{author} --count]
+          stdout = run %W[git rev-list --author #{author} --count #{commit} --]
           return Integer(stdout)
         end
       end

@@ -5,6 +5,8 @@ module ModuleSync
   module GitService
     class MissingCredentialsError < Error; end
 
+    class UnguessableTypeError < Error; end
+
     def self.configuration_for(sourcecode:)
       type = type_for(sourcecode: sourcecode)
 
@@ -28,13 +30,13 @@ module ModuleSync
       return :gitlab if sourcecode.repository_remote.include? 'gitlab'
 
       if ENV['GITLAB_TOKEN'].nil? && ENV['GITHUB_TOKEN'].nil?
-        raise ModuleSync::Error, <<~MESSAGE
+        raise UnguessableTypeError, <<~MESSAGE
           Unable to guess Git service type without GITLAB_TOKEN or GITHUB_TOKEN sets.
         MESSAGE
       end
 
       unless ENV['GITLAB_TOKEN'].nil? || ENV['GITHUB_TOKEN'].nil?
-        raise ModuleSync::Error, <<~MESSAGE
+        raise UnguessableTypeError, <<~MESSAGE
           Unable to guess Git service type with both GITLAB_TOKEN and GITHUB_TOKEN sets.
 
           Please set the wanted one in configuration (ie. add `gitlab:` or `github:` key)
@@ -63,23 +65,13 @@ module ModuleSync
                      ENV['GITLAB_BASE_URL']
                    end
 
-      endpoint ||= guess_endpoint_from(remote: sourcecode.repository_remote, type: type)
+      endpoint ||= GitService::Factory.klass(type: type).guess_endpoint_from(remote: sourcecode.repository_remote)
 
       raise NotImplementedError, <<~MESSAGE if endpoint.nil?
         Unable to guess endpoint for remote: '#{sourcecode.repository_remote}'
         Please provide `base_url` option in configuration file
       MESSAGE
 
-      endpoint
-    end
-
-    # This method attempts to guess the git service endpoint based on remote and type
-    def self.guess_endpoint_from(remote:, type:)
-      hostname = extract_hostname(remote)
-      return nil if hostname.nil?
-
-      endpoint = "https://#{hostname}"
-      endpoint += '/api/v4' if type == :gitlab
       endpoint
     end
 
@@ -99,31 +91,6 @@ module ModuleSync
                 end
 
       token
-    end
-
-    # This method extracts hostname from URL like:
-    #
-    # - ssh://[user@]host.xz[:port]/path/to/repo.git/
-    # - git://host.xz[:port]/path/to/repo.git/
-    # - [user@]host.xz:path/to/repo.git/
-    # - http[s]://host.xz[:port]/path/to/repo.git/
-    # - ftp[s]://host.xz[:port]/path/to/repo.git/
-    #
-    # Returns nil if
-    # - /path/to/repo.git/
-    # - file:///path/to/repo.git/
-    # - any invalid URL
-    def self.extract_hostname(url)
-      return nil if url.start_with?('/') || url.start_with?('file://') # local path (e.g. file:///path/to/repo)
-
-      unless url.start_with?(%r{[a-z]+://}) # SSH notation does not contain protocol (e.g. user@server:path/to/repo/)
-        pattern = /^(?<user>.*@)?(?<hostname>[\w|.]*):(?<repo>.*)$/ # SSH path (e.g. user@server:repo)
-        return url.match(pattern)[:hostname] if url.match?(pattern)
-      end
-
-      URI.parse(url).host
-    rescue URI::InvalidURIError
-      nil
     end
   end
 end

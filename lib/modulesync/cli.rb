@@ -12,14 +12,13 @@ module ModuleSync
     end
 
     class Hook < Thor
-      class_option :project_root,
-                   :aliases => '-c',
-                   :desc => 'Path used by git to clone modules into. Defaults to "modules"',
-                   :default => CLI.defaults[:project_root] || 'modules'
-      class_option :hook_args,
-                   :aliases => '-a',
-                   :desc => 'Arguments to pass to msync in the git hook'
-
+      option :hook_args,
+             :aliases => '-a',
+             :desc => 'Arguments to pass to msync in the git hook'
+      option :branch,
+             :aliases => '-b',
+             :desc => 'Branch name to pass to msync in the git hook',
+             :default => CLI.defaults[:branch]
       desc 'activate', 'Activate the git hook.'
       def activate
         config = { :command => 'hook' }.merge(options)
@@ -53,11 +52,11 @@ module ModuleSync
       class_option :negative_filter,
                    :aliases => '-x',
                    :desc => 'A regular expression to skip repositories.'
-      class_option :branch,
-                   :aliases => '-b',
-                   :desc => 'Branch name to make the changes in.' \
-                            ' Defaults to the default branch of the upstream repository, but falls back to "master".',
-                   :default => CLI.defaults[:branch]
+      class_option :verbose,
+                   :aliases => '-v',
+                   :desc => 'Verbose mode',
+                   :type => :boolean,
+                   :default => false
 
       desc 'update', 'Update the modules in managed_modules.yml'
       option :message,
@@ -132,6 +131,11 @@ module ModuleSync
              :desc => 'Produce a failure exit code when there are warnings' \
                       ' (only has effect when --skip_broken is enabled)',
              :default => false
+      option :branch,
+             :aliases => '-b',
+             :desc => 'Branch name to make the changes in.' \
+                      ' Defaults to the default branch of the upstream repository, but falls back to "master".',
+             :default => CLI.defaults[:branch]
 
       def update
         config = { :command => 'update' }.merge(options)

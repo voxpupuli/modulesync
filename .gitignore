@@ -5,6 +5,7 @@
 Gemfile.lock
 bin/bundle
 bin/rspec
+coverage/
 modules/
 tmp/
 vendor/
