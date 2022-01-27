@@ -164,7 +164,7 @@ module ModuleSync # rubocop:disable Metrics/ModuleLength
     managed_modules.each do |puppet_module|
       manage_module(puppet_module, module_files, defaults)
     rescue ModuleSync::Error, Git::GitExecuteError => e
-      message = e.message || "Error during '#{options[:command]}'"
+      message = e.message || 'Error during `update`'
       $stderr.puts "#{puppet_module.given_name}: #{message}"
       exit 1 unless options[:skip_broken]
       errors = true
