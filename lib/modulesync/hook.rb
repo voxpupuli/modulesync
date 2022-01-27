@@ -6,9 +6,9 @@ module ModuleSync
 
     def initialize(hook_file, options = [])
       @hook_file = hook_file
-      @namespace = options['namespace']
-      @branch = options['branch']
-      @args = options['hook_args']
+      @namespace = options[:namespace]
+      @branch = options[:branch]
+      @args = options[:hook_args]
     end
 
     def content(arguments)

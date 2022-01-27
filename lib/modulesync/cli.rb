@@ -7,6 +7,14 @@ require 'modulesync/util'
 
 module ModuleSync
   module CLI
+    def self.prepare_options(cli_options, **more_options)
+      options = CLI.defaults
+      options.merge! Util.symbolize_keys(cli_options)
+      options.merge! more_options
+
+      Util.symbolize_keys options
+    end
+
     def self.defaults
       @defaults ||= Util.symbolize_keys(Util.parse_config(Constants::MODULESYNC_CONF_FILE))
     end
@@ -21,16 +29,12 @@ module ModuleSync
              :default => CLI.defaults[:branch]
       desc 'activate', 'Activate the git hook.'
       def activate
-        config = { :command => 'hook' }.merge(options)
-        config[:hook] = 'activate'
-        ModuleSync.hook(config)
+        ModuleSync.hook CLI.prepare_options(options, hook: 'activate')
       end
 
       desc 'deactivate', 'Deactivate the git hook.'
       def deactivate
-        config = { :command => 'hook' }.merge(options)
-        config[:hook] = 'deactivate'
-        ModuleSync.hook(config)
+        ModuleSync.hook CLI.prepare_options(options, hook: 'deactivate')
       end
     end
 
@@ -136,16 +140,13 @@ module ModuleSync
              :desc => 'Branch name to make the changes in.' \
                       ' Defaults to the default branch of the upstream repository, but falls back to "master".',
              :default => CLI.defaults[:branch]
-
       def update
-        config = { :command => 'update' }.merge(options)
-        config = Util.symbolize_keys(config)
+        config = CLI.prepare_options(options)
         raise Thor::Error, 'No value provided for required option "--message"' unless config[:noop] \
                                                                                       || config[:message] \
                                                                                       || config[:offline]
 
-        config[:git_opts] = { 'amend' => config[:amend], 'force' => config[:force] }
-        ModuleSync.update(config)
+        ModuleSync.update config
       end
 
       desc 'execute COMMAND', 'Execute the command in each managed modules'
@@ -161,12 +162,7 @@ module ModuleSync
              :default => CLI.defaults[:branch]
 
       def execute(*command_args)
-        config = {
-          :command => 'execute',
-          :command_args => command_args,
-        }.merge(options)
-        config = Util.symbolize_keys(config)
-        ModuleSync.execute(config)
+        ModuleSync.execute CLI.prepare_options(options, command_args: command_args)
       end
 
       desc 'reset', 'Reset local repositories to a well-known state'
@@ -197,13 +193,8 @@ module ModuleSync
              :default => false
       option :source_branch,
              :desc => 'Branch to reset from (e.g. origin/wip)'
-
       def reset
-        config = {
-          :command => 'reset',
-        }.merge(options)
-        config = Util.symbolize_keys(config)
-        ModuleSync.reset(config)
+        ModuleSync.reset CLI.prepare_options(options)
       end
 
       desc 'push', 'Push all available commits from branch to remote'
@@ -219,22 +210,13 @@ module ModuleSync
              :default => CLI.defaults[:branch]
       option :remote_branch,
              :desc => 'Remote branch to push to (e.g. maintenance)'
-
       def push
-        config = {
-          :command => 'push',
-        }.merge(options)
-        config = Util.symbolize_keys(config)
-        ModuleSync.push(config)
+        ModuleSync.push CLI.prepare_options(options)
       end
 
       desc 'clone', 'Clone repositories that need to'
       def clone
-        config = {
-          :command => 'clone',
-        }.merge(options)
-        config = Util.symbolize_keys(config)
-        ModuleSync.clone(config)
+        ModuleSync.clone CLI.prepare_options(options)
       end
 
       desc 'hook', 'Activate or deactivate a git hook.'
