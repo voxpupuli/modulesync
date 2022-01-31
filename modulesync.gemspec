@@ -32,4 +32,5 @@ Gem::Specification.new do |spec|
   spec.add_runtime_dependency 'octokit', '~>4.0'
   spec.add_runtime_dependency 'puppet-blacksmith', '>= 3.0', '< 7'
   spec.add_runtime_dependency 'thor'
+  spec.metadata['rubygems_mfa_required'] = 'true'
 end

@@ -28,9 +28,7 @@ module ModuleSync
       hook_args << "-b #{branch}" if branch
       hook_args << args if args
 
-      File.open(hook_file, 'w') do |file|
-        file.write(content(hook_args.join(' ')))
-      end
+      File.write(hook_file, content(hook_args.join(' ')))
     end
 
     def deactivate
