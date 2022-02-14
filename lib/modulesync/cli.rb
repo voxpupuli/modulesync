@@ -150,6 +150,19 @@ module ModuleSync
       end
 
       desc 'execute [OPTIONS] -- COMMAND..', 'Execute the command in each managed modules'
+      long_desc <<~DESC
+        Execute the command in each managed modules.
+
+        COMMAND can be an absolute or a relative path.
+
+        To ease running local commands, a relative path is expanded with the current user directory but only if the target file exists.
+
+        Example: `msync exec custom-scripts/true` will run "$PWD/custom-scripts/true" in each repository.
+
+        As side effect, you can shadow system binary if a local file is present:
+        \x5  `msync exec true` will run "$PWD/true", not `/bin/true` if "$PWD/true" exists.
+      DESC
+
       option :configs,
              :aliases => '-c',
              :desc => 'The local directory or remote repository to define the list of managed modules,' \
