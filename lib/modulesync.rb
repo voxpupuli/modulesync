@@ -1,3 +1,4 @@
+require 'English'
 require 'fileutils'
 require 'pathname'
 
@@ -108,7 +109,12 @@ module ModuleSync # rubocop:disable Metrics/ModuleLength
 
   def self.manage_module(puppet_module, module_files, defaults)
     puts "Syncing '#{puppet_module.given_name}'"
-    puppet_module.repository.prepare_workspace(options[:branch]) unless options[:offline]
+    # NOTE: #prepare_workspace now supports to execute only offline operations
+    # but we totally skip the workspace preparation to keep the current behavior
+    unless options[:offline]
+      puppet_module.repository.prepare_workspace(branch: options[:branch],
+                                                 operate_offline: false)
+    end
 
     module_configs = Util.parse_config puppet_module.path(MODULE_CONF_FILE)
     settings = Settings.new(defaults[GLOBAL_DEFAULTS_KEY] || {},
@@ -164,7 +170,7 @@ module ModuleSync # rubocop:disable Metrics/ModuleLength
     managed_modules.each do |puppet_module|
       manage_module(puppet_module, module_files, defaults)
     rescue ModuleSync::Error, Git::GitExecuteError => e
-      message = e.message || "Error during '#{options[:command]}'"
+      message = e.message || 'Error during `update`'
       $stderr.puts "#{puppet_module.given_name}: #{message}"
       exit 1 unless options[:skip_broken]
       errors = true
@@ -176,5 +182,85 @@ module ModuleSync # rubocop:disable Metrics/ModuleLength
       $stdout.puts "Skipping '#{puppet_module.given_name}' as update process failed"
     end
     exit 1 if errors && options[:fail_on_warnings]
+  end
+
+  def self.clone(cli_options)
+    @options = config_defaults.merge(cli_options)
+
+    managed_modules.each do |puppet_module|
+      puppet_module.repository.clone unless puppet_module.repository.cloned?
+    end
+  end
+
+  def self.execute(cli_options)
+    @options = config_defaults.merge(cli_options)
+
+    errors = {}
+    managed_modules.each do |puppet_module|
+      $stdout.puts "#{puppet_module.given_name}:"
+
+      puppet_module.repository.clone unless puppet_module.repository.cloned?
+      puppet_module.repository.switch branch: @options[:branch]
+
+      command_args = cli_options[:command_args]
+      local_script = File.expand_path command_args[0]
+      command_args[0] = local_script if File.exist?(local_script)
+
+      # Remove bundler-related env vars to allow the subprocess to run `bundle`
+      command_env = ENV.reject { |k, _v| k.match?(/(^BUNDLE|^SOURCE_DATE_EPOCH$|^GEM_|RUBY)/) }
+
+      result = system command_env, *command_args, unsetenv_others: true, chdir: puppet_module.working_directory
+      unless result
+        message = "Command execution failed ('#{@options[:command_args].join ' '}': #{$CHILD_STATUS})"
+        raise Thor::Error, message if @options[:fail_fast]
+
+        errors.merge!(
+          puppet_module.given_name => message,
+        )
+        $stderr.puts message
+      end
+
+      $stdout.puts ''
+    end
+
+    unless errors.empty?
+      raise Thor::Error, <<~MSG
+        Error(s) during `execute` command:
+        #{errors.map { |name, message| "  * #{name}: #{message}" }.join "\n"}
+      MSG
+    end
+
+    exit 1 unless errors.empty?
+  end
+
+  def self.reset(cli_options)
+    @options = config_defaults.merge(cli_options)
+    if @options[:branch].nil?
+      raise Thor::Error,
+            "Error: 'branch' option is missing, please set it in configuration or in command line."
+    end
+
+    managed_modules.each do |puppet_module|
+      puppet_module.repository.reset_workspace(
+        branch: @options[:branch],
+        source_branch: @options[:source_branch],
+        operate_offline: @options[:offline],
+      )
+    end
+  end
+
+  def self.push(cli_options)
+    @options = config_defaults.merge(cli_options)
+
+    if @options[:branch].nil?
+      raise Thor::Error,
+            "Error: 'branch' option is missing, please set it in configuration or in command line."
+    end
+
+    managed_modules.each do |puppet_module|
+      puppet_module.repository.push branch: @options[:branch], remote_branch: @options[:remote_branch]
+    rescue ModuleSync::Error => e
+      raise Thor::Error, "#{puppet_module.given_name}: #{e.message}"
+    end
   end
 end

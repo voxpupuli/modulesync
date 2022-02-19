@@ -33,7 +33,7 @@ SimpleCov.start do
   track_files '**/*.rb'
 end
 
-if ENV['CODECOV']
+if ENV['CODECOV'] == 'yes'
   require 'simplecov-console'
   require 'codecov'
 

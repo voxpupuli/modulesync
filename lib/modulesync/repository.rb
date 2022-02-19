@@ -37,7 +37,7 @@ module ModuleSync
       %r{remotes/origin/HEAD\s+->\s+origin/(?<branch>.+?)$}.match(symbolic_ref.full)[:branch]
     end
 
-    def switch_branch(branch)
+    def switch(branch:)
       unless branch
         branch = default_branch
         puts "Using repository's default branch: #{branch}"
@@ -63,23 +63,50 @@ module ModuleSync
       end
     end
 
-    def prepare_workspace(branch)
-      # Repo already cloned, check out master and override local changes
-      if Dir.exist? File.join(@directory, '.git')
-        # Some versions of git can't properly handle managing a repo from outside the repo directory
-        Dir.chdir(@directory) do
-          puts "Overriding any local changes to repository in '#{@directory}'"
-          @git = Git.open('.')
-          repo.fetch 'origin', prune: true
-          repo.reset_hard
-          switch_branch(branch)
-          git.pull('origin', branch) if remote_branch_exists?(branch)
-        end
-      # Repo needs to be cloned in the cwd
+    def cloned?
+      Dir.exist? File.join(@directory, '.git')
+    end
+
+    def clone
+      puts "Cloning from '#{@remote}'"
+      @git = Git.clone(@remote, @directory)
+    end
+
+    def prepare_workspace(branch:, operate_offline:)
+      if cloned?
+        puts "Overriding any local changes to repository in '#{@directory}'"
+        git.fetch 'origin', prune: true unless operate_offline
+        git.reset_hard
+        switch(branch: branch)
+        git.pull('origin', branch) if !operate_offline && remote_branch_exists?(branch)
       else
-        puts "Cloning from '#{@remote}'"
-        @git = Git.clone(@remote, @directory)
-        switch_branch(branch)
+        raise ModuleSync::Error, 'Unable to clone in offline mode.' if operate_offline
+
+        clone
+        switch(branch: branch)
+      end
+    end
+
+    def default_reset_branch(branch)
+      remote_branch_exists?(branch) ? branch : default_branch
+    end
+
+    def reset_workspace(branch:, operate_offline:, source_branch: nil)
+      raise if branch.nil?
+
+      if cloned?
+        source_branch ||= "origin/#{default_reset_branch branch}"
+        puts "Hard-resetting any local changes to repository in '#{@directory}' from branch '#{source_branch}'"
+        switch(branch: branch)
+        git.fetch 'origin', prune: true unless operate_offline
+
+        git.reset_hard source_branch
+        git.clean(d: true, force: true)
+      else
+        raise ModuleSync::Error, 'Unable to clone in offline mode.' if operate_offline
+
+        clone
+        switch(branch: branch)
       end
     end
 
@@ -134,6 +161,16 @@ module ModuleSync
       end
 
       true
+    end
+
+    def push(branch:, remote_branch:, remote_name: 'origin')
+      raise ModuleSync::Error, 'Repository must be locally available before trying to push' unless cloned?
+
+      remote_url = git.remote(remote_name).url
+      remote_branch ||= branch
+      puts "Push branch '#{branch}' to '#{remote_url}' (#{remote_name}/#{remote_branch})"
+
+      git.push(remote_name, "#{branch}:#{remote_branch}", force: true)
     end
 
     # Needed because of a bug in the git gem that lists ignored files as

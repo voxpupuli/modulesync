@@ -32,7 +32,20 @@ Given 'a puppet module {string} from {string}' do |name, namespace|
 end
 
 Given 'a git_base option appended to "modulesync.yml" for local tests' do
-  File.write "#{Aruba.config.working_directory}/modulesync.yml", "\ngit_base: #{ModuleSync::Faker::PuppetModuleRemoteRepo.git_base}", mode: 'a'
+  step "the global option 'git_base' sets to '#{ModuleSync::Faker::PuppetModuleRemoteRepo.git_base}'"
+end
+
+Given 'the file {string} appended with:' do |filename, content|
+  File.write filename, "\n#{content}", mode: 'a'
+end
+
+Given 'the global option {string} sets to {string}' do |key, value|
+  steps %(
+    Given the file "#{Aruba.config.working_directory}/modulesync.yml" appended with:
+    """
+    #{key}: #{value}
+    """
+  )
 end
 
 Given 'the puppet module {string} from {string} is read-only' do |name, namespace|

@@ -6,9 +6,9 @@ module ModuleSync
 
     def initialize(hook_file, options = [])
       @hook_file = hook_file
-      @namespace = options['namespace']
-      @branch = options['branch']
-      @args = options['hook_args']
+      @namespace = options[:namespace]
+      @branch = options[:branch]
+      @args = options[:hook_args]
     end
 
     def content(arguments)
@@ -28,9 +28,7 @@ module ModuleSync
       hook_args << "-b #{branch}" if branch
       hook_args << args if args
 
-      File.open(hook_file, 'w') do |file|
-        file.write(content(hook_args.join(' ')))
-      end
+      File.write(hook_file, content(hook_args.join(' ')))
     end
 
     def deactivate

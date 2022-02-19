@@ -7,6 +7,14 @@ require 'modulesync/util'
 
 module ModuleSync
   module CLI
+    def self.prepare_options(cli_options, **more_options)
+      options = CLI.defaults
+      options.merge! Util.symbolize_keys(cli_options)
+      options.merge! more_options
+
+      Util.symbolize_keys options
+    end
+
     def self.defaults
       @defaults ||= Util.symbolize_keys(Util.parse_config(Constants::MODULESYNC_CONF_FILE))
     end
@@ -21,16 +29,12 @@ module ModuleSync
              :default => CLI.defaults[:branch]
       desc 'activate', 'Activate the git hook.'
       def activate
-        config = { :command => 'hook' }.merge(options)
-        config[:hook] = 'activate'
-        ModuleSync.hook(config)
+        ModuleSync.hook CLI.prepare_options(options, hook: 'activate')
       end
 
       desc 'deactivate', 'Deactivate the git hook.'
       def deactivate
-        config = { :command => 'hook' }.merge(options)
-        config[:hook] = 'deactivate'
-        ModuleSync.hook(config)
+        ModuleSync.hook CLI.prepare_options(options, hook: 'deactivate')
       end
     end
 
@@ -38,7 +42,7 @@ module ModuleSync
       class_option :project_root,
                    :aliases => '-c',
                    :desc => 'Path used by git to clone modules into.',
-                   :default => CLI.defaults[:project_root] || 'modules'
+                   :default => CLI.defaults[:project_root]
       class_option :git_base,
                    :desc => 'Specify the base part of a git URL to pull from',
                    :default => CLI.defaults[:git_base] || 'git@github.com:'
@@ -136,16 +140,101 @@ module ModuleSync
              :desc => 'Branch name to make the changes in.' \
                       ' Defaults to the default branch of the upstream repository, but falls back to "master".',
              :default => CLI.defaults[:branch]
-
       def update
-        config = { :command => 'update' }.merge(options)
-        config = Util.symbolize_keys(config)
+        config = CLI.prepare_options(options)
         raise Thor::Error, 'No value provided for required option "--message"' unless config[:noop] \
                                                                                       || config[:message] \
                                                                                       || config[:offline]
 
-        config[:git_opts] = { 'amend' => config[:amend], 'force' => config[:force] }
-        ModuleSync.update(config)
+        ModuleSync.update config
+      end
+
+      desc 'execute [OPTIONS] -- COMMAND..', 'Execute the command in each managed modules'
+      long_desc <<~DESC
+        Execute the command in each managed modules.
+
+        COMMAND can be an absolute or a relative path.
+
+        To ease running local commands, a relative path is expanded with the current user directory but only if the target file exists.
+
+        Example: `msync exec custom-scripts/true` will run "$PWD/custom-scripts/true" in each repository.
+
+        As side effect, you can shadow system binary if a local file is present:
+        \x5  `msync exec true` will run "$PWD/true", not `/bin/true` if "$PWD/true" exists.
+      DESC
+
+      option :configs,
+             :aliases => '-c',
+             :desc => 'The local directory or remote repository to define the list of managed modules,' \
+                      ' the file templates, and the default values for template variables.'
+      option :managed_modules_conf,
+             :desc => 'The file name to define the list of managed modules'
+      option :branch,
+             :aliases => '-b',
+             :desc => 'Branch name to make the changes in.',
+             :default => CLI.defaults[:branch]
+      option :fail_fast,
+             :type => :boolean,
+             :desc => 'Abort the run after a command execution failure',
+             :default => CLI.defaults[:fail_fast].nil? ? true : CLI.defaults[:fail_fast]
+      def execute(*command_args)
+        raise Thor::Error, 'COMMAND is a required argument' if command_args.empty?
+
+        ModuleSync.execute CLI.prepare_options(options, command_args: command_args)
+      end
+
+      desc 'reset', 'Reset local repositories to a well-known state'
+      long_desc <<~DESC
+        Reset local repository to a well-known state:
+        \x5  * Switch local repositories to specified branch
+        \x5  * Fetch and prune repositories unless running with `--offline` option
+        \x5  * Hard-reset any changes to specified source branch, technically any git refs, e.g. `main`, `origin/wip`
+        \x5  * Clean all extra local files
+
+        Note: If a repository is not already cloned, it will operate the following to reach to well-known state:
+        \x5  * Clone the repository
+        \x5  * Switch to specified branch
+      DESC
+      option :configs,
+             :aliases => '-c',
+             :desc => 'The local directory or remote repository to define the list of managed modules,' \
+                      ' the file templates, and the default values for template variables.'
+      option :managed_modules_conf,
+             :desc => 'The file name to define the list of managed modules'
+      option :branch,
+             :aliases => '-b',
+             :desc => 'Branch name to make the changes in.',
+             :default => CLI.defaults[:branch]
+      option :offline,
+             :type => :boolean,
+             :desc => 'Only proceed local operations',
+             :default => false
+      option :source_branch,
+             :desc => 'Branch to reset from (e.g. origin/wip)'
+      def reset
+        ModuleSync.reset CLI.prepare_options(options)
+      end
+
+      desc 'push', 'Push all available commits from branch to remote'
+      option :configs,
+             :aliases => '-c',
+             :desc => 'The local directory or remote repository to define the list of managed modules,' \
+                      ' the file templates, and the default values for template variables.'
+      option :managed_modules_conf,
+             :desc => 'The file name to define the list of managed modules'
+      option :branch,
+             :aliases => '-b',
+             :desc => 'Branch name to push',
+             :default => CLI.defaults[:branch]
+      option :remote_branch,
+             :desc => 'Remote branch to push to (e.g. maintenance)'
+      def push
+        ModuleSync.push CLI.prepare_options(options)
+      end
+
+      desc 'clone', 'Clone repositories that need to'
+      def clone
+        ModuleSync.clone CLI.prepare_options(options)
       end
 
       desc 'hook', 'Activate or deactivate a git hook.'
