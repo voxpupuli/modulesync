@@ -32,8 +32,7 @@ module ModuleSync
     end
 
     def self.sync(template, target_name)
-      path = target_name.rpartition('/').first
-      FileUtils.mkdir_p(path) unless path.empty?
+      FileUtils.mkdir_p(File.dirname(target_name))
       File.write(target_name, template)
     end
   end
