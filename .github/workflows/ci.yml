@@ -15,7 +15,7 @@ jobs:
       - name: Setup ruby
         uses: ruby/setup-ruby@v1
         with:
-          ruby-version: '3.0'
+          ruby-version: '3.1'
           bundler-cache: true
       - name: Run linter
         run: bundle exec rubocop --format github
@@ -30,6 +30,7 @@ jobs:
           - ruby: "2.6"
           - ruby: "2.7"
           - ruby: "3.0"
+          - ruby: "3.1"
             codecov: "yes"
     env:
       CODECOV: ${{ matrix.codecov }}

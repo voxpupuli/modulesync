@@ -9,14 +9,12 @@ jobs:
   release:
     runs-on: ubuntu-latest
     if: github.repository == 'voxpupuli/modulesync'
-    env:
-      BUNDLE_WITHOUT: release
     steps:
       - uses: actions/checkout@v2
-      - name: Install Ruby 3.0
+      - name: Install Ruby 3.1
         uses: ruby/setup-ruby@v1
         with:
-          ruby-version: '3.0'
+          ruby-version: '3.1'
       - name: Build gem
         run: gem build *.gemspec
       - name: Publish gem to rubygems.org
