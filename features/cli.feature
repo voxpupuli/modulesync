@@ -20,6 +20,14 @@ Feature: CLI
     When I successfully run `msync help`
     Then the output should match /Commands:/
 
+  Scenario: Use --help options on subcommand should show subcommand help
+    When I successfully run `msync clone --help`
+    Then the output should contain:
+    """
+    Usage:
+      msync clone
+    """
+
   Scenario: When overriding a setting from the config file on the command line
     Given a puppet module "puppet-test" from "fakenamespace"
     And a file named "managed_modules.yml" with:
