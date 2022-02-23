@@ -2,6 +2,37 @@
 
 All notable changes to this project will be documented in this file.
 
+## [2.3.0](https://github.com/voxpupuli/modulesync/tree/2.3.0) (2022-03-07)
+
+[Full Changelog](https://github.com/voxpupuli/modulesync/compare/2.2.0...2.3.0)
+
+**Implemented enhancements:**
+
+- CLI: Show relevant help when using --help option on a subcommand [\#248](https://github.com/voxpupuli/modulesync/pull/248) ([neomilium](https://github.com/neomilium))
+- New CLI commands [\#244](https://github.com/voxpupuli/modulesync/pull/244) ([neomilium](https://github.com/neomilium))
+
+**Fixed bugs:**
+
+- Existing MR makes msync fail \(which leaves changes in target branch\) [\#195](https://github.com/voxpupuli/modulesync/issues/195)
+- Target branch `.sync.yml` not taken into account on branch update \(--force\) [\#192](https://github.com/voxpupuli/modulesync/issues/192)
+- Fix error when git upstream branch is deleted [\#240](https://github.com/voxpupuli/modulesync/pull/240) ([neomilium](https://github.com/neomilium))
+
+**Closed issues:**
+
+- Linter is missing in CI [\#237](https://github.com/voxpupuli/modulesync/issues/237)
+- Behavior tests are missing in CI [\#236](https://github.com/voxpupuli/modulesync/issues/236)
+
+**Merged pull requests:**
+
+- Properly ensure the parent directory exists [\#247](https://github.com/voxpupuli/modulesync/pull/247) ([ekohl](https://github.com/ekohl))
+- Add Ruby 3.1 to CI matrix [\#245](https://github.com/voxpupuli/modulesync/pull/245) ([bastelfreak](https://github.com/bastelfreak))
+- Fix rubocop offences and add linter to CI [\#243](https://github.com/voxpupuli/modulesync/pull/243) ([neomilium](https://github.com/neomilium))
+- Support `.sync.yml` changes between two runs [\#242](https://github.com/voxpupuli/modulesync/pull/242) ([neomilium](https://github.com/neomilium))
+- Fix gitlab merge request submission [\#241](https://github.com/voxpupuli/modulesync/pull/241) ([neomilium](https://github.com/neomilium))
+- Add behavior tests to CI [\#239](https://github.com/voxpupuli/modulesync/pull/239) ([neomilium](https://github.com/neomilium))
+- Rework PR/MR feature [\#219](https://github.com/voxpupuli/modulesync/pull/219) ([neomilium](https://github.com/neomilium))
+- Refactor code for maintainabilty [\#206](https://github.com/voxpupuli/modulesync/pull/206) ([neomilium](https://github.com/neomilium))
+
 ## [2.2.0](https://github.com/voxpupuli/modulesync/tree/2.2.0) (2021-07-24)
 
 [Full Changelog](https://github.com/voxpupuli/modulesync/compare/2.1.1...2.2.0)
@@ -52,6 +83,7 @@ The 2.1.0 release didn't make it to github packages. 2.1.1 is a new release with
 
 **Closed issues:**
 
+- PR/MR feature should honor the repository default branch name as target branch [\#207](https://github.com/voxpupuli/modulesync/issues/207)
 - Add linting \(rubocop\) to Travis CI configuration [\#153](https://github.com/voxpupuli/modulesync/issues/153)
 - Language sensitive GIT handling [\#85](https://github.com/voxpupuli/modulesync/issues/85)
 
