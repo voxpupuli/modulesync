@@ -199,8 +199,12 @@ module ModuleSync # rubocop:disable Metrics/ModuleLength
     managed_modules.each do |puppet_module|
       $stdout.puts "#{puppet_module.given_name}:"
 
-      puppet_module.repository.clone unless puppet_module.repository.cloned?
-      puppet_module.repository.switch branch: @options[:branch]
+      if puppet_module.repository.cloned?
+        puppet_module.repository.switch branch: @options[:branch] if @options[:branch]
+      else
+        puppet_module.repository.clone
+        puppet_module.repository.switch branch: @options[:branch]
+      end
 
       command_args = cli_options[:command_args]
       local_script = File.expand_path command_args[0]
