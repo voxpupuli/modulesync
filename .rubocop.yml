@@ -12,6 +12,9 @@ AllCops:
     - 'Gemfile'
     - 'Rakefile'
 
+Style/FetchEnvVar:
+  Enabled: false
+
 Style/HashSyntax:
   Enabled: false
 
