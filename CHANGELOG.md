@@ -2,6 +2,14 @@
 
 All notable changes to this project will be documented in this file.
 
+## [2.3.1](https://github.com/voxpupuli/modulesync/tree/2.3.1) (2022-05-05)
+
+[Full Changelog](https://github.com/voxpupuli/modulesync/compare/2.3.0...2.3.1)
+
+**Fixed bugs:**
+
+- Handle Ruby 3.1 ERB trim\_mode deprecation [\#252](https://github.com/voxpupuli/modulesync/pull/252) ([ekohl](https://github.com/ekohl))
+
 ## [2.3.0](https://github.com/voxpupuli/modulesync/tree/2.3.0) (2022-03-07)
 
 [Full Changelog](https://github.com/voxpupuli/modulesync/compare/2.2.0...2.3.0)
