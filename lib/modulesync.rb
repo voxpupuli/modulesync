@@ -95,6 +95,7 @@ module ModuleSync # rubocop:disable Metrics/ModuleLength
         # Meta data passed to the template as @metadata[:name]
         metadata = {
           :module_name => module_name,
+          :namespace => settings.additional_settings[:namespace],
           :workdir => puppet_module.working_directory,
           :target_file => target_file,
         }
