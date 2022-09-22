@@ -29,7 +29,7 @@ module ModuleSync
     end
 
     def self.remove(file)
-      File.delete(file) if File.exist?(file)
+      FileUtils.rm_f(file)
     end
 
     def self.render(_template, configs = {}, metadata = {})

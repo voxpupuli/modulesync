@@ -32,7 +32,7 @@ module ModuleSync
     end
 
     def deactivate
-      File.delete(hook_file) if File.exist?(hook_file)
+      FileUtils.rm_f(hook_file)
     end
   end
 end
