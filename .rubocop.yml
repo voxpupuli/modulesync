@@ -27,6 +27,9 @@ Style/TrailingCommaInArrayLiteral:
 Style/TrailingCommaInHashLiteral:
   EnforcedStyleForMultiline: comma
 
+Layout/LineContinuationLeadingSpace:
+  Enabled: false
+
 # sane line length
 Layout/LineLength:
   Max: 120
