@@ -717,6 +717,7 @@ Feature: update
     And a file named "moduleroot/test.erb" with:
       """
       module: <%= @metadata[:module_name] %>
+      namespace: <%= @metadata[:namespace] %>
       target: <%= @metadata[:target_file] %>
       workdir: <%= @metadata[:workdir] %>
       """
@@ -724,6 +725,7 @@ Feature: update
     Then the file named "modules/fakenamespace/puppet-test/test" should contain:
       """
       module: puppet-test
+      namespace: fakenamespace
       target: modules/fakenamespace/puppet-test/test
       workdir: modules/fakenamespace/puppet-test
       """

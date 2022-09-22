@@ -83,7 +83,6 @@ module ModuleSync # rubocop:disable Metrics/ModuleLength
   end
 
   def self.manage_file(puppet_module, filename, settings, options)
-    module_name = settings.additional_settings[:puppet_module]
     configs = settings.build_file_configs(filename)
     target_file = puppet_module.path(filename)
     if configs['delete']
@@ -94,7 +93,8 @@ module ModuleSync # rubocop:disable Metrics/ModuleLength
         erb = Renderer.build(templatename)
         # Meta data passed to the template as @metadata[:name]
         metadata = {
-          :module_name => module_name,
+          :module_name => settings.additional_settings[:puppet_module],
+          :namespace => settings.additional_settings[:namespace],
           :workdir => puppet_module.working_directory,
           :target_file => target_file,
         }
