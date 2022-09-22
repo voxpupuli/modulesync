@@ -214,9 +214,7 @@ module ModuleSync # rubocop:disable Metrics/ModuleLength
         message = "Command execution failed ('#{@options[:command_args].join ' '}': #{$CHILD_STATUS})"
         raise Thor::Error, message if @options[:fail_fast]
 
-        errors.merge!(
-          puppet_module.given_name => message,
-        )
+        errors[puppet_module.given_name] = message
         $stderr.puts message
       end
 
