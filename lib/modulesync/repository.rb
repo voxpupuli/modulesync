@@ -31,7 +31,7 @@ module ModuleSync
     end
 
     def default_branch
-      symbolic_ref = repo.branches.find { |b| b.full =~ %r{remotes/origin/HEAD} }
+      symbolic_ref = repo.branches.find { |b| b.full.include?('remotes/origin/HEAD') }
       return unless symbolic_ref
 
       %r{remotes/origin/HEAD\s+->\s+origin/(?<branch>.+?)$}.match(symbolic_ref.full)[:branch]
