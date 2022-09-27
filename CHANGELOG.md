@@ -2,6 +2,18 @@
 
 All notable changes to this project will be documented in this file.
 
+## [2.4.0](https://github.com/voxpupuli/modulesync/tree/2.4.0) (2022-09-27)
+
+[Full Changelog](https://github.com/voxpupuli/modulesync/compare/2.3.1...2.4.0)
+
+**Implemented enhancements:**
+
+- Expose namespace in metadata [\#254](https://github.com/voxpupuli/modulesync/pull/254) ([ekohl](https://github.com/ekohl))
+
+**Merged pull requests:**
+
+- Fix Rubocop and add additional rubocop plugins [\#255](https://github.com/voxpupuli/modulesync/pull/255) ([ekohl](https://github.com/ekohl))
+
 ## [2.3.1](https://github.com/voxpupuli/modulesync/tree/2.3.1) (2022-05-05)
 
 [Full Changelog](https://github.com/voxpupuli/modulesync/compare/2.3.0...2.3.1)
