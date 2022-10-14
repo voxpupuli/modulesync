@@ -2,6 +2,14 @@
 
 All notable changes to this project will be documented in this file.
 
+## [2.5.0](https://github.com/voxpupuli/modulesync/tree/2.5.0) (2022-10-14)
+
+[Full Changelog](https://github.com/voxpupuli/modulesync/compare/2.4.0...2.5.0)
+
+**Implemented enhancements:**
+
+- Copy file permissions from template to target [\#257](https://github.com/voxpupuli/modulesync/pull/257) ([ekohl](https://github.com/ekohl))
+
 ## [2.4.0](https://github.com/voxpupuli/modulesync/tree/2.4.0) (2022-09-27)
 
 [Full Changelog](https://github.com/voxpupuli/modulesync/compare/2.3.1...2.4.0)
