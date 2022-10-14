@@ -31,7 +31,13 @@ module ModuleSync # rubocop:disable Metrics/ModuleLength
   end
 
   def self.local_file(config_path, file)
-    File.join(config_path, MODULE_FILES_DIR, file)
+    path = File.join(config_path, MODULE_FILES_DIR, file)
+    if !File.exist?("#{path}.erb") && File.exist?(path)
+      $stderr.puts "Warning: using '#{path}' as template without '.erb' suffix"
+      path
+    else
+      "#{path}.erb"
+    end
   end
 
   # List all template files.
@@ -88,9 +94,9 @@ module ModuleSync # rubocop:disable Metrics/ModuleLength
     if configs['delete']
       Renderer.remove(target_file)
     else
-      templatename = local_file(options[:configs], filename)
+      template_file = local_file(options[:configs], filename)
       begin
-        erb = Renderer.build(templatename)
+        erb = Renderer.build(template_file)
         # Meta data passed to the template as @metadata[:name]
         metadata = {
           :module_name => settings.additional_settings[:puppet_module],
