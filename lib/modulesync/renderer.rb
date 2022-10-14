@@ -10,13 +10,7 @@ module ModuleSync
       end
     end
 
-    def self.build(target_name)
-      template_file = if !File.exist?("#{target_name}.erb") && File.exist?(target_name)
-                        $stderr.puts "Warning: using '#{target_name}' as template without '.erb' suffix"
-                        target_name
-                      else
-                        "#{target_name}.erb"
-                      end
+    def self.build(template_file)
       template = File.read(template_file)
       erb_obj = if RUBY_VERSION >= '2.7'
                   ERB.new(template, trim_mode: '-')
@@ -36,9 +30,10 @@ module ModuleSync
       ForgeModuleFile.new(configs, metadata).render
     end
 
-    def self.sync(template, target_name)
+    def self.sync(template, target_name, mode = nil)
       FileUtils.mkdir_p(File.dirname(target_name))
       File.write(target_name, template)
+      File.chmod(mode, target_name) unless mode.nil?
     end
   end
 end
