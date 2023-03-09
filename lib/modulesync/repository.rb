@@ -31,6 +31,9 @@ module ModuleSync
     end
 
     def default_branch
+      # `Git.default_branch` requires ruby-git >= 1.17.0
+      return Git.default_branch(repo.dir) if Git.respond_to? :default_branch
+
       symbolic_ref = repo.branches.find { |b| b.full.include?('remotes/origin/HEAD') }
       return unless symbolic_ref
 
