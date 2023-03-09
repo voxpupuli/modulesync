@@ -15,10 +15,10 @@ module ModuleSync
       <<~CONTENT
         #!/usr/bin/env bash
 
-        current_branch=\`git symbolic-ref HEAD | sed -e 's,.*/\(.*\),\1,'\`
-        git_dir=\`git rev-parse --show-toplevel\`
-        message=\`git log -1 --format=%B\`
-        msync -m "\$message" #{arguments}
+        current_branch=`git symbolic-ref HEAD | sed -e 's,.*/(.*),\1,'`
+        git_dir=`git rev-parse --show-toplevel`
+        message=`git log -1 --format=%B`
+        msync -m "$message" #{arguments}
       CONTENT
     end
 
