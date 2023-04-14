@@ -32,9 +32,6 @@ Style/TrailingCommaInArrayLiteral:
 Style/TrailingCommaInHashLiteral:
   EnforcedStyleForMultiline: comma
 
-Layout/LineContinuationLeadingSpace:
-  Enabled: false
-
 # sane line length
 Layout/LineLength:
   Max: 120
@@ -48,6 +45,6 @@ Style/FrozenStringLiteralComment:
 Style/StderrPuts:
   Enabled: false
 
-# Disabling until there's a consensus on what the default style should be
-Gemspec/DevelopmentDependencies:
-  Enabled: false
+Gemspec/RequireMFA:
+  Exclude:
+    - 'modulesync.gemspec'
