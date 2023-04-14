@@ -9,7 +9,18 @@ rescue LoadError
   puts 'rspec not installed - skipping unit test task setup'
 end
 
-RuboCop::RakeTask.new
+begin
+  require 'rubocop/rake_task'
+rescue LoadError
+  # RuboCop is an optional group
+else
+  RuboCop::RakeTask.new(:rubocop) do |task|
+    # These make the rubocop experience maybe slightly less terrible
+    task.options = ['--display-cop-names', '--display-style-guide', '--extra-details']
+    # Use Rubocop's Github Actions formatter if possible
+    task.formatters << 'github' if ENV['GITHUB_ACTIONS'] == 'true'
+  end
+end
 
 CLEAN.include('pkg/', 'tmp/')
 
