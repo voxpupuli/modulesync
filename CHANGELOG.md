@@ -2,6 +2,29 @@
 
 All notable changes to this project will be documented in this file.
 
+## [2.6.0](https://github.com/voxpupuli/modulesync/tree/2.6.0) (2023-04-14)
+
+[Full Changelog](https://github.com/voxpupuli/modulesync/compare/2.5.0...2.6.0)
+
+**Implemented enhancements:**
+
+- Add Ruby 3.2 support [\#266](https://github.com/voxpupuli/modulesync/pull/266) ([bastelfreak](https://github.com/bastelfreak))
+- Update to latest RuboCop 1.28.2 [\#265](https://github.com/voxpupuli/modulesync/pull/265) ([bastelfreak](https://github.com/bastelfreak))
+
+**Fixed bugs:**
+
+- Fix compatibility with latest `ruby-git` [\#260](https://github.com/voxpupuli/modulesync/pull/260) ([alexjfisher](https://github.com/alexjfisher))
+
+**Closed issues:**
+
+- msync update --noop is broken with git 1.17.x [\#259](https://github.com/voxpupuli/modulesync/issues/259)
+
+**Merged pull requests:**
+
+- Add CI best practices [\#264](https://github.com/voxpupuli/modulesync/pull/264) ([bastelfreak](https://github.com/bastelfreak))
+- Bump actions/checkout from 2 to 3 [\#262](https://github.com/voxpupuli/modulesync/pull/262) ([dependabot[bot]](https://github.com/apps/dependabot))
+- dependabot: check for github actions and gems [\#261](https://github.com/voxpupuli/modulesync/pull/261) ([bastelfreak](https://github.com/bastelfreak))
+
 ## [2.5.0](https://github.com/voxpupuli/modulesync/tree/2.5.0) (2022-10-14)
 
 [Full Changelog](https://github.com/voxpupuli/modulesync/compare/2.4.0...2.5.0)
