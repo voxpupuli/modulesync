@@ -47,3 +47,7 @@ Style/FrozenStringLiteralComment:
 # We explicitly prefer $stderr.puts over #warn
 Style/StderrPuts:
   Enabled: false
+
+# Disabling until there's a consensus on what the default style should be
+Gemspec/DevelopmentDependencies:
+  Enabled: false

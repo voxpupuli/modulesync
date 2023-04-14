@@ -28,9 +28,8 @@ module ModuleSync
 
       def _open_pull_request(repo_path:, namespace:, title:, message:, source_branch:, target_branch:, labels:, noop:) # rubocop:disable Metrics/ParameterLists, Lint/UnusedMethodArgument
         if noop
-          $stdout.puts \
-            "Using no-op. Would submit MR '#{title}' to '#{repo_path}' " \
-            "- merges #{source_branch} into #{target_branch}"
+          $stdout.puts "Using no-op. Would submit MR '#{title}' to '#{repo_path}' " \
+                       "- merges #{source_branch} into #{target_branch}"
           return
         end
 

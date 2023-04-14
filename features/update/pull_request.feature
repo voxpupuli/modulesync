@@ -32,9 +32,8 @@ Feature: Create a pull-request/merge-request after update
       """
       ---
       puppet-test:
-        gitlab: {
+        gitlab:
           base_url: 'https://gitlab.example.com'
-      }
       """
     And I set the environment variables to:
       | variable     | value  |
@@ -60,9 +59,8 @@ Feature: Create a pull-request/merge-request after update
       """
       ---
       puppet-test:
-        gitlab: {
+        gitlab:
           base_url: 'https://gitlab.example.com'
-        }
       """
     And I set the environment variables to:
       | variable     | value  |
@@ -77,9 +75,8 @@ Feature: Create a pull-request/merge-request after update
       """
       ---
       puppet-test:
-        gitlab: {
+        gitlab:
           base_url: https://gitlab.example.com
-        }
       """
     And a file named "config_defaults.yml" with:
       """

@@ -16,7 +16,7 @@ Gem::Specification.new do |spec|
   spec.executables   = spec.files.grep(%r{^bin/}) { |f| File.basename(f) }
   spec.require_paths = ['lib']
 
-  spec.add_development_dependency 'aruba', '>= 0.14', '< 2'
+  spec.add_development_dependency 'aruba', '~>2.0'
   spec.add_development_dependency 'bundler'
   spec.add_development_dependency 'cucumber'
   spec.add_development_dependency 'rake'

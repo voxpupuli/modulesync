@@ -22,9 +22,8 @@ module ModuleSync
         head = "#{namespace}:#{source_branch}"
 
         if noop
-          $stdout.puts \
-            "Using no-op. Would submit PR '#{title}' to '#{repo_path}' " \
-            "- merges '#{source_branch}' into '#{target_branch}'"
+          $stdout.puts "Using no-op. Would submit PR '#{title}' to '#{repo_path}' " \
+                       "- merges '#{source_branch}' into '#{target_branch}'"
           return
         end
 
