@@ -8,13 +8,15 @@ on:
 jobs:
   release:
     runs-on: ubuntu-latest
-    if: github.repository == 'voxpupuli/modulesync'
+    if: github.repository_owner == 'voxpupuli'
     steps:
       - uses: actions/checkout@v3
-      - name: Install Ruby 3.1
+      - name: Install Ruby 3.2
         uses: ruby/setup-ruby@v1
         with:
-          ruby-version: '3.1'
+          ruby-version: '3.2'
+        env:
+          BUNDLE_WITHOUT: release
       - name: Build gem
         run: gem build *.gemspec
       - name: Publish gem to rubygems.org
