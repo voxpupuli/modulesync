@@ -35,6 +35,7 @@ jobs:
           - ruby: "3.0"
           - ruby: "3.1"
             codecov: "yes"
+          - ruby: "3.2"
     env:
       CODECOV: ${{ matrix.codecov }}
     steps:
