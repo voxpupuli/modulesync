@@ -13,12 +13,12 @@ module ModuleSync
         Octokit.configure do |c|
           c.api_endpoint = endpoint
         end
-        @api = Octokit::Client.new(:access_token => token)
+        @api = Octokit::Client.new(access_token: token)
       end
 
       private
 
-      def _open_pull_request(repo_path:, namespace:, title:, message:, source_branch:, target_branch:, labels:, noop:) # rubocop:disable Metrics/ParameterLists
+      def _open_pull_request(repo_path:, namespace:, title:, message:, source_branch:, target_branch:, labels:, noop:)
         head = "#{namespace}:#{source_branch}"
 
         if noop
@@ -28,9 +28,9 @@ module ModuleSync
         end
 
         pull_requests = @api.pull_requests(repo_path,
-                                           :state => 'open',
-                                           :base => target_branch,
-                                           :head => head)
+                                           state: 'open',
+                                           base: target_branch,
+                                           head: head)
         unless pull_requests.empty?
           # Skip creating the PR if it exists already.
           $stdout.puts "Skipped! #{pull_requests.length} PRs found for branch '#{source_branch}'"

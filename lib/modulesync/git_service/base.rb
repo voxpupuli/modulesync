@@ -2,7 +2,7 @@ module ModuleSync
   module GitService
     # Generic class for git services
     class Base
-      def open_pull_request(repo_path:, namespace:, title:, message:, source_branch:, target_branch:, labels:, noop:) # rubocop:disable Metrics/ParameterLists
+      def open_pull_request(repo_path:, namespace:, title:, message:, source_branch:, target_branch:, labels:, noop:)
         unless source_branch != target_branch
           raise ModuleSync::Error,
                 "Unable to open a pull request with the same source and target branch: '#{source_branch}'"
@@ -55,7 +55,7 @@ module ModuleSync
 
       protected
 
-      def _open_pull_request(repo_path:, namespace:, title:, message:, source_branch:, target_branch:, labels:, noop:) # rubocop:disable Metrics/ParameterLists
+      def _open_pull_request(repo_path:, namespace:, title:, message:, source_branch:, target_branch:, labels:, noop:)
         raise NotImplementedError
       end
     end

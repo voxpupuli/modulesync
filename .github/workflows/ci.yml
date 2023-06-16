@@ -21,7 +21,7 @@ jobs:
           ruby-version: '3.1'
           bundler-cache: true
       - name: Run linter
-        run: bundle exec rubocop --format github
+        run: bundle exec rake rubocop
   test:
     needs: rubocop
     runs-on: ubuntu-latest
@@ -29,8 +29,6 @@ jobs:
       fail-fast: false
       matrix:
         include:
-          - ruby: "2.5"
-          - ruby: "2.6"
           - ruby: "2.7"
           - ruby: "3.0"
           - ruby: "3.1"
@@ -50,7 +48,7 @@ jobs:
       - name: Run behavior tests
         run: bundle exec cucumber
       - name: Build gem
-        run: gem build *.gemspec
+        run: gem build --verbose *.gemspec
   tests:
     needs:
       - rubocop

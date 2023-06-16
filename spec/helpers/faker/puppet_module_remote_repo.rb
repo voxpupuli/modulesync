@@ -102,21 +102,21 @@ module ModuleSync
 
       def tags
         FileUtils.chdir(bare_repo_dir) do
-          return run %w{git tag --list}
+          return run %w[git tag --list]
         end
       end
 
       def delete_branch(branch)
         FileUtils.chdir(bare_repo_dir) do
-          run %W{git branch -D #{branch}}
+          run %W[git branch -D #{branch}]
         end
       end
 
       def create_branch(branch, from = nil)
         from ||= default_branch
         FileUtils.chdir(tmp_repo_dir) do
-          run %W{git branch -c #{from} #{branch}}
-          run %W{git push --set-upstream origin #{branch}}
+          run %W[git branch -c #{from} #{branch}]
+          run %W[git push --set-upstream origin #{branch}]
         end
       end
 
