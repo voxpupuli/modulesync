@@ -11,8 +11,8 @@ module ModuleSync
         super()
 
         @api = Gitlab::Client.new(
-          :endpoint => endpoint,
-          :private_token => token,
+          endpoint: endpoint,
+          private_token: token,
         )
       end
 
@@ -26,7 +26,7 @@ module ModuleSync
 
       private
 
-      def _open_pull_request(repo_path:, namespace:, title:, message:, source_branch:, target_branch:, labels:, noop:) # rubocop:disable Metrics/ParameterLists, Lint/UnusedMethodArgument
+      def _open_pull_request(repo_path:, namespace:, title:, message:, source_branch:, target_branch:, labels:, noop:) # rubocop:disable Lint/UnusedMethodArgument
         if noop
           $stdout.puts "Using no-op. Would submit MR '#{title}' to '#{repo_path}' " \
                        "- merges #{source_branch} into #{target_branch}"
@@ -34,9 +34,9 @@ module ModuleSync
         end
 
         merge_requests = @api.merge_requests(repo_path,
-                                             :state => 'opened',
-                                             :source_branch => source_branch,
-                                             :target_branch => target_branch)
+                                             state: 'opened',
+                                             source_branch: source_branch,
+                                             target_branch: target_branch)
         unless merge_requests.empty?
           # Skip creating the MR if it exists already.
           $stdout.puts "Skipped! #{merge_requests.length} MRs found for branch '#{source_branch}'"
@@ -45,9 +45,9 @@ module ModuleSync
 
         mr = @api.create_merge_request(repo_path,
                                        title,
-                                       :source_branch => source_branch,
-                                       :target_branch => target_branch,
-                                       :labels => labels)
+                                       source_branch: source_branch,
+                                       target_branch: target_branch,
+                                       labels: labels)
         $stdout.puts \
           "Submitted MR '#{title}' to '#{repo_path}' " \
           "- merges '#{source_branch}' into '#{target_branch}'"

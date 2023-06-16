@@ -12,17 +12,17 @@ require 'modulesync/util'
 
 require 'monkey_patches'
 
-module ModuleSync # rubocop:disable Metrics/ModuleLength
+module ModuleSync
   class Error < StandardError; end
 
   include Constants
 
   def self.config_defaults
     {
-      :project_root => 'modules/',
-      :managed_modules_conf => 'managed_modules.yml',
-      :configs => '.',
-      :tag_pattern => '%s',
+      project_root: 'modules/',
+      managed_modules_conf: 'managed_modules.yml',
+      configs: '.',
+      tag_pattern: '%s',
     }
   end
 
@@ -33,7 +33,7 @@ module ModuleSync # rubocop:disable Metrics/ModuleLength
   def self.local_file(config_path, file)
     path = File.join(config_path, MODULE_FILES_DIR, file)
     if !File.exist?("#{path}.erb") && File.exist?(path)
-      $stderr.puts "Warning: using '#{path}' as template without '.erb' suffix"
+      warn "Warning: using '#{path}' as template without '.erb' suffix"
       path
     else
       "#{path}.erb"
@@ -50,9 +50,9 @@ module ModuleSync # rubocop:disable Metrics/ModuleLength
           .collect { |p| p.chomp('.erb') }
           .to_a
     else
-      $stderr.puts "#{local_template_dir} does not exist." \
-                   ' Check that you are working in your module configs directory or' \
-                   ' that you have passed in the correct directory with -c.'
+      warn "#{local_template_dir} does not exist. " \
+           'Check that you are working in your module configs directory or ' \
+           'that you have passed in the correct directory with -c.'
       exit 1
     end
   end
@@ -68,8 +68,8 @@ module ModuleSync # rubocop:disable Metrics/ModuleLength
 
     managed_modules = Util.parse_config(config_file)
     if managed_modules.empty?
-      $stderr.puts "No modules found in #{config_file}." \
-                   ' Check that you specified the right :configs directory and :managed_modules_conf file.'
+      warn "No modules found in #{config_file}. " \
+           'Check that you specified the right :configs directory and :managed_modules_conf file.'
       exit 1
     end
     managed_modules.select! { |m| m =~ Regexp.new(filter) } unless filter.nil?
@@ -99,16 +99,16 @@ module ModuleSync # rubocop:disable Metrics/ModuleLength
         erb = Renderer.build(template_file)
         # Meta data passed to the template as @metadata[:name]
         metadata = {
-          :module_name => settings.additional_settings[:puppet_module],
-          :namespace => settings.additional_settings[:namespace],
-          :workdir => puppet_module.working_directory,
-          :target_file => target_file,
+          module_name: settings.additional_settings[:puppet_module],
+          namespace: settings.additional_settings[:namespace],
+          workdir: puppet_module.working_directory,
+          target_file: target_file,
         }
         template = Renderer.render(erb, configs, metadata)
         mode = File.stat(template_file).mode
         Renderer.sync(template, target_file, mode)
       rescue StandardError
-        $stderr.puts "#{puppet_module.given_name}: Error while rendering file: '#{filename}'"
+        warn "#{puppet_module.given_name}: Error while rendering file: '#{filename}'"
         raise
       end
     end
@@ -128,9 +128,9 @@ module ModuleSync # rubocop:disable Metrics/ModuleLength
                             defaults,
                             module_configs[GLOBAL_DEFAULTS_KEY] || {},
                             module_configs,
-                            :puppet_module => puppet_module.repository_name,
-                            :git_base => options[:git_base],
-                            :namespace => puppet_module.repository_namespace)
+                            puppet_module: puppet_module.repository_name,
+                            git_base: options[:git_base],
+                            namespace: puppet_module.repository_namespace)
 
     settings.unmanaged_files(module_files).each do |filename|
       $stdout.puts "Not managing '#{filename}' in '#{puppet_module.given_name}'"
@@ -178,7 +178,7 @@ module ModuleSync # rubocop:disable Metrics/ModuleLength
       manage_module(puppet_module, module_files, defaults)
     rescue ModuleSync::Error, Git::GitExecuteError => e
       message = e.message || 'Error during `update`'
-      $stderr.puts "#{puppet_module.given_name}: #{message}"
+      warn "#{puppet_module.given_name}: #{message}"
       exit 1 unless options[:skip_broken]
       errors = true
       $stdout.puts "Skipping '#{puppet_module.given_name}' as update process failed"
@@ -222,7 +222,7 @@ module ModuleSync # rubocop:disable Metrics/ModuleLength
         raise Thor::Error, message if @options[:fail_fast]
 
         errors[puppet_module.given_name] = message
-        $stderr.puts message
+        warn message
       end
 
       $stdout.puts ''

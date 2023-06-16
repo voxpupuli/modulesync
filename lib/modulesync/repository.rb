@@ -140,8 +140,8 @@ module ModuleSync
       begin
         opts_commit = {}
         opts_push = {}
-        opts_commit = { :amend => true } if options[:amend]
-        opts_push = { :force => true } if options[:force]
+        opts_commit = { amend: true } if options[:amend]
+        opts_push = { force: true } if options[:force]
         if options[:pre_commit_script]
           script = "#{File.dirname(File.dirname(__FILE__))}/../contrib/#{options[:pre_commit_script]}"
           `#{script} #{@directory}`

@@ -4,9 +4,9 @@ require 'modulesync/git_service'
 describe ModuleSync::GitService do
   before do
     options = ModuleSync.config_defaults.merge({
-      git_base: 'file:///tmp/dummy',
-    })
-    ModuleSync.instance_variable_set '@options', options
+                                                 git_base: 'file:///tmp/dummy',
+                                               })
+    ModuleSync.instance_variable_set :@options, options
   end
 
   context 'when guessing the git service configuration' do
@@ -31,10 +31,10 @@ describe ModuleSync::GitService do
 
       it 'build git service arguments from configuration entry' do
         expect(ModuleSync::GitService.configuration_for(sourcecode: sourcecode)).to eq({
-          type: :gitlab,
-          endpoint: 'https://vcs.example.com/api/v4',
-          token: 'secret',
-        })
+                                                                                         type: :gitlab,
+                                                                                         endpoint: 'https://vcs.example.com/api/v4',
+                                                                                         token: 'secret',
+                                                                                       })
       end
     end
 
@@ -56,10 +56,10 @@ describe ModuleSync::GitService do
             .and_return('secret')
 
           expect(ModuleSync::GitService.configuration_for(sourcecode: sourcecode)).to eq({
-            type: :gitlab,
-            endpoint: 'https://vcs.example.com/api/v4',
-            token: 'secret',
-          })
+                                                                                           type: :gitlab,
+                                                                                           endpoint: 'https://vcs.example.com/api/v4',
+                                                                                           token: 'secret',
+                                                                                         })
         end
       end
 
@@ -70,20 +70,20 @@ describe ModuleSync::GitService do
             .and_return('secret')
 
           expect(ModuleSync::GitService.configuration_for(sourcecode: sourcecode)).to eq({
-            type: :gitlab,
-            endpoint: 'https://git.example.com/api/v4',
-            token: 'secret',
-          })
+                                                                                           type: :gitlab,
+                                                                                           endpoint: 'https://git.example.com/api/v4',
+                                                                                           token: 'secret',
+                                                                                         })
         end
       end
 
       context 'without any environment variable sets' do
         it 'returns a nil token' do
           expect(ModuleSync::GitService.configuration_for(sourcecode: sourcecode)).to eq({
-            type: :gitlab,
-            endpoint: 'https://git.example.com/api/v4',
-            token: nil,
-          })
+                                                                                           type: :gitlab,
+                                                                                           endpoint: 'https://git.example.com/api/v4',
+                                                                                           token: nil,
+                                                                                         })
         end
       end
     end
@@ -103,20 +103,20 @@ describe ModuleSync::GitService do
               .and_return('secret')
 
             expect(ModuleSync::GitService.configuration_for(sourcecode: sourcecode)).to eq({
-              type: :gitlab,
-              endpoint: 'https://gitlab.example.com/api/v4',
-              token: 'secret',
-            })
+                                                                                             type: :gitlab,
+                                                                                             endpoint: 'https://gitlab.example.com/api/v4',
+                                                                                             token: 'secret',
+                                                                                           })
           end
         end
 
         context 'without a GITLAB_TOKEN environment variable sets' do
           it 'returns a nil token' do
             expect(ModuleSync::GitService.configuration_for(sourcecode: sourcecode)).to eq({
-              type: :gitlab,
-              endpoint: 'https://gitlab.example.com/api/v4',
-              token: nil,
-            })
+                                                                                             type: :gitlab,
+                                                                                             endpoint: 'https://gitlab.example.com/api/v4',
+                                                                                             token: nil,
+                                                                                           })
           end
         end
       end
@@ -135,10 +135,10 @@ describe ModuleSync::GitService do
               .and_return('secret')
 
             expect(ModuleSync::GitService.configuration_for(sourcecode: sourcecode)).to eq({
-              type: :github,
-              endpoint: 'https://vcs.example.com',
-              token: 'secret',
-            })
+                                                                                             type: :github,
+                                                                                             endpoint: 'https://vcs.example.com',
+                                                                                             token: 'secret',
+                                                                                           })
           end
         end
 
@@ -152,7 +152,7 @@ describe ModuleSync::GitService do
               .with('GITLAB_TOKEN')
               .and_return('secret')
 
-            expect{ModuleSync::GitService.configuration_for(sourcecode: sourcecode)}
+            expect { ModuleSync::GitService.configuration_for(sourcecode: sourcecode) }
               .to raise_error ModuleSync::Error
           end
         end
@@ -163,31 +163,32 @@ describe ModuleSync::GitService do
   RSpec.shared_examples 'hostname_extractor' do |url, hostname|
     context "with '#{url}' URL" do
       subject { ModuleSync::GitService::Base.extract_hostname(url) }
-      it "should extract #{hostname.nil? ? 'nil' : "'#{hostname}'"} as hostname" do
+
+      it "extracts #{hostname.nil? ? 'nil' : "'#{hostname}'"} as hostname" do
         expect(subject).to eq(hostname)
       end
     end
   end
 
-  context '#extract_hostname' do
+  describe '#extract_hostname' do
     [
       %w[ssh://user@host.xz:4444/path/to/repo.git/ host.xz],
-      %w[ssh://user@host.xz:/path/to/repo.git/     host.xz],
-      %w[ssh://host.xz/path/to/repo.git/           host.xz],
+      %w[ssh://user@host.xz:/path/to/repo.git/ host.xz],
+      %w[ssh://host.xz/path/to/repo.git/ host.xz],
 
-      %w[git://host.xz/path/to/repo.git/           host.xz],
-      %w[git://host.xz/path/to/repo/               host.xz],
-      %w[git://host.xz/path/to/repo                host.xz],
+      %w[git://host.xz/path/to/repo.git/ host.xz],
+      %w[git://host.xz/path/to/repo/ host.xz],
+      %w[git://host.xz/path/to/repo host.xz],
 
-      %w[user@host.xz:path/to/repo.git/            host.xz],
-      %w[user@host.xz:path/to/repo.git             host.xz],
-      %w[user@host.xz:path/to/repo                 host.xz],
-      %w[host.xz:path/to/repo.git/                 host.xz],
+      %w[user@host.xz:path/to/repo.git/ host.xz],
+      %w[user@host.xz:path/to/repo.git host.xz],
+      %w[user@host.xz:path/to/repo host.xz],
+      %w[host.xz:path/to/repo.git/ host.xz],
 
-      %w[https://host.xz:8443/path/to/repo.git/    host.xz],
-      %w[https://host.xz/path/to/repo.git/         host.xz],
+      %w[https://host.xz:8443/path/to/repo.git/ host.xz],
+      %w[https://host.xz/path/to/repo.git/ host.xz],
 
-      %w[ftp://host.xz/path/to/repo/               host.xz],
+      %w[ftp://host.xz/path/to/repo/ host.xz],
 
       ['/path/to/repo.git/',                       nil],
 
@@ -195,7 +196,7 @@ describe ModuleSync::GitService do
 
       ['something-invalid',                        nil],
     ].each do |url, hostname|
-      it_should_behave_like 'hostname_extractor', url, hostname
+      it_behaves_like 'hostname_extractor', url, hostname
     end
   end
 end

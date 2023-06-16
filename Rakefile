@@ -10,16 +10,9 @@ rescue LoadError
 end
 
 begin
-  require 'rubocop/rake_task'
+  require 'voxpupuli/rubocop/rake'
 rescue LoadError
   # RuboCop is an optional group
-else
-  RuboCop::RakeTask.new(:rubocop) do |task|
-    # These make the rubocop experience maybe slightly less terrible
-    task.options = ['--display-cop-names', '--display-style-guide', '--extra-details']
-    # Use Rubocop's Github Actions formatter if possible
-    task.formatters << 'github' if ENV['GITHUB_ACTIONS'] == 'true'
-  end
 end
 
 CLEAN.include('pkg/', 'tmp/')
@@ -29,8 +22,8 @@ Cucumber::Rake::Task.new do |t|
   t.cucumber_opts << '--format pretty'
 end
 
-task :test => %i[clean spec cucumber rubocop]
-task :default => %i[test]
+task test: %i[clean spec cucumber rubocop]
+task default: %i[test]
 
 begin
   require 'github_changelog_generator/task'
@@ -44,7 +37,7 @@ begin
 
   # Workaround for https://github.com/github-changelog-generator/github-changelog-generator/issues/715
   require 'rbconfig'
-  if RbConfig::CONFIG['host_os'] =~ /linux/
+  if /linux/.match?(RbConfig::CONFIG['host_os'])
     task :changelog do
       puts 'Fixing line endings...'
       changelog_file = File.join(__dir__, 'CHANGELOG.md')

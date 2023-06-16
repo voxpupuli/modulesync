@@ -1,50 +1,5 @@
+---
 inherit_from: .rubocop_todo.yml
 
-require:
-  - rubocop-performance
-  - rubocop-rake
-  - rubocop-rspec
-
-AllCops:
-  TargetRubyVersion: 2.5
-  NewCops: enable
-  Exclude:
-    - 'vendor/**/*'
-    - 'tmp/**/*'
-    - 'pkg/**/*'
-    - 'lib/monkey_patches.rb'
-    - 'spec/**/*'
-    - 'Gemfile'
-    - 'Rakefile'
-
-Style/FetchEnvVar:
-  Enabled: false
-
-Style/HashSyntax:
-  Enabled: false
-
-Style/TrailingCommaInArguments:
-  EnforcedStyleForMultiline: comma
-
-Style/TrailingCommaInArrayLiteral:
-  EnforcedStyleForMultiline: comma
-
-Style/TrailingCommaInHashLiteral:
-  EnforcedStyleForMultiline: comma
-
-# sane line length
-Layout/LineLength:
-  Max: 120
-  Exclude:
-    - 'features/**/*'
-
-Style/FrozenStringLiteralComment:
-  Enabled: false
-
-# We explicitly prefer $stderr.puts over #warn
-Style/StderrPuts:
-  Enabled: false
-
-Gemspec/RequireMFA:
-  Exclude:
-    - 'modulesync.gemspec'
+inherit_gem:
+  voxpupuli-rubocop: rubocop.yml

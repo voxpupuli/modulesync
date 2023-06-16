@@ -7,6 +7,7 @@ module ModuleSync
 
     def self.working_directory
       raise 'Working directory must be set' if @working_directory.nil?
+
       FileUtils.mkdir_p @working_directory
       @working_directory
     end
