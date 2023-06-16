@@ -2,6 +2,19 @@
 
 All notable changes to this project will be documented in this file.
 
+## [2.7.0](https://github.com/voxpupuli/modulesync/tree/2.7.0) (2023-06-16)
+
+[Full Changelog](https://github.com/voxpupuli/modulesync/compare/2.6.0...2.7.0)
+
+**Breaking changes:**
+
+- Drop EoL Ruby 2.5/2.6 support [\#270](https://github.com/voxpupuli/modulesync/pull/270) ([bastelfreak](https://github.com/bastelfreak))
+
+**Merged pull requests:**
+
+- Update puppet-blacksmith requirement from \>= 3.0, \< 7 to \>= 3.0, \< 8 [\#268](https://github.com/voxpupuli/modulesync/pull/268) ([dependabot[bot]](https://github.com/apps/dependabot))
+- Update octokit requirement from ~\> 4.0 to \>= 4, \< 7 [\#263](https://github.com/voxpupuli/modulesync/pull/263) ([dependabot[bot]](https://github.com/apps/dependabot))
+
 ## [2.6.0](https://github.com/voxpupuli/modulesync/tree/2.6.0) (2023-04-14)
 
 [Full Changelog](https://github.com/voxpupuli/modulesync/compare/2.5.0...2.6.0)
