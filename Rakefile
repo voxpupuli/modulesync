@@ -42,7 +42,7 @@ begin
       puts 'Fixing line endings...'
       changelog_file = File.join(__dir__, 'CHANGELOG.md')
       changelog_txt = File.read(changelog_file)
-      new_contents = changelog_txt.gsub(/\r\n/, "\n")
+      new_contents = changelog_txt.gsub("\r\n", "\n")
       File.open(changelog_file, 'w') { |file| file.puts new_contents }
     end
   end
