@@ -2,9 +2,21 @@
 
 All notable changes to this project will be documented in this file.
 
-## [2.7.0](https://github.com/voxpupuli/modulesync/tree/2.7.0) (2023-06-16)
+## [3.1.0](https://github.com/voxpupuli/modulesync/tree/3.1.0) (2023-08-02)
 
-[Full Changelog](https://github.com/voxpupuli/modulesync/compare/2.6.0...2.7.0)
+[Full Changelog](https://github.com/voxpupuli/modulesync/compare/3.0.0...3.1.0)
+
+Release 3.0.0 was broken. It was tagged as 3.0.0 but accidentally released as 2.7.0. The only breaking change was dropping support for EoL ruby versions.
+
+**Merged pull requests:**
+
+- rubocop: autofix [\#273](https://github.com/voxpupuli/modulesync/pull/273) ([bastelfreak](https://github.com/bastelfreak))
+- Update octokit requirement from \>= 4, \< 7 to \>= 4, \< 8 [\#272](https://github.com/voxpupuli/modulesync/pull/272) ([dependabot[bot]](https://github.com/apps/dependabot))
+- Update voxpupuli-rubocop requirement from ~\> 1.3 to ~\> 2.0 [\#271](https://github.com/voxpupuli/modulesync/pull/271) ([dependabot[bot]](https://github.com/apps/dependabot))
+
+## [3.0.0](https://github.com/voxpupuli/modulesync/tree/3.0.0) (2023-06-16)
+
+[Full Changelog](https://github.com/voxpupuli/modulesync/compare/2.6.0...3.0.0)
 
 **Breaking changes:**
 
