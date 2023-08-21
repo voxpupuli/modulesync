@@ -12,11 +12,7 @@ module ModuleSync
 
     def self.build(template_file)
       template = File.read(template_file)
-      erb_obj = if RUBY_VERSION >= '2.7'
-                  ERB.new(template, trim_mode: '-')
-                else
-                  ERB.new(template, trim_mode: '-')
-                end
+      erb_obj = ERB.new(template, trim_mode: '-')
       erb_obj.filename = template_file
       erb_obj.def_method(ForgeModuleFile, 'render()', template_file)
       erb_obj
