@@ -29,7 +29,7 @@ begin
   require 'github_changelog_generator/task'
   GitHubChangelogGenerator::RakeTask.new :changelog do |config|
     config.header = "# Changelog\n\nAll notable changes to this project will be documented in this file."
-    config.exclude_labels = %w[duplicate question invalid wontfix wont-fix modulesync skip-changelog]
+    config.exclude_labels = %w[duplicate question invalid wontfix wont-fix modulesync skip-changelog github_actions]
     config.user = 'voxpupuli'
     config.project = 'modulesync'
     config.future_release = Gem::Specification.load("#{config.project}.gemspec").version

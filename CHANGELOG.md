@@ -2,6 +2,18 @@
 
 All notable changes to this project will be documented in this file.
 
+## [3.2.0](https://github.com/voxpupuli/modulesync/tree/3.2.0) (2023-10-31)
+
+[Full Changelog](https://github.com/voxpupuli/modulesync/compare/3.1.0...3.2.0)
+
+**Implemented enhancements:**
+
+- Update octokit requirement from \>= 4, \< 8 to \>= 4, \< 9 [\#278](https://github.com/voxpupuli/modulesync/pull/278) ([dependabot[bot]](https://github.com/apps/dependabot))
+
+**Merged pull requests:**
+
+- Clean up redundant statement [\#276](https://github.com/voxpupuli/modulesync/pull/276) ([ekohl](https://github.com/ekohl))
+
 ## [3.1.0](https://github.com/voxpupuli/modulesync/tree/3.1.0) (2023-08-02)
 
 [Full Changelog](https://github.com/voxpupuli/modulesync/compare/3.0.0...3.1.0)
@@ -47,7 +59,6 @@ Release 3.0.0 was broken. It was tagged as 3.0.0 but accidentally released as 2.
 **Merged pull requests:**
 
 - Add CI best practices [\#264](https://github.com/voxpupuli/modulesync/pull/264) ([bastelfreak](https://github.com/bastelfreak))
-- Bump actions/checkout from 2 to 3 [\#262](https://github.com/voxpupuli/modulesync/pull/262) ([dependabot[bot]](https://github.com/apps/dependabot))
 - dependabot: check for github actions and gems [\#261](https://github.com/voxpupuli/modulesync/pull/261) ([bastelfreak](https://github.com/bastelfreak))
 
 ## [2.5.0](https://github.com/voxpupuli/modulesync/tree/2.5.0) (2022-10-14)
