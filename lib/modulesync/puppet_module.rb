@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 require 'puppet_blacksmith'
 
 require 'modulesync/source_code'

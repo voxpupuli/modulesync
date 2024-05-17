@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 require_relative '../../spec/helpers/faker/puppet_module_remote_repo'
 
 Given 'a basic setup with a puppet module {string} from {string}' do |name, namespace|

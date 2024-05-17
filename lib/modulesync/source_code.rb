@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 require 'modulesync'
 require 'modulesync/git_service'
 require 'modulesync/git_service/factory'

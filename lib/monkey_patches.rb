@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 module Git
   module LibMonkeyPatch
     # Monkey patch set_custom_git_env_variables due to our ::Git::GitExecuteError handling.

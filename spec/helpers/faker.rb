@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 module ModuleSync
   # Faker is a top-level module to keep global faker config
   module Faker
