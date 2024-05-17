@@ -2,7 +2,7 @@ require 'spec_helper'
 
 describe ModuleSync::Settings do
   subject do
-    ModuleSync::Settings.new(
+    described_class.new(
       {},
       {},
       {},

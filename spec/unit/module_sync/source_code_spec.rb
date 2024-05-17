@@ -2,7 +2,7 @@ require 'spec_helper'
 
 describe ModuleSync::SourceCode do
   subject do
-    ModuleSync::SourceCode.new('namespace/name', nil)
+    described_class.new('namespace/name', nil)
   end
 
   before do
