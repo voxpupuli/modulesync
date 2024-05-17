@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 module ModuleSync
   module GitService
     # Generic class for git services

@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 module ModuleSync
   class Error < StandardError; end
 

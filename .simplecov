@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 SimpleCov.start do
   if ENV['SIMPLECOV_ROOT']
     SimpleCov.root(ENV['SIMPLECOV_ROOT'])
