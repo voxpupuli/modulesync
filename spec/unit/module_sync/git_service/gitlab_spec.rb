@@ -7,7 +7,7 @@ describe ModuleSync::GitService::GitLab do
     before do
       @client = double
       allow(Gitlab::Client).to receive(:new).and_return(@client)
-      @it = ModuleSync::GitService::GitLab.new('test', 'https://gitlab.com/api/v4')
+      @it = described_class.new('test', 'https://gitlab.com/api/v4')
     end
 
     let(:args) do

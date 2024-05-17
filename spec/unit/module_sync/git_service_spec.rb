@@ -30,11 +30,11 @@ describe ModuleSync::GitService do
       end
 
       it 'build git service arguments from configuration entry' do
-        expect(ModuleSync::GitService.configuration_for(sourcecode: sourcecode)).to eq({
-                                                                                         type: :gitlab,
-                                                                                         endpoint: 'https://vcs.example.com/api/v4',
-                                                                                         token: 'secret',
-                                                                                       })
+        expect(described_class.configuration_for(sourcecode: sourcecode)).to eq({
+                                                                                  type: :gitlab,
+                                                                                  endpoint: 'https://vcs.example.com/api/v4',
+                                                                                  token: 'secret',
+                                                                                })
       end
     end
 
@@ -55,11 +55,11 @@ describe ModuleSync::GitService do
             .with('GITLAB_TOKEN')
             .and_return('secret')
 
-          expect(ModuleSync::GitService.configuration_for(sourcecode: sourcecode)).to eq({
-                                                                                           type: :gitlab,
-                                                                                           endpoint: 'https://vcs.example.com/api/v4',
-                                                                                           token: 'secret',
-                                                                                         })
+          expect(described_class.configuration_for(sourcecode: sourcecode)).to eq({
+                                                                                    type: :gitlab,
+                                                                                    endpoint: 'https://vcs.example.com/api/v4',
+                                                                                    token: 'secret',
+                                                                                  })
         end
       end
 
@@ -69,21 +69,21 @@ describe ModuleSync::GitService do
             .with('GITLAB_TOKEN')
             .and_return('secret')
 
-          expect(ModuleSync::GitService.configuration_for(sourcecode: sourcecode)).to eq({
-                                                                                           type: :gitlab,
-                                                                                           endpoint: 'https://git.example.com/api/v4',
-                                                                                           token: 'secret',
-                                                                                         })
+          expect(described_class.configuration_for(sourcecode: sourcecode)).to eq({
+                                                                                    type: :gitlab,
+                                                                                    endpoint: 'https://git.example.com/api/v4',
+                                                                                    token: 'secret',
+                                                                                  })
         end
       end
 
       context 'without any environment variable sets' do
         it 'returns a nil token' do
-          expect(ModuleSync::GitService.configuration_for(sourcecode: sourcecode)).to eq({
-                                                                                           type: :gitlab,
-                                                                                           endpoint: 'https://git.example.com/api/v4',
-                                                                                           token: nil,
-                                                                                         })
+          expect(described_class.configuration_for(sourcecode: sourcecode)).to eq({
+                                                                                    type: :gitlab,
+                                                                                    endpoint: 'https://git.example.com/api/v4',
+                                                                                    token: nil,
+                                                                                  })
         end
       end
     end
@@ -102,21 +102,21 @@ describe ModuleSync::GitService do
               .with('GITLAB_TOKEN')
               .and_return('secret')
 
-            expect(ModuleSync::GitService.configuration_for(sourcecode: sourcecode)).to eq({
-                                                                                             type: :gitlab,
-                                                                                             endpoint: 'https://gitlab.example.com/api/v4',
-                                                                                             token: 'secret',
-                                                                                           })
+            expect(described_class.configuration_for(sourcecode: sourcecode)).to eq({
+                                                                                      type: :gitlab,
+                                                                                      endpoint: 'https://gitlab.example.com/api/v4',
+                                                                                      token: 'secret',
+                                                                                    })
           end
         end
 
         context 'without a GITLAB_TOKEN environment variable sets' do
           it 'returns a nil token' do
-            expect(ModuleSync::GitService.configuration_for(sourcecode: sourcecode)).to eq({
-                                                                                             type: :gitlab,
-                                                                                             endpoint: 'https://gitlab.example.com/api/v4',
-                                                                                             token: nil,
-                                                                                           })
+            expect(described_class.configuration_for(sourcecode: sourcecode)).to eq({
+                                                                                      type: :gitlab,
+                                                                                      endpoint: 'https://gitlab.example.com/api/v4',
+                                                                                      token: nil,
+                                                                                    })
           end
         end
       end
@@ -134,11 +134,11 @@ describe ModuleSync::GitService do
               .with('GITHUB_TOKEN')
               .and_return('secret')
 
-            expect(ModuleSync::GitService.configuration_for(sourcecode: sourcecode)).to eq({
-                                                                                             type: :github,
-                                                                                             endpoint: 'https://vcs.example.com',
-                                                                                             token: 'secret',
-                                                                                           })
+            expect(described_class.configuration_for(sourcecode: sourcecode)).to eq({
+                                                                                      type: :github,
+                                                                                      endpoint: 'https://vcs.example.com',
+                                                                                      token: 'secret',
+                                                                                    })
           end
         end
 
@@ -152,7 +152,7 @@ describe ModuleSync::GitService do
               .with('GITLAB_TOKEN')
               .and_return('secret')
 
-            expect { ModuleSync::GitService.configuration_for(sourcecode: sourcecode) }
+            expect { described_class.configuration_for(sourcecode: sourcecode) }
               .to raise_error ModuleSync::Error
           end
         end

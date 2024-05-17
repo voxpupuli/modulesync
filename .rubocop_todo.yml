@@ -33,20 +33,6 @@ RSpec/ContextWording:
     - 'spec/unit/module_sync/git_service/gitlab_spec.rb'
     - 'spec/unit/module_sync_spec.rb'
 
-# Offense count: 17
-# This cop supports unsafe autocorrection (--autocorrect-all).
-# Configuration parameters: SkipBlocks, EnforcedStyle, OnlyStaticConstants.
-# SupportedStyles: described_class, explicit
-RSpec/DescribedClass:
-  Exclude:
-    - 'spec/unit/module_sync/git_service/factory_spec.rb'
-    - 'spec/unit/module_sync/git_service/github_spec.rb'
-    - 'spec/unit/module_sync/git_service/gitlab_spec.rb'
-    - 'spec/unit/module_sync/git_service_spec.rb'
-    - 'spec/unit/module_sync/settings_spec.rb'
-    - 'spec/unit/module_sync/source_code_spec.rb'
-    - 'spec/unit/module_sync_spec.rb'
-
 # Offense count: 11
 # Configuration parameters: CountAsOne.
 RSpec/ExampleLength:

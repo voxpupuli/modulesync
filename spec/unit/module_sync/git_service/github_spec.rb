@@ -7,7 +7,7 @@ describe ModuleSync::GitService::GitHub do
     before do
       @client = double
       allow(Octokit::Client).to receive(:new).and_return(@client)
-      @it = ModuleSync::GitService::GitHub.new('test', 'https://api.github.com')
+      @it = described_class.new('test', 'https://api.github.com')
     end
 
     let(:args) do
