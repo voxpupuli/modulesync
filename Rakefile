@@ -37,7 +37,7 @@ begin
 
   # Workaround for https://github.com/github-changelog-generator/github-changelog-generator/issues/715
   require 'rbconfig'
-  if /linux/.match?(RbConfig::CONFIG['host_os'])
+  if RbConfig::CONFIG['host_os'].include?('linux')
     task :changelog do
       puts 'Fixing line endings...'
       changelog_file = File.join(__dir__, 'CHANGELOG.md')
