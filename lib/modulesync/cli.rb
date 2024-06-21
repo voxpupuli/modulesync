@@ -175,6 +175,11 @@ module ModuleSync
              aliases: '-b',
              desc: 'Branch name to make the changes in.',
              default: CLI.defaults[:branch]
+      option :default_branch,
+             aliases: '-B',
+             type: :boolean,
+             desc: 'Work on the default branch (take precedence over --branch).',
+             default: false
       option :fail_fast,
              type: :boolean,
              desc: 'Abort the run after a command execution failure',
