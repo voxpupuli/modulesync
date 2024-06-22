@@ -209,7 +209,11 @@ module ModuleSync
       $stdout.puts "#{puppet_module.given_name}:"
 
       puppet_module.repository.clone unless puppet_module.repository.cloned?
-      puppet_module.repository.switch branch: @options[:branch]
+      if @options[:default_branch]
+        puppet_module.repository.switch branch: false
+      else
+        puppet_module.repository.switch branch: @options[:branch]
+      end
 
       command_args = cli_options[:command_args]
       local_script = File.expand_path command_args[0]
