@@ -49,7 +49,7 @@ jobs:
       - name: Run behavior tests
         run: bundle exec cucumber
       - name: Build gem
-        run: gem build --verbose *.gemspec
+        run: gem build --strict --verbose *.gemspec
   tests:
     needs:
       - rubocop
