@@ -29,5 +29,6 @@ Gem::Specification.new do |spec|
   spec.add_runtime_dependency 'gitlab', '>=4', '<6'
   spec.add_runtime_dependency 'octokit', '>=4', '<10'
   spec.add_runtime_dependency 'puppet-blacksmith', '>= 3.0', '< 9'
-  spec.add_runtime_dependency 'thor', '1.3.0'
+  # 1.3.1 has a bug that was fixed in 1.3.2 https://github.com/rails/thor/pull/878
+  spec.add_runtime_dependency 'thor', '~> 1.3', '!= 1.3.1'
 end
