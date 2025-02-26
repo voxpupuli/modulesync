@@ -2,6 +2,30 @@
 
 All notable changes to this project will be documented in this file.
 
+## [3.3.0](https://github.com/voxpupuli/modulesync/tree/3.3.0) (2025-02-26)
+
+[Full Changelog](https://github.com/voxpupuli/modulesync/compare/3.2.0...3.3.0)
+
+**Implemented enhancements:**
+
+- Add Ruby 3.4 to CI [\#295](https://github.com/voxpupuli/modulesync/pull/295) ([kenyon](https://github.com/kenyon))
+- gemspec: allow puppet-blacksmith 8.x [\#294](https://github.com/voxpupuli/modulesync/pull/294) ([kenyon](https://github.com/kenyon))
+- CI: Build gems with strict and verbose mode [\#292](https://github.com/voxpupuli/modulesync/pull/292) ([bastelfreak](https://github.com/bastelfreak))
+- Add Ruby 3.3 to CI [\#291](https://github.com/voxpupuli/modulesync/pull/291) ([bastelfreak](https://github.com/bastelfreak))
+- Add a flag to `msync execute` on the default branch [\#288](https://github.com/voxpupuli/modulesync/pull/288) ([smortex](https://github.com/smortex))
+- Update octokit requirement from \>= 4, \< 9 to \>= 4, \< 10 [\#287](https://github.com/voxpupuli/modulesync/pull/287) ([dependabot[bot]](https://github.com/apps/dependabot))
+- update to voxpupuli-rubocop 2.7.0; adjust path to unit files & rubocop: autofix & regen todo file [\#281](https://github.com/voxpupuli/modulesync/pull/281) ([bastelfreak](https://github.com/bastelfreak))
+
+**Fixed bugs:**
+
+- pin thor to 1.3.0 [\#282](https://github.com/voxpupuli/modulesync/pull/282) ([bastelfreak](https://github.com/bastelfreak))
+
+**Merged pull requests:**
+
+- Update voxpupuli-rubocop requirement from ~\> 2.7.0 to ~\> 2.8.0 [\#290](https://github.com/voxpupuli/modulesync/pull/290) ([dependabot[bot]](https://github.com/apps/dependabot))
+- Update gitlab requirement from ~\> 4.0 to \>= 4, \< 6 [\#289](https://github.com/voxpupuli/modulesync/pull/289) ([dependabot[bot]](https://github.com/apps/dependabot))
+- rubocop: Fix Style/FrozenStringLiteralComment [\#285](https://github.com/voxpupuli/modulesync/pull/285) ([bastelfreak](https://github.com/bastelfreak))
+
 ## [3.2.0](https://github.com/voxpupuli/modulesync/tree/3.2.0) (2023-10-31)
 
 [Full Changelog](https://github.com/voxpupuli/modulesync/compare/3.1.0...3.2.0)
