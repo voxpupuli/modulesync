@@ -23,12 +23,12 @@ Gem::Specification.new do |spec|
   spec.add_development_dependency 'rake', '~> 13.2', '>= 13.2.1'
   spec.add_development_dependency 'rspec', '~> 3.13'
   spec.add_development_dependency 'simplecov', '~> 0.22.0'
-  spec.add_development_dependency 'voxpupuli-rubocop', '~> 2.8.0'
+  spec.add_development_dependency 'voxpupuli-rubocop', '~> 3.0.0'
 
-  spec.add_runtime_dependency 'git', '~>1.7'
-  spec.add_runtime_dependency 'gitlab', '>=4', '<6'
-  spec.add_runtime_dependency 'octokit', '>=4', '<10'
-  spec.add_runtime_dependency 'puppet-blacksmith', '>= 3.0', '< 9'
+  spec.add_dependency 'git', '~>1.7'
+  spec.add_dependency 'gitlab', '>=4', '<6'
+  spec.add_dependency 'octokit', '>=4', '<10'
+  spec.add_dependency 'puppet-blacksmith', '>= 3.0', '< 9'
   # 1.3.1 has a bug that was fixed in 1.3.2 https://github.com/rails/thor/pull/878
-  spec.add_runtime_dependency 'thor', '~> 1.3', '!= 1.3.1'
+  spec.add_dependency 'thor', '~> 1.3', '!= 1.3.1'
 end
