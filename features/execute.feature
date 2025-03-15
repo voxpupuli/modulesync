@@ -37,8 +37,8 @@ Feature: execute
     When I successfully run `msync help exec`
     Then the stdout should contain:
     """
-          [--fail-fast], [--no-fail-fast]                # Abort the run after a command execution failure
-                                                         # Default: true
+          [--fail-fast], [--no-fail-fast], [--skip-fail-fast]                 # Abort the run after a command execution failure
+                                                                              # Default: true
     """
 
   Scenario: Override fail-fast default value using config file
@@ -46,6 +46,6 @@ Feature: execute
     When I successfully run `msync help exec`
     Then the stdout should contain:
     """
-          [--fail-fast], [--no-fail-fast]                # Abort the run after a command execution failure
+    [--fail-fast], [--no-fail-fast], [--skip-fail-fast]                 # Abort the run after a command execution failure
     """
     # NOTE: It seems there is a Thor bug here: default value is missing in help when sets to 'false'
