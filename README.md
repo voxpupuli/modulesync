@@ -1,5 +1,4 @@
-ModuleSync
-===========
+# ModuleSync
 
 [![License](https://img.shields.io/github/license/voxpupuli/modulesync.svg)](https://github.com/voxpupuli/modulesync/blob/master/LICENSE)
 [![Test](https://github.com/voxpupuli/modulesync/actions/workflows/ci.yml/badge.svg)](https://github.com/voxpupuli/modulesync/actions/workflows/ci.yml)
@@ -9,26 +8,40 @@ ModuleSync
 [![RubyGem Downloads](https://img.shields.io/gem/dt/modulesync.svg)](https://rubygems.org/gems/modulesync)
 [![Donated by Puppet Inc](https://img.shields.io/badge/donated%20by-Puppet%20Inc-fb7047.svg)](#transfer-notice)
 
-Table of Contents
------------------
+## Table of Contents
 
-1. [Usage TLDR](#usage-tldr)
-2. [Overview](#overview)
-3. [How it works](#how-it-works)
-4. [Installing](#installing)
-5. [Workflow](#workflow)
-6. [The Templates](#the-templates)
+* [Usage TLDR](#usage-tldr)
+* [Overview](#overview)
+* [How it works](#how-it-works)
+  * [Default mode](#default-mode)
+* [Installing](#installing)
+* [Workflow](#workflow)
+  * [Default mode](#default-mode)
+  * [Using Forks and Non-master branches](#using-forks-and-non-master-branches)
+    * [Dry run](#dry-run-1)
+    * [Damage mode](#damage-mode-1)
+    * [Configuring ModuleSync defaults](#configuring-modulesync-defaults)
+  * [Filtering Repositories](#filtering-repositories)
+  * [Pushing to a different remote branch](#pushing-to-a-different-remote-branch)
+  * [Automating updates](#automating-updates-1)
+  * [Updating metadata.json](#updating-metadatajson)
+  * [Tagging repositories](#tagging-repositories)
+  * [Setting the tag pattern](#setting-the-tag-pattern)
+  * [Updating the CHANGELOG](#updating-the-changelog)
+  * [Working with templates](#working-with-templates)
+* [The Templates](#the-templates)
+* [Transfer Notice](#transfer-notice)
+* [License](#license)
+* [Release information](#release-information)
 
-Usage TLDR
-----------
+## Usage TLDR
 
 ```
 gem install modulesync
 msync --help
 ```
 
-Overview
---------
+## Overview
 
 ModuleSync was written as a simple script with ERB templates to help the
 Puppet Labs module engineers manage the zoo of Puppet modules on GitHub, and
@@ -58,8 +71,7 @@ Another advantage of ModuleSync is the ability to run in no-op mode, which
 makes local changes and shows the diffs, but does not make permanent changes in
 the remote repository.
 
-How It Works
-------------
+## How It Works
 
 ModuleSync is a gem that uses the GitHub workflow to clone, update, and push module
 repositories. It expects to be activated from a directory containing
@@ -88,8 +100,7 @@ branch you're working on or the remote to clone from and push to. You can also
 define these parameters in a file named `modulesync.yml` in the configuration
 directory.
 
-Installing
-----------
+## Installing
 
 ```
 gem install modulesync
@@ -102,8 +113,7 @@ gem build modulesync.gemspec
 gem install modulesync-*.gem
 ```
 
-Workflow
---------
+## Workflow
 
 ### Default mode
 
