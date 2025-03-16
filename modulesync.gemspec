@@ -25,7 +25,7 @@ Gem::Specification.new do |spec|
   spec.add_development_dependency 'simplecov', '~> 0.22.0'
   spec.add_development_dependency 'voxpupuli-rubocop', '~> 3.0.0'
 
-  spec.add_dependency 'git', '~>1.7'
+  spec.add_dependency 'git', '~> 3.0'
   spec.add_dependency 'gitlab', '>=4', '<6'
   spec.add_dependency 'octokit', '>=4', '<10'
   spec.add_dependency 'puppet-blacksmith', '>= 3.0', '< 9'
