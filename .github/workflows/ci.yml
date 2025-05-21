@@ -32,12 +32,9 @@ jobs:
           - ruby: "2.7"
           - ruby: "3.0"
           - ruby: "3.1"
-            codecov: "yes"
           - ruby: "3.2"
           - ruby: "3.3"
           - ruby: "3.4"
-    env:
-      CODECOV: ${{ matrix.codecov }}
     steps:
       - uses: actions/checkout@v4
       - name: Install Ruby ${{ matrix.ruby }}
