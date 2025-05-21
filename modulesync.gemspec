@@ -29,5 +29,6 @@ Gem::Specification.new do |spec|
   spec.add_dependency 'octokit', '>=4', '<10'
   spec.add_dependency 'puppet-blacksmith', '>= 3.0', '< 9'
   # 1.3.1 has a bug that was fixed in 1.3.2 https://github.com/rails/thor/pull/878
-  spec.add_dependency 'thor', '~> 1.3', '!= 1.3.1'
+  # Allow 1.2 and newer, because Perforce facter 4.10.0 only allows < 1.3....
+  spec.add_dependency 'thor', '~> 1.2', '!= 1.3.1'
 end
