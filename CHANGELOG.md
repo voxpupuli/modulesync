@@ -2,6 +2,17 @@
 
 All notable changes to this project will be documented in this file.
 
+## [3.4.0](https://github.com/voxpupuli/modulesync/tree/3.4.0) (2025-05-21)
+
+[Full Changelog](https://github.com/voxpupuli/modulesync/compare/3.3.0...3.4.0)
+
+**Merged pull requests:**
+
+- Disable coverage reports [\#300](https://github.com/voxpupuli/modulesync/pull/300) ([bastelfreak](https://github.com/bastelfreak))
+- voxpupuli-rubocop: Update 3.0.0-\>3.1.0 [\#299](https://github.com/voxpupuli/modulesync/pull/299) ([bastelfreak](https://github.com/bastelfreak))
+- voxpupuli-rubocop: Update 2.8.0-\>3.0.0 [\#297](https://github.com/voxpupuli/modulesync/pull/297) ([bastelfreak](https://github.com/bastelfreak))
+- Allow thor 1.3.2 and newer [\#293](https://github.com/voxpupuli/modulesync/pull/293) ([dependabot[bot]](https://github.com/apps/dependabot))
+
 ## [3.3.0](https://github.com/voxpupuli/modulesync/tree/3.3.0) (2025-02-26)
 
 [Full Changelog](https://github.com/voxpupuli/modulesync/compare/3.2.0...3.3.0)
