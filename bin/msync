@@ -1,22 +1,6 @@
 #!/usr/bin/env ruby
 # frozen_string_literal: true
 
-if ENV['COVERAGE']
-  # This block allow us to grab code coverage when running this script.
-  #
-  # Note: This environment variable (ie. COVERAGE) is set in Cucumber/Aruba configuration to collect reports
-  simplecov_root = File.expand_path File.join(File.dirname(__FILE__), '..')
-
-  # When running with aruba simplecov was using /tmp/aruba as the root folder.
-  # This is to force using the project folder
-  ENV['SIMPLECOV_ROOT'] = simplecov_root
-  require 'simplecov'
-
-  # https://github.com/simplecov-ruby/simplecov/issues/234
-  # As described in the issue, every process must have an unique name:
-  SimpleCov.command_name "#{File.basename $PROGRAM_NAME} (pid: #{Process.pid})"
-end
-
 lib = File.expand_path('../lib', __dir__)
 $LOAD_PATH.unshift(lib) unless $LOAD_PATH.include?(lib)
 
