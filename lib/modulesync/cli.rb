@@ -183,7 +183,7 @@ module ModuleSync
       option :fail_fast,
              type: :boolean,
              desc: 'Abort the run after a command execution failure',
-             default: CLI.defaults[:fail_fast].nil? ? true : CLI.defaults[:fail_fast]
+             default: CLI.defaults[:fail_fast].nil? || CLI.defaults[:fail_fast]
       def execute(*command_args)
         raise Thor::Error, 'COMMAND is a required argument' if command_args.empty?
 
