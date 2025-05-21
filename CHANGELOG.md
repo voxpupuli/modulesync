@@ -2,6 +2,14 @@
 
 All notable changes to this project will be documented in this file.
 
+## [3.4.1](https://github.com/voxpupuli/modulesync/tree/3.4.1) (2025-05-21)
+
+[Full Changelog](https://github.com/voxpupuli/modulesync/compare/3.4.0...3.4.1)
+
+**Fixed bugs:**
+
+- thor: Allow 1.2 to stay compatible with ancient facter [\#303](https://github.com/voxpupuli/modulesync/pull/303) ([bastelfreak](https://github.com/bastelfreak))
+
 ## [3.4.0](https://github.com/voxpupuli/modulesync/tree/3.4.0) (2025-05-21)
 
 [Full Changelog](https://github.com/voxpupuli/modulesync/compare/3.3.0...3.4.0)
