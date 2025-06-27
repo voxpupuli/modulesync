@@ -2,6 +2,14 @@
 
 All notable changes to this project will be documented in this file.
 
+## [3.4.2](https://github.com/voxpupuli/modulesync/tree/3.4.2) (2025-06-27)
+
+[Full Changelog](https://github.com/voxpupuli/modulesync/compare/3.4.1...3.4.2)
+
+**Merged pull requests:**
+
+- cleanup github release action; switch to rubygems trusted publishers [\#306](https://github.com/voxpupuli/modulesync/pull/306) ([bastelfreak](https://github.com/bastelfreak))
+
 ## [3.4.1](https://github.com/voxpupuli/modulesync/tree/3.4.1) (2025-05-21)
 
 [Full Changelog](https://github.com/voxpupuli/modulesync/compare/3.4.0...3.4.1)
