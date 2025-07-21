@@ -64,8 +64,8 @@ How It Works
 ModuleSync is a gem that uses the GitHub workflow to clone, update, and push module
 repositories. It expects to be activated from a directory containing
 configuration for modulesync and the modules, or you can pass it the location
-of this configuration directory. [The configuration for the Puppet Labs
-modules](https://github.com/puppetlabs/modulesync_configs), can be used as an
+of this configuration directory. [The configuration for the Vox Pupuli
+modules](https://github.com/voxpupuli/modulesync_config), can be used as an
 example for your own configuration. The configuration directory contains a
 directory called moduleroot which mirrors the structure of a module. The files
 in the moduleroot are ERB templates, and MUST be named after the target file,
@@ -442,8 +442,7 @@ workdir: modules/github-org/puppet-test
 The Templates
 -------------
 
-See [Puppet's modulesync\_configs](https://github.com/puppetlabs/modulesync_configs) and [Vox Pupuli's modulesync\_config](https://github.com/voxpupuli/modulesync_config)
-repositories for different templates currently in use.
+See [Vox Pupuli's modulesync\_config](https://github.com/voxpupuli/modulesync_config) and [Puppet's modulesync\_configs (Archived)](https://github.com/puppetlabs/modulesync_configs) repositories for different templates currently in use.
 
 ## Transfer Notice
 
