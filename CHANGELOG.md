@@ -2,6 +2,15 @@
 
 All notable changes to this project will be documented in this file.
 
+## [3.5.0](https://github.com/voxpupuli/modulesync/tree/3.5.0) (2025-07-23)
+
+[Full Changelog](https://github.com/voxpupuli/modulesync/compare/3.4.2...3.5.0)
+
+**Merged pull requests:**
+
+- thor: require 1.4 or newer [\#309](https://github.com/voxpupuli/modulesync/pull/309) ([kenyon](https://github.com/kenyon))
+- README: change example config to voxpupuli [\#308](https://github.com/voxpupuli/modulesync/pull/308) ([trefzer](https://github.com/trefzer))
+
 ## [3.4.2](https://github.com/voxpupuli/modulesync/tree/3.4.2) (2025-06-27)
 
 [Full Changelog](https://github.com/voxpupuli/modulesync/compare/3.4.1...3.4.2)
