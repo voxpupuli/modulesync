@@ -145,7 +145,7 @@ module ModuleSync
         opts_commit = { amend: true } if options[:amend]
         opts_push = { force: true } if options[:force]
         if options[:pre_commit_script]
-          script = "#{File.dirname(File.dirname(__FILE__))}/../contrib/#{options[:pre_commit_script]}"
+          script = "#{File.dirname(__FILE__, 3)}/contrib/#{options[:pre_commit_script]}"
           `#{script} #{@directory}`
         end
         repo.commit(message, opts_commit)
@@ -158,7 +158,7 @@ module ModuleSync
           repo.push('origin', branch, opts_push)
           puts "Changes have been pushed to: '#{branch}'"
         end
-      rescue Git::GitExecuteError => e
+      rescue Git::Error => e
         raise unless e.message.match?(/working (directory|tree) clean/)
 
         puts "There were no changes in '#{@directory}'. Not committing."
