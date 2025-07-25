@@ -12,7 +12,7 @@ module ModuleSync
 
     def self.parse_config(config_file)
       if File.exist?(config_file)
-        YAML.load_file(config_file) || {}
+        YAML.load_file(config_file, aliases: true) || {}
       else
         puts "No config file under #{config_file} found, using default values"
         {}
