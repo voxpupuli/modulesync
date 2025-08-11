@@ -13,7 +13,7 @@ module ModuleSync
     # - show subcommands help using `msync subcommand --help`
     class Thor < ::Thor
       def self.start(*args)
-        if (Thor::HELP_MAPPINGS & ARGV).any? && subcommands.none? { |command| command.start_with?(ARGV[0]) }
+        if Thor::HELP_MAPPINGS.intersect?(ARGV) && subcommands.none? { |command| command.start_with?(ARGV[0]) }
           Thor::HELP_MAPPINGS.each do |cmd|
             if (match = ARGV.delete(cmd))
               ARGV.unshift match
