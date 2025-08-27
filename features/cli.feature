@@ -45,5 +45,5 @@ Feature: CLI
     When I successfully run `msync update --verbose --noop --namespace fakenamespace --branch command-line-branch`
     Then the output should contain:
       """
-      Creating new branch command-line-branch
+      Creating new branch command-line-branch from master
       """
