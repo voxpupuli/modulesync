@@ -26,6 +26,7 @@ jobs:
         run: bundle exec rake rubocop
       - id: ruby
         uses: voxpupuli/ruby-version@v1
+
   test:
     name: "Ruby ${{ matrix.ruby }}"
     needs: rubocop_and_matrix
@@ -47,11 +48,16 @@ jobs:
         run: bundle exec cucumber
       - name: Build gem
         run: gem build --strict --verbose *.gemspec
+
   tests:
+    if: always()
     needs:
       - rubocop_and_matrix
       - test
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04
     name: Test suite
     steps:
-      - run: echo Test suite completed
+      - name: Decide whether the needed jobs succeeded or failed
+        uses: re-actors/alls-green@release/v1
+        with:
+          jobs: ${{ toJSON(needs) }}
