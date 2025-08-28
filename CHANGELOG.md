@@ -2,6 +2,20 @@
 
 All notable changes to this project will be documented in this file.
 
+## [4.0.0](https://github.com/voxpupuli/modulesync/tree/4.0.0) (2025-08-28)
+
+[Full Changelog](https://github.com/voxpupuli/modulesync/compare/3.5.0...4.0.0)
+
+**Breaking changes:**
+
+- Require Ruby 3.2+ [\#317](https://github.com/voxpupuli/modulesync/pull/317) ([bastelfreak](https://github.com/bastelfreak))
+- Drop ruby older than 3.2.0 [\#312](https://github.com/voxpupuli/modulesync/pull/312) ([traylenator](https://github.com/traylenator))
+
+**Implemented enhancements:**
+
+- Allow YAML aliases in configuration [\#311](https://github.com/voxpupuli/modulesync/pull/311) ([traylenator](https://github.com/traylenator))
+
+
 ## [3.5.0](https://github.com/voxpupuli/modulesync/tree/3.5.0) (2025-07-23)
 
 [Full Changelog](https://github.com/voxpupuli/modulesync/compare/3.4.2...3.5.0)
