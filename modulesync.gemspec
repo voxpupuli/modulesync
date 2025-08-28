@@ -22,7 +22,7 @@ Gem::Specification.new do |spec|
   spec.add_development_dependency 'cucumber', '~> 9.2'
   spec.add_development_dependency 'rake', '~> 13.2', '>= 13.2.1'
   spec.add_development_dependency 'rspec', '~> 3.13'
-  spec.add_development_dependency 'voxpupuli-rubocop', '~> 4.1.0'
+  spec.add_development_dependency 'voxpupuli-rubocop', '~> 4.2.0'
 
   spec.add_dependency 'git', '~>1.7'
   spec.add_dependency 'gitlab', '>=4', '<6'
