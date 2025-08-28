@@ -206,8 +206,8 @@ module ModuleSync
       git.diff('HEAD', '--').any? || untracked_unignored_files.any?
     end
 
-    def puts(*args)
-      $stdout.puts(*args) if ModuleSync.options[:verbose]
+    def puts(*)
+      $stdout.puts(*) if ModuleSync.options[:verbose]
     end
   end
 end
