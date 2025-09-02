@@ -2,9 +2,19 @@
 
 All notable changes to this project will be documented in this file.
 
+## [4.0.1](https://github.com/voxpupuli/modulesync/tree/4.0.1) (2025-09-02)
+
+[Full Changelog](https://github.com/voxpupuli/modulesync/compare/4.0.0...4.0.1)
+
+We had some issues with the 4.0.0 release. It was published to rubygems, but we've a `v4.0.0` and a `4.0.0` git tag. This confuses renovate in some setups. To fix this, we will release 4.0.1.
+
 ## [4.0.0](https://github.com/voxpupuli/modulesync/tree/4.0.0) (2025-08-28)
 
-[Full Changelog](https://github.com/voxpupuli/modulesync/compare/3.5.0...4.0.0)
+[Full Changelog](https://github.com/voxpupuli/modulesync/compare/v4.0.0...4.0.0)
+
+## [v4.0.0](https://github.com/voxpupuli/modulesync/tree/v4.0.0) (2025-08-28)
+
+[Full Changelog](https://github.com/voxpupuli/modulesync/compare/3.5.0...v4.0.0)
 
 **Breaking changes:**
 
@@ -14,7 +24,6 @@ All notable changes to this project will be documented in this file.
 **Implemented enhancements:**
 
 - Allow YAML aliases in configuration [\#311](https://github.com/voxpupuli/modulesync/pull/311) ([traylenator](https://github.com/traylenator))
-
 
 ## [3.5.0](https://github.com/voxpupuli/modulesync/tree/3.5.0) (2025-07-23)
 
