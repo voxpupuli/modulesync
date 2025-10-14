@@ -395,6 +395,14 @@ msync update -m "Commit message" --bump --tag --tag_pattern 'v%s'
 
 The default for the tag pattern is `%s`.
 
+#### Executing bundle command with a shared bundle path and gemfile
+
+By default `msync execute` will remove bundler related env vars (^BUNDLE|^SOURCE_DATE_EPOCH$|^GEM_|RUBY), you can use `--env` flag to keep specified env vars:
+
+```
+msync execute --env BUNDLE_PATH,BUNDLE_GEMFILE bundle exec rake lint
+```
+
 #### Updating the CHANGELOG
 
 When bumping the version in `metadata.json`, modulesync can let you
