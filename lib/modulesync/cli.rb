@@ -184,6 +184,9 @@ module ModuleSync
              type: :boolean,
              desc: 'Abort the run after a command execution failure',
              default: CLI.defaults[:fail_fast].nil? || CLI.defaults[:fail_fast]
+      option :env,
+             aliases: '-e',
+             desc: 'Comma-separated list of environment variables to preserve.'
       def execute(*command_args)
         raise Thor::Error, 'COMMAND is a required argument' if command_args.empty?
 

@@ -49,3 +49,14 @@ Feature: execute
     [--fail-fast], [--no-fail-fast], [--skip-fail-fast]                 # Abort the run after a command execution failure
     """
     # NOTE: It seems there is a Thor bug here: default value is missing in help when sets to 'false'
+
+  Scenario: Show preserved bundle env var.
+    Given a basic setup with a puppet module "puppet-test" from "awesome"
+    And I set the environment variables to:
+      | variable   | value  |
+      | BUNLE_PATH | /opt/msync/bundle |
+    When I successfully run `msync exec --env BUNLE_PATH -- env`
+    Then the stdout should contain:
+    """
+    BUNLE_PATH=/opt/msync/bundle
+    """

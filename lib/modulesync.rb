@@ -216,11 +216,12 @@ module ModuleSync
       end
 
       command_args = cli_options[:command_args]
+      env_whitelist = (@options[:env] || '').split(',')
       local_script = File.expand_path command_args[0]
       command_args[0] = local_script if File.exist?(local_script)
 
-      # Remove bundler-related env vars to allow the subprocess to run `bundle`
-      command_env = ENV.reject { |k, _v| k.match?(/(^BUNDLE|^SOURCE_DATE_EPOCH$|^GEM_|RUBY)/) }
+      # Remove bundler-related env vars to allow the subprocess to run `bundle` unless explicitly whitelisted.
+      command_env = ENV.reject { |k, _v| k.match?(/(^BUNDLE|^SOURCE_DATE_EPOCH$|^GEM_|RUBY)/) && !env_whitelist.include?(k) }
 
       result = system command_env, *command_args, unsetenv_others: true, chdir: puppet_module.working_directory
       unless result
