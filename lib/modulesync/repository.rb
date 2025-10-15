@@ -191,7 +191,7 @@ module ModuleSync
       checkout_branch(options[:branch])
 
       $stdout.puts 'Files changed:'
-      repo.diff('HEAD', '--').each do |diff|
+      repo.diff('HEAD').each do |diff|
         $stdout.puts diff.patch
       end
 
@@ -203,7 +203,7 @@ module ModuleSync
       $stdout.puts "\n\n"
       $stdout.puts '--------------------------------'
 
-      git.diff('HEAD', '--').any? || untracked_unignored_files.any?
+      git.diff('HEAD').any? || untracked_unignored_files.any?
     end
 
     def puts(*)
