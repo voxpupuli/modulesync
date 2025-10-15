@@ -146,7 +146,7 @@ module ModuleSync
         opts_push = { force: true } if options[:force]
         if options[:pre_commit_script]
           script = "#{File.dirname(__FILE__, 3)}/contrib/#{options[:pre_commit_script]}"
-          `#{script} #{@directory}`
+          system(script, @directory)
         end
         repo.commit(message, opts_commit)
         if options[:remote_branch]
