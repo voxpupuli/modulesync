@@ -26,7 +26,7 @@ Gem::Specification.new do |spec|
 
   spec.add_dependency 'git', '>= 3.0', '< 5'
   spec.add_dependency 'gitlab', '>=4', '<7'
-  spec.add_dependency 'octokit', '>=4', '<10'
+  spec.add_dependency 'octokit', '>=4', '<11'
   spec.add_dependency 'puppet-blacksmith', '>= 3.0', '< 10'
   spec.add_dependency 'thor', '~> 1.4'
 end
