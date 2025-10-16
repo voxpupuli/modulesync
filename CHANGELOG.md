@@ -2,6 +2,22 @@
 
 All notable changes to this project will be documented in this file.
 
+## [4.2.0](https://github.com/voxpupuli/modulesync/tree/4.2.0) (2025-10-16)
+
+[Full Changelog](https://github.com/voxpupuli/modulesync/compare/4.1.0...4.2.0)
+
+**Implemented enhancements:**
+
+- git: Allow 4.x [\#327](https://github.com/voxpupuli/modulesync/pull/327) ([bastelfreak](https://github.com/bastelfreak))
+- puppet-blacksmith: Allow 9.x [\#325](https://github.com/voxpupuli/modulesync/pull/325) ([bastelfreak](https://github.com/bastelfreak))
+
+**Merged pull requests:**
+
+- Update gitlab requirement from \>= 4, \< 6 to \>= 4, \< 7 [\#330](https://github.com/voxpupuli/modulesync/pull/330) ([dependabot[bot]](https://github.com/apps/dependabot))
+- Update octokit requirement from \>= 4, \< 10 to \>= 4, \< 11 [\#329](https://github.com/voxpupuli/modulesync/pull/329) ([dependabot[bot]](https://github.com/apps/dependabot))
+- Update cucumber requirement from ~\> 9.2 to ~\> 10.1 [\#328](https://github.com/voxpupuli/modulesync/pull/328) ([dependabot[bot]](https://github.com/apps/dependabot))
+- voxpupuli-rubocop: Update 4.2.0-\>5.0.0 [\#324](https://github.com/voxpupuli/modulesync/pull/324) ([bastelfreak](https://github.com/bastelfreak))
+
 ## [4.1.0](https://github.com/voxpupuli/modulesync/tree/4.1.0) (2025-10-16)
 
 [Full Changelog](https://github.com/voxpupuli/modulesync/compare/4.0.1...4.1.0)
