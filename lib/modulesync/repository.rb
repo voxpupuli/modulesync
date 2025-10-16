@@ -148,7 +148,12 @@ module ModuleSync
           script = "#{File.dirname(__FILE__, 3)}/contrib/#{options[:pre_commit_script]}"
           system(script, @directory)
         end
-        repo.commit(message, opts_commit)
+        if repo.status.changed.empty? && repo.status.added.empty? && repo.status.deleted.empty?
+          puts "There were no changes in '#{@directory}'. Not committing."
+          return false
+        else
+          repo.commit(message, opts_commit)
+        end
         if options[:remote_branch]
           if remote_branch_differ?(branch, options[:remote_branch])
             repo.push('origin', "#{branch}:#{options[:remote_branch]}", opts_push)
@@ -159,10 +164,7 @@ module ModuleSync
           puts "Changes have been pushed to: '#{branch}'"
         end
       rescue Git::Error => e
-        raise unless e.message.match?(/working (directory|tree) clean/)
-
-        puts "There were no changes in '#{@directory}'. Not committing."
-        return false
+        raise e.message
       end
 
       true
