@@ -19,7 +19,7 @@ Gem::Specification.new do |spec|
   spec.require_paths = ['lib']
 
   spec.add_development_dependency 'aruba', '~>2.0'
-  spec.add_development_dependency 'cucumber', '~> 9.2'
+  spec.add_development_dependency 'cucumber', '~> 10.1'
   spec.add_development_dependency 'rake', '~> 13.2', '>= 13.2.1'
   spec.add_development_dependency 'rspec', '~> 3.13'
   spec.add_development_dependency 'voxpupuli-rubocop', '~> 5.0.0'
