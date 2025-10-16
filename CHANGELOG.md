@@ -2,6 +2,15 @@
 
 All notable changes to this project will be documented in this file.
 
+## [4.1.0](https://github.com/voxpupuli/modulesync/tree/4.1.0) (2025-10-16)
+
+[Full Changelog](https://github.com/voxpupuli/modulesync/compare/4.0.1...4.1.0)
+
+**Implemented enhancements:**
+
+- Add execute option to preserve env vars [\#321](https://github.com/voxpupuli/modulesync/pull/321) ([Joris29](https://github.com/Joris29))
+- Update git requirement from ~\> 3.0 [\#280](https://github.com/voxpupuli/modulesync/pull/280) ([dependabot[bot]](https://github.com/apps/dependabot))
+
 ## [4.0.1](https://github.com/voxpupuli/modulesync/tree/4.0.1) (2025-09-02)
 
 [Full Changelog](https://github.com/voxpupuli/modulesync/compare/4.0.0...4.0.1)
