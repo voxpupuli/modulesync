@@ -116,6 +116,30 @@ module ModuleSync
     end
   end
 
+  def self.update_readme_badges(puppet_module)
+    return unless File.exist?(puppet_module.path('README.md'))
+
+    $stdout.puts "Updating README badges for '#{puppet_module.given_name}'"
+    content = File.read(puppet_module.path('README.md'))
+    badge_start = '[//]: # (modulesync badges start)'
+    badge_end = '[//]: # (modulesync badges end)'
+    badge_regex = /#{Regexp.escape(badge_start)}.*?#{Regexp.escape(badge_end)}/m
+
+    build_status = "![Build Status](https://github.com/#{puppet_module.repository_namespace}/#{puppet_module.repository_name}/actions/workflows/ci.yml/badge.svg?branch=master)"
+    # rubocop:disable Layout/LineLength
+    code_coverage = "[![Code Coverage](https://coveralls.io/repos/github/#{puppet_module.repository_namespace}/#{puppet_module.repository_name}/badge.svg?branch=master)](https://coveralls.io/github/#{puppet_module.repository_namespace}/#{puppet_module.repository_name})"
+    # rubocop:enable Layout/LineLength
+    license = "[![License](https://img.shields.io/github/license/#{puppet_module.repository_namespace}/#{puppet_module.repository_name}.svg)](LICENSE)"
+
+    badges = [build_status, license]
+    badges << code_coverage if Dir.exist?(File.join(puppet_module.path, 'lib'))
+
+    new_content = "#{badge_start}\n#{badges.join("\n")}\n#{badge_end}"
+    return unless content.gsub!(badge_regex, new_content)
+
+    File.write(puppet_module.path('README.md'), content)
+  end
+
   def self.manage_module(puppet_module, module_files, defaults)
     puts "Syncing '#{puppet_module.given_name}'"
     # NOTE: #prepare_workspace now supports to execute only offline operations
@@ -140,6 +164,7 @@ module ModuleSync
 
     files_to_manage = settings.managed_files(module_files)
     files_to_manage.each { |filename| manage_file(puppet_module, filename, settings, options) }
+    update_readme_badges(puppet_module)
 
     if options[:noop]
       puts "Using no-op. Files in '#{puppet_module.given_name}' may be changed but will not be committed."
