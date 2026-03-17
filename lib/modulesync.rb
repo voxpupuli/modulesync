@@ -49,8 +49,8 @@ module ModuleSync
   def self.find_template_files(local_template_dir)
     if File.exist?(local_template_dir)
       Find.find(local_template_dir).find_all { |p| p =~ /.erb$/ && !File.directory?(p) }
-          .collect { |p| p.chomp('.erb') }
-          .to_a
+                                   .collect { |p| p.chomp('.erb') }
+                                   .to_a
     else
       warn "#{local_template_dir} does not exist. " \
            'Check that you are working in your module configs directory or ' \
