@@ -144,10 +144,9 @@ module ModuleSync
         opts_push = {}
         opts_commit = { amend: true } if options[:amend]
         opts_push = { force: true } if options[:force]
-        if options[:pre_commit_script]
-          script = "#{File.dirname(__FILE__, 3)}/contrib/#{options[:pre_commit_script]}"
-          system(script, @directory)
-        end
+
+        system(options[:pre_commit_script], @directory) if options[:pre_commit_script]
+
         if repo.status.changed.empty? && repo.status.added.empty? && repo.status.deleted.empty?
           puts "There were no changes in '#{@directory}'. Not committing."
           return false
