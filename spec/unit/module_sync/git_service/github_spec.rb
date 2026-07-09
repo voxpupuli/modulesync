@@ -5,6 +5,18 @@ require 'spec_helper'
 require 'modulesync/git_service/github'
 
 describe ModuleSync::GitService::GitHub do
+  describe '.guess_endpoint_from' do
+    it 'uses the public GitHub API endpoint for a github.com remote' do
+      expect(described_class.guess_endpoint_from(remote: 'git@github.com:test/modulesync.git'))
+        .to eq('https://api.github.com')
+    end
+
+    it 'uses the remote hostname for a GitHub Enterprise remote' do
+      expect(described_class.guess_endpoint_from(remote: 'git@github.example.com:test/modulesync.git'))
+        .to eq('https://github.example.com')
+    end
+  end
+
   context '::open_pull_request' do
     before do
       @client = double

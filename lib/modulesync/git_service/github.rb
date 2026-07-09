@@ -18,6 +18,13 @@ module ModuleSync
         @api = Octokit::Client.new(access_token: token)
       end
 
+      def self.guess_endpoint_from(remote:)
+        endpoint = super
+        return 'https://api.github.com' if endpoint == 'https://github.com'
+
+        endpoint
+      end
+
       private
 
       def _open_pull_request(repo_path:, namespace:, title:, message:, source_branch:, target_branch:, labels:, noop:)
