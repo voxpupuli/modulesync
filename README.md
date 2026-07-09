@@ -200,7 +200,7 @@ or set them per repository in `managed_modules.yml`, using the `github` or
 
 For GitHub Enterprise and self-hosted GitLab instances you also need to set the
 `GITHUB_BASE_URL` or `GITLAB_BASE_URL` environment variables, or specify the
-`base_url` parameter in `modulesync.yml`:
+`base_url` parameter per repository in `managed_modules.yml`:
 
 ```yaml
 ---
