@@ -2,6 +2,24 @@
 
 All notable changes to this project will be documented in this file.
 
+## [4.3.0](https://github.com/voxpupuli/modulesync/tree/4.3.0) (2026-07-09)
+
+[Full Changelog](https://github.com/voxpupuli/modulesync/compare/4.2.0...4.3.0)
+
+**Implemented enhancements:**
+
+- Add Ruby 4.0 support [\#338](https://github.com/voxpupuli/modulesync/pull/338) ([dependabot[bot]](https://github.com/apps/dependabot))
+
+**Fixed bugs:**
+
+- fix: validate PR credentials and retry PR creation [\#347](https://github.com/voxpupuli/modulesync/pull/347) ([rwaffen](https://github.com/rwaffen))
+
+**Merged pull requests:**
+
+- Update cucumber requirement from ~\> 10.1 to ~\> 11.0 [\#344](https://github.com/voxpupuli/modulesync/pull/344) ([dependabot[bot]](https://github.com/apps/dependabot))
+- Update voxpupuli-rubocop requirement from ~\> 5.1.0 to ~\> 5.2.0 [\#341](https://github.com/voxpupuli/modulesync/pull/341) ([dependabot[bot]](https://github.com/apps/dependabot))
+- Update voxpupuli-rubocop requirement from ~\> 5.0.0 to ~\> 5.1.0 [\#334](https://github.com/voxpupuli/modulesync/pull/334) ([dependabot[bot]](https://github.com/apps/dependabot))
+
 ## [4.2.0](https://github.com/voxpupuli/modulesync/tree/4.2.0) (2025-10-16)
 
 [Full Changelog](https://github.com/voxpupuli/modulesync/compare/4.1.0...4.2.0)
