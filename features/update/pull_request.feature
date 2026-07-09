@@ -88,7 +88,7 @@ Feature: Create a pull-request/merge-request after update
       """
       <%= @configs['name'] %>
       """
-    When I run `msync update --noop --pr`
+    When I run `msync update --message "Update test" --pr`
     Then the stderr should contain "A token is required to use services from gitlab"
     And the exit status should be 1
     And the puppet module "puppet-test" from "fakenamespace" should have no commits made by "Aruba"

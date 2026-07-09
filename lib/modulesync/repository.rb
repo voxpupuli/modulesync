@@ -32,6 +32,16 @@ module ModuleSync
         repo.diff("#{local_branch}..origin/#{remote_branch}").any?
     end
 
+    # This method checks if the source branch is ahead of the target branch in the remote repository.
+    # It does this by checking if there are any commits in the source branch that are not in the target branch.
+    def remote_branch_ahead?(source_branch, target_branch)
+      return false unless remote_branch_exists?(source_branch) && remote_branch_exists?(target_branch)
+
+      log = repo.log(1).between("origin/#{target_branch}", "origin/#{source_branch}")
+      commits = log.respond_to?(:execute) ? log.execute : log
+      commits.any?
+    end
+
     def default_branch
       # `Git.default_branch` requires ruby-git >= 1.17.0
       return Git.default_branch(repo.dir) if Git.respond_to? :default_branch
