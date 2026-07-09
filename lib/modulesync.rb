@@ -11,6 +11,7 @@ require 'modulesync/puppet_module'
 require 'modulesync/renderer'
 require 'modulesync/settings'
 require 'modulesync/util'
+require 'modulesync/version'
 
 require 'monkey_patches'
 
