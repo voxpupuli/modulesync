@@ -68,11 +68,29 @@ module ModuleSync
         namespace: repository_namespace,
         title: ModuleSync.options[:pr_title],
         message: ModuleSync.options[:message],
-        source_branch: ModuleSync.options[:remote_branch] || ModuleSync.options[:branch] || repository.default_branch,
-        target_branch: ModuleSync.options[:pr_target_branch] || repository.default_branch,
+        source_branch: pull_request_source_branch,
+        target_branch: pull_request_target_branch,
         labels: ModuleSync::Util.parse_list(ModuleSync.options[:pr_labels]),
         noop: ModuleSync.options[:noop],
       )
+    end
+
+    # This method checks if the pull request branch is ready to be opened.
+    # It does this by checking if the source branch is ahead of the target branch in the remote repository.
+    def pull_request_branch_ready?
+      repository.remote_branch_ahead?(pull_request_source_branch, pull_request_target_branch)
+    end
+
+    # This method returns the source branch for the pull request.
+    # It first checks if the `remote_branch` option is set, then checks if the `branch` option is set, and finally defaults to the repository's default branch.
+    def pull_request_source_branch
+      ModuleSync.options[:remote_branch] || ModuleSync.options[:branch] || repository.default_branch
+    end
+
+    # This method returns the target branch for the pull request.
+    # It first checks if the `pr_target_branch` option is set, and if not, it defaults to the repository's default branch.
+    def pull_request_target_branch
+      ModuleSync.options[:pr_target_branch] || repository.default_branch
     end
 
     private

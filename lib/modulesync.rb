@@ -152,7 +152,7 @@ module ModuleSync
         new = puppet_module.bump(options[:message], options[:changelog])
         puppet_module.repository.tag(new, options[:tag_pattern]) if options[:tag]
       end
-      pushed && options[:pr] && puppet_module.open_pull_request
+      options[:pr] && (pushed || puppet_module.pull_request_branch_ready?) && puppet_module.open_pull_request
     end
   end
 
@@ -174,9 +174,13 @@ module ModuleSync
     local_files = find_template_files(local_template_dir)
     module_files = relative_names(local_files, local_template_dir)
 
+    # Initialize every Git service before updating any repository.
+    # This validates PR credentials before an update can commit or push changes.
+    initialized_modules = managed_modules
+    initialized_modules.each(&:git_service) if options[:pr]
+
     errors = false
-    # managed_modules is either an array or a hash
-    managed_modules.each do |puppet_module|
+    initialized_modules.each do |puppet_module|
       manage_module(puppet_module, module_files, defaults)
     rescue ModuleSync::Error, Git::Error => e
       message = e.message || 'Error during `update`'
