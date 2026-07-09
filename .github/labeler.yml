@@ -1,0 +1,5 @@
+---
+skip-changelog:
+  - head-branch:
+    - '^release-*'
+    - '^rel[0-9]+'
