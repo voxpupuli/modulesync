@@ -2,9 +2,21 @@
 
 All notable changes to this project will be documented in this file.
 
-## [4.3.0](https://github.com/voxpupuli/modulesync/tree/4.3.0) (2026-07-09)
+## [4.4.0](https://github.com/voxpupuli/modulesync/tree/4.4.0) (2026-07-09)
 
-[Full Changelog](https://github.com/voxpupuli/modulesync/compare/4.2.0...4.3.0)
+[Full Changelog](https://github.com/voxpupuli/modulesync/compare/v4.3.0...4.4.0)
+
+**Implemented enhancements:**
+
+- feat: add best practices on how to version a gem [\#351](https://github.com/voxpupuli/modulesync/pull/351) ([rwaffen](https://github.com/rwaffen))
+
+**Fixed bugs:**
+
+- fix: add guess\_endpoint\_from for github, similar to gitlab [\#350](https://github.com/voxpupuli/modulesync/pull/350) ([rwaffen](https://github.com/rwaffen))
+
+## [v4.3.0](https://github.com/voxpupuli/modulesync/tree/v4.3.0) (2026-07-09)
+
+[Full Changelog](https://github.com/voxpupuli/modulesync/compare/4.2.0...v4.3.0)
 
 **Implemented enhancements:**
 
