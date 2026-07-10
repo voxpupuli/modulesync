@@ -42,6 +42,12 @@ module ModuleSync
       commits.any?
     end
 
+    def branch_behind?(branch, target_branch)
+      log = repo.log(1).between(branch, "origin/#{target_branch}")
+      commits = log.respond_to?(:execute) ? log.execute : log
+      commits.any?
+    end
+
     def default_branch
       # `Git.default_branch` requires ruby-git >= 1.17.0
       return Git.default_branch(repo.dir) if Git.respond_to? :default_branch
@@ -94,6 +100,7 @@ module ModuleSync
     end
 
     def prepare_workspace(branch:, operate_offline:, rebase: false)
+      @rebased = false
       if cloned?
         puts "Overriding any local changes to repository in '#{@directory}'"
         git.fetch 'origin', prune: true unless operate_offline
@@ -111,10 +118,11 @@ module ModuleSync
     end
 
     def rebase_onto(branch)
-      return if repo.current_branch == branch
+      return false if repo.current_branch == branch || !branch_behind?(repo.current_branch, branch)
 
       puts "Rebasing #{repo.current_branch} onto origin/#{branch}"
       repo.lib.send(:command, 'rebase', "origin/#{branch}")
+      @rebased = true
     rescue Git::Error => e
       begin
         repo.lib.send(:command, 'rebase', '--abort')
@@ -122,6 +130,16 @@ module ModuleSync
         # Preserve the original rebase error if Git had no rebase to abort.
       end
       raise ModuleSync::Error, "Rebase onto origin/#{branch} failed and was aborted: #{e.message}"
+    end
+
+    def push_changes(branch, remote_branch, options)
+      refspec = remote_branch ? "#{branch}:#{remote_branch}" : branch
+      if @rebased && !options[:force]
+        repo.lib.send(:command, 'push', '--force-with-lease', 'origin', refspec)
+      else
+        opts_push = options[:force] ? { force: true } : {}
+        repo.push('origin', refspec, opts_push)
+      end
     end
 
     def default_reset_branch(branch)
@@ -173,26 +191,24 @@ module ModuleSync
       end
       begin
         opts_commit = {}
-        opts_push = {}
         opts_commit = { amend: true } if options[:amend]
-        opts_push = { force: true } if options[:force]
         if options[:pre_commit_script]
           script = "#{File.dirname(__FILE__, 3)}/contrib/#{options[:pre_commit_script]}"
           system(script, @directory)
         end
         if repo.status.changed.empty? && repo.status.added.empty? && repo.status.deleted.empty?
           puts "There were no changes in '#{@directory}'. Not committing."
-          return false
+          return false unless @rebased
         else
           repo.commit(message, opts_commit)
         end
         if options[:remote_branch]
-          if remote_branch_differ?(branch, options[:remote_branch])
-            repo.push('origin', "#{branch}:#{options[:remote_branch]}", opts_push)
+          if @rebased || remote_branch_differ?(branch, options[:remote_branch])
+            push_changes(branch, options[:remote_branch], options)
             puts "Changes have been pushed to: '#{branch}:#{options[:remote_branch]}'"
           end
         else
-          repo.push('origin', branch, opts_push)
+          push_changes(branch, nil, options)
           puts "Changes have been pushed to: '#{branch}'"
         end
       rescue Git::Error => e
