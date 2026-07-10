@@ -52,6 +52,12 @@ module ModuleSync
       %r{remotes/origin/HEAD\s+->\s+origin/(?<branch>.+?)$}.match(symbolic_ref.full)[:branch]
     end
 
+    def remote_default_branch
+      return Git.default_branch(@remote) if Git.respond_to? :default_branch
+
+      default_branch
+    end
+
     def switch(branch:)
       unless branch
         branch = default_branch
@@ -87,19 +93,35 @@ module ModuleSync
       @git = Git.clone(@remote, @directory)
     end
 
-    def prepare_workspace(branch:, operate_offline:)
+    def prepare_workspace(branch:, operate_offline:, rebase: false)
       if cloned?
         puts "Overriding any local changes to repository in '#{@directory}'"
         git.fetch 'origin', prune: true unless operate_offline
         git.reset_hard
+        rebase_target = remote_default_branch if rebase && !operate_offline
         switch(branch: branch)
         git.pull('origin', branch) if !operate_offline && remote_branch_exists?(branch)
+        rebase_onto(rebase_target) if rebase_target
       else
         raise ModuleSync::Error, 'Unable to clone in offline mode.' if operate_offline
 
         clone
         switch(branch: branch)
       end
+    end
+
+    def rebase_onto(branch)
+      return if repo.current_branch == branch
+
+      puts "Rebasing #{repo.current_branch} onto origin/#{branch}"
+      repo.lib.send(:command, 'rebase', "origin/#{branch}")
+    rescue Git::Error => e
+      begin
+        repo.lib.send(:command, 'rebase', '--abort')
+      rescue Git::Error
+        # Preserve the original rebase error if Git had no rebase to abort.
+      end
+      raise ModuleSync::Error, "Rebase onto origin/#{branch} failed and was aborted: #{e.message}"
     end
 
     def default_reset_branch(branch)

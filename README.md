@@ -281,6 +281,10 @@ msync update --noop
 msync update -m "Commit message"
 ```
 
+Use `--rebase` to update the local working branch with the latest remote default
+branch before ModuleSync changes any files. If the rebase conflicts, ModuleSync
+aborts the rebase and reports an error for that module.
+
 Available parameters for modulesync.yml
 
 * `git_base` : The default URL to git clone from (Default: 'git@github.com:')
