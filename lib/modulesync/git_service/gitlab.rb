@@ -40,8 +40,17 @@ module ModuleSync
                                              source_branch: source_branch,
                                              target_branch: target_branch)
         unless merge_requests.empty?
-          # Skip creating the MR if it exists already.
-          $stdout.puts "Skipped! #{merge_requests.length} MRs found for branch '#{source_branch}'"
+          # assumption: there should only be one MR for a given source and target branch, so we just take the first one
+          mr = merge_requests.first
+
+          if mr['title'] == title
+            $stdout.puts "Skipped! #{merge_requests.length} MRs found for branch '#{source_branch}'"
+            $stdout.puts "Skipped! Existing MR !#{mr['iid']} already has title '#{title}'"
+          else
+            @api.update_merge_request(repo_path, mr['iid'], title: title)
+            $stdout.puts "Updated title of existing MR !#{mr['iid']} to '#{title}'"
+          end
+
           return
         end
 
