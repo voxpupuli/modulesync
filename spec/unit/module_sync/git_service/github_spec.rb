@@ -54,7 +54,7 @@ describe ModuleSync::GitService::GitHub do
       expect { @it.open_pull_request(**args) }.to output(/Submitted PR/).to_stdout
     end
 
-    it 'skips submitting PR if one has already been issued' do
+    it 'updates the title if an existing PR has a different title' do
       pr = {
         'title' => 'Test title',
         'html_url' => 'https://example.com/pulls/44',
@@ -66,7 +66,28 @@ describe ModuleSync::GitService::GitHub do
               state: 'open',
               base: 'master',
               head: "#{args[:namespace]}:#{args[:source_branch]}").and_return([pr])
-      expect { @it.open_pull_request(**args) }.to output("Skipped! 1 PRs found for branch 'test'\n").to_stdout
+      expect(@client).to receive(:update_pull_request)
+        .with(args[:repo_path], pr['number'], title: args[:title])
+      expect { @it.open_pull_request(**args) }
+        .to output("Updated title of existing PR #44 to 'Test PR is submitted'\n").to_stdout
+    end
+
+    it 'skips updating an existing PR if its title is unchanged' do
+      pr = {
+        'title' => args[:title],
+        'html_url' => 'https://example.com/pulls/44',
+        'number' => '44',
+      }
+
+      expect(@client).to receive(:pull_requests)
+        .with(args[:repo_path],
+              state: 'open',
+              base: 'master',
+              head: "#{args[:namespace]}:#{args[:source_branch]}").and_return([pr])
+      expect(@client).not_to receive(:update_pull_request)
+      expect { @it.open_pull_request(**args) }
+        .to output("Skipped! 1 PRs found for branch 'test'\n" \
+                   "Skipped! Existing PR #44 already has title 'Test PR is submitted'\n").to_stdout
     end
 
     context 'when labels are set' do

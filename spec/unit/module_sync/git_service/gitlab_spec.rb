@@ -44,7 +44,7 @@ describe ModuleSync::GitService::GitLab do
       expect { @it.open_pull_request(**args) }.to output(/Submitted MR/).to_stdout
     end
 
-    it 'skips submitting MR if one has already been issued' do
+    it 'updates the title if an existing MR has a different title' do
       mr = {
         'title' => 'Test title',
         'html_url' => 'https://example.com/pulls/44',
@@ -56,8 +56,28 @@ describe ModuleSync::GitService::GitLab do
               state: 'opened',
               source_branch: args[:source_branch],
               target_branch: 'master').and_return([mr])
+      expect(@client).to receive(:update_merge_request)
+        .with(args[:repo_path], mr['iid'], title: args[:title])
+      expect { @it.open_pull_request(**args) }
+        .to output("Updated title of existing MR !44 to 'Test MR is submitted'\n").to_stdout
+    end
 
-      expect { @it.open_pull_request(**args) }.to output("Skipped! 1 MRs found for branch 'test'\n").to_stdout
+    it 'skips updating an existing MR if its title is unchanged' do
+      mr = {
+        'title' => args[:title],
+        'html_url' => 'https://example.com/pulls/44',
+        'iid' => '44',
+      }
+
+      expect(@client).to receive(:merge_requests)
+        .with(args[:repo_path],
+              state: 'opened',
+              source_branch: args[:source_branch],
+              target_branch: 'master').and_return([mr])
+      expect(@client).not_to receive(:update_merge_request)
+      expect { @it.open_pull_request(**args) }
+        .to output("Skipped! 1 MRs found for branch 'test'\n" \
+                   "Skipped! Existing MR !44 already has title 'Test MR is submitted'\n").to_stdout
     end
 
     context 'when labels are set' do

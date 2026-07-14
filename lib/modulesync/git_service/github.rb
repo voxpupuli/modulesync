@@ -41,8 +41,17 @@ module ModuleSync
                                            base: target_branch,
                                            head: head)
         unless pull_requests.empty?
-          # Skip creating the PR if it exists already.
-          $stdout.puts "Skipped! #{pull_requests.length} PRs found for branch '#{source_branch}'"
+          # assumption: there should only be one PR for a given source and target branch, so we just take the first one
+          pr = pull_requests.first
+
+          if pr['title'] == title
+            $stdout.puts "Skipped! #{pull_requests.length} PRs found for branch '#{source_branch}'"
+            $stdout.puts "Skipped! Existing PR ##{pr['number']} already has title '#{title}'"
+          else
+            @api.update_pull_request(repo_path, pr['number'], title: title)
+            $stdout.puts "Updated title of existing PR ##{pr['number']} to '#{title}'"
+          end
+
           return
         end
 
