@@ -44,28 +44,28 @@ describe ModuleSync::Repository do
     end
 
     it 'rebases the current branch onto the remote default branch' do
-      expect(git_lib).to receive(:command).with('rebase', 'origin/main')
+      expect(git_lib).to receive(:send).with(:command, 'rebase', 'origin/main')
 
       repository.rebase_onto('main')
     end
 
     it 'does not rebase the default branch onto itself' do
       allow(git).to receive(:current_branch).and_return('main')
-      expect(git_lib).not_to receive(:command)
+      expect(git_lib).not_to receive(:send)
 
       repository.rebase_onto('main')
     end
 
     it 'does not rebase a branch that already contains the remote default branch' do
       allow(log).to receive(:execute).and_return([])
-      expect(git_lib).not_to receive(:command)
+      expect(git_lib).not_to receive(:send)
 
       repository.rebase_onto('main')
     end
 
     it 'aborts and reports a failed rebase' do
-      allow(git_lib).to receive(:command).with('rebase', 'origin/main').and_raise(Git::Error, 'merge conflict')
-      expect(git_lib).to receive(:command).with('rebase', '--abort')
+      allow(git_lib).to receive(:send).with(:command, 'rebase', 'origin/main').and_raise(Git::Error, 'merge conflict')
+      expect(git_lib).to receive(:send).with(:command, 'rebase', '--abort')
 
       expect { repository.rebase_onto('main') }
         .to raise_error(ModuleSync::Error, %r{Rebase onto origin/main failed and was aborted: merge conflict})
@@ -82,7 +82,7 @@ describe ModuleSync::Repository do
       expect(git).to receive(:fetch).with('origin', prune: true).ordered
       expect(git).to receive(:reset_hard).ordered
       expect(git).to receive(:pull).with('origin', 'modulesync').ordered
-      expect(git_lib).to receive(:command).with('rebase', 'origin/main').ordered
+      expect(git_lib).to receive(:send).with(:command, 'rebase', 'origin/main').ordered
 
       repository.prepare_workspace(branch: 'modulesync', operate_offline: false, rebase: true)
     end
@@ -95,7 +95,7 @@ describe ModuleSync::Repository do
       allow(git).to receive(:branch).with('modulesync').and_return(branch)
       allow(git).to receive(:status).and_return(status)
       expect(git).not_to receive(:push)
-      expect(git_lib).not_to receive(:command)
+      expect(git_lib).not_to receive(:send)
 
       result = repository.submit_changes([], branch: 'modulesync', message: 'Update', force: false)
 
@@ -108,8 +108,8 @@ describe ModuleSync::Repository do
       repository.instance_variable_set(:@rebased, true)
       allow(git).to receive(:branch).with('modulesync').and_return(branch)
       allow(git).to receive(:status).and_return(status)
-      expect(git_lib).to receive(:command)
-        .with('push', '--force-with-lease', 'origin', 'modulesync')
+      expect(git_lib).to receive(:send)
+        .with(:command, 'push', '--force-with-lease', 'origin', 'modulesync')
 
       result = repository.submit_changes([], branch: 'modulesync', message: 'Update', force: false)
 
