@@ -2,9 +2,22 @@
 
 All notable changes to this project will be documented in this file.
 
-## [4.4.0](https://github.com/voxpupuli/modulesync/tree/4.4.0) (2026-07-09)
+## [4.5.0](https://github.com/voxpupuli/modulesync/tree/4.5.0) (2026-07-15)
 
-[Full Changelog](https://github.com/voxpupuli/modulesync/compare/v4.3.0...4.4.0)
+[Full Changelog](https://github.com/voxpupuli/modulesync/compare/v4.4.0...4.5.0)
+
+**Implemented enhancements:**
+
+- feat: update pr/mr title if needed [\#358](https://github.com/voxpupuli/modulesync/pull/358) ([rwaffen](https://github.com/rwaffen))
+- feat: add option to rebase modulesync branch with the latest changes from the origin’s default branch [\#356](https://github.com/voxpupuli/modulesync/pull/356) ([rwaffen](https://github.com/rwaffen))
+
+**Merged pull requests:**
+
+- Enhance README.md [\#298](https://github.com/voxpupuli/modulesync/pull/298) ([bastelfreak](https://github.com/bastelfreak))
+
+## [v4.4.0](https://github.com/voxpupuli/modulesync/tree/v4.4.0) (2026-07-09)
+
+[Full Changelog](https://github.com/voxpupuli/modulesync/compare/v4.3.0...v4.4.0)
 
 **Implemented enhancements:**
 
