@@ -48,7 +48,7 @@
 
 ## Usage TLDR
 
-```
+```shell
 gem install modulesync
 msync --help
 ```
@@ -91,13 +91,13 @@ You can also define these parameters in a file named `modulesync.yml` in the con
 
 ## Installing
 
-```
+```shell
 gem install modulesync
 ```
 
 For developers:
 
-```
+```shell
 gem build modulesync.gemspec
 gem install modulesync-*.gem
 ```
@@ -118,7 +118,7 @@ For sanity's sake you should commit and push these changes, but in this mode the
 Do a dry-run to see what files will be changed, added and removed.
 This clones the modules to `modules/<namespace>-<modulename>` in the current working directory, or if the modules are already cloned, does an effective
 
-```
+```shell
 git fetch origin
 git checkout master
 git reset --hard origin/master
@@ -129,7 +129,7 @@ Don't run modulesync if the current working directory contains a `modules/` dire
 The dry-run makes local changes there, but does not commit or push changes.
 It is still destructive in that it overwrites local changes.
 
-```
+```shell
 msync update --noop
 ```
 
@@ -140,7 +140,7 @@ One reason for this is because the user wants to control git commands external t
 Note, when using this command, msync assumes you have create the folder structure and git repositories correctly.
 If not, msync will fail to update correctly.
 
-```
+```shell
 msync update --offline
 ```
 
@@ -149,20 +149,20 @@ msync update --offline
 Make changes for real and push them back to master.
 This operates on the pre-cloned modules from the dry-run or clones them fresh if the modules aren't found.
 
-```
+```shell
 msync update -m "Commit message"
 ```
 
 Amend the commit if changes are needed.
 
-```
+```shell
 msync update --amend
 ```
 
 For most workflows you will need to force-push an amended commit.
 Not required for gerrit.
 
-```
+```shell
 msync update --amend --force
 ```
 
@@ -171,13 +171,13 @@ msync update --amend --force
 You can install a pre-push git hook to automatically clone, update, and push modules upon pushing changes to the configuration directory.
 This does not include a noop mode.
 
-```
+```shell
 msync hook activate
 ```
 
 If you have activated the hook but want to make changes to the configuration directory (such as changes to `managed_modules.yml` or `modulesync.yml`) without touching the modules, you can deactivate the hook.
 
-```
+```shell
 msync hook deactivate
 ```
 
@@ -185,7 +185,7 @@ msync hook deactivate
 
 You can have modulesync submit Pull Requests on GitHub or Merge Requests on GitLab automatically with the `--pr` CLI option.
 
-```
+```shell
 msync update --pr
 ```
 
@@ -229,7 +229,7 @@ It does not support automating pull requests.
 If you dry-run before doing the live update, you need to specify what namespace to clone from because the live update will not re-clone if the modules are already cloned.
 The namespace should be your fork, not the upstream module (if working on a fork).
 
-```
+```shell
 msync update -n puppetlabs --noop
 ```
 
@@ -239,7 +239,7 @@ You don't technically need to specify the namespace if the modules are already c
 You do need to specify the namespace if the modules are not pre-cloned.
 You need to specify a branch to push to if you are not pushing to master.
 
-```
+```shell
 msync update -n puppetlabs -b sync_branch -m "Commit message"
 ```
 
@@ -257,7 +257,7 @@ branch: modulesyncbranch
 
 Then you can run ModuleSync without extra arguments:
 
-```
+```shell
 msync update --noop
 msync update -m "Commit message"
 ```
@@ -317,14 +317,14 @@ pre_commit_script: openstack-commit-msg-hook.sh
 
 If you only want to sync some of the repositories in your managed_modules.yml, use the `-f` flag to filter by a regex:
 
-```
+```shell
 msync update -f augeas -m "Commit message"    # acts only on the augeas module
 msync update -f puppet-a..o "Commit message"
 ```
 
 If you want to skip syncing some of the repositories in your managed_modules.yml, use the `-x` flag to filter by a regex:
 
-```
+```shell
 msync update -x augeas -m "Commit message"    # acts on all modules except the augeas module
 msync update -x puppet-a..o "Commit message"
 ```
@@ -335,7 +335,7 @@ If no `-f` is specified, all repository are processed, if no `-x` is specified n
 
 If you want to push the modified branch to a different remote branch, you can use the -r flag:
 
-```
+```shell
 msync update -r master_new -m "Commit message"
 ```
 
@@ -345,7 +345,7 @@ If you install a git hook, you need to tell it what remote and branch to push to
 This may not work properly if you already have the modules cloned from a different remote.
 The hook will also look in modulesync.yml for default arguments.
 
-```
+```shell
 msync hook activate -n puppetlabs -b sync_branch
 ```
 
@@ -353,7 +353,7 @@ msync hook activate -n puppetlabs -b sync_branch
 
 Modulesync can optionally bump the minor version in `metadata.json` for each modified modules if you add the `--bump` flag to the command line:
 
-```
+```shell
 msync update -m "Commit message" --bump
 ```
 
@@ -361,7 +361,7 @@ msync update -m "Commit message" --bump
 
 If you wish to tag the modified repositories with the newly bumped version, you can do so by using the `--tag` flag:
 
-```
+```shell
 msync update -m "Commit message" --bump --tag
 ```
 
@@ -369,7 +369,7 @@ msync update -m "Commit message" --bump --tag
 
 You can also set the format of the tag to be used (`printf`-formatted) by setting the `tag_pattern` option:
 
-```
+```shell
 msync update -m "Commit message" --bump --tag --tag_pattern 'v%s'
 ```
 
@@ -379,7 +379,7 @@ The default for the tag pattern is `%s`.
 
 By default `msync execute` will remove bundler related env vars (^BUNDLE|^SOURCE_DATE_EPOCH$|^GEM_|RUBY), you can use `--env` flag to keep specified env vars:
 
-```
+```shell
 msync execute --env BUNDLE_PATH,BUNDLE_GEMFILE bundle exec rake lint
 ```
 
@@ -389,14 +389,13 @@ When bumping the version in `metadata.json`, modulesync can let you updating `CH
 
 This is one by using the `--changelog` flag:
 
-```
+```shell
 msync update -m "Commit message" --bump --changelog
 ```
 
 This flag will cause the `CHANGELOG.md` file to be updated with the current date, bumped (minor) version, and commit message.
 
 If `CHANGELOG.md` is absent in the repository, nothing will happen.
-
 
 #### Working with templates
 
@@ -420,16 +419,15 @@ workdir: <%= @metadata[:workdir] %>
 
 Will result in something like:
 
-```
+```yaml
 module: puppet-test
 target: modules/github-org/puppet-test/test
 workdir: modules/github-org/puppet-test
 ```
 
-The Templates
--------------
+## The Templates
 
-See [Vox Pupuli's modulesync\_config](https://github.com/voxpupuli/modulesync_config) and [Puppet's modulesync\_configs (Archived)](https://github.com/puppetlabs/modulesync_configs) repositories for different templates currently in use.
+See [Vox Pupuli's modulesync\_config](https://github.com/voxpupuli/modulesync_config) repository for templates currently in use.
 
 ## Transfer Notice
 
@@ -446,6 +444,7 @@ This gem is licensed under the Apache-2 license.
 ## Release information
 
 To make a new release, please do:
+
 * update the version in `lib/modulesync/version.rb`
 * Install gems with `bundle install --with release --path .vendor`
 * generate the changelog with `bundle exec rake changelog`
