@@ -219,8 +219,8 @@ More details for GitHub:
 
 ### Using Forks and Non-master branches
 
-The default functionality is to run ModuleSync on the puppetlabs modules, but you can use this on your own organization's modules.
-This functionality also applies if you want to work on a fork of the puppetlabs modules or work on a non-master branch of any organization's modules.
+The default functionality is to run ModuleSync on the Vox Pupuli modules, but you can use this on your own organization's modules.
+This functionality also applies if you want to work on a fork of the Vox Pupuli modules or work on a non-master branch of any organization's modules.
 ModuleSync does not support cloning from one remote and pushing to another, you are expected to fork manually.
 It does not support automating pull requests.
 
@@ -230,7 +230,7 @@ If you dry-run before doing the live update, you need to specify what namespace 
 The namespace should be your fork, not the upstream module (if working on a fork).
 
 ```shell
-msync update -n puppetlabs --noop
+msync update -n voxpupuli --noop
 ```
 
 #### Damage mode
@@ -240,12 +240,12 @@ You do need to specify the namespace if the modules are not pre-cloned.
 You need to specify a branch to push to if you are not pushing to master.
 
 ```shell
-msync update -n puppetlabs -b sync_branch -m "Commit message"
+msync update -n voxpupuli -b sync_branch -m "Commit message"
 ```
 
 #### Configuring ModuleSync defaults
 
-If you're not using the puppetlabs modules or only ever pushing to a fork of them, then specifying the namespace and branch every time you use ModuleSync probably seems excessive.
+If you're not using Vox Pupuli modules or only ever pushing to a fork of them, then specifying the namespace and branch every time you use ModuleSync probably seems excessive.
 You can create a file called modulesync.yml in the configuration directory that provides these arguments automatically.
 This file has a form such as:
 
@@ -346,7 +346,7 @@ This may not work properly if you already have the modules cloned from a differe
 The hook will also look in modulesync.yml for default arguments.
 
 ```shell
-msync hook activate -n puppetlabs -b sync_branch
+msync hook activate -n voxpupuli -b sync_branch
 ```
 
 #### Updating metadata.json
