@@ -123,7 +123,8 @@ module ModuleSync
     # but we totally skip the workspace preparation to keep the current behavior
     unless options[:offline]
       puppet_module.repository.prepare_workspace(branch: options[:branch],
-                                                 operate_offline: false)
+                                                 operate_offline: false,
+                                                 rebase: options[:rebase])
     end
 
     module_configs = Util.parse_config puppet_module.path(MODULE_CONF_FILE)

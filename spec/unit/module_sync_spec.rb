@@ -63,5 +63,12 @@ describe ModuleSync do
 
       described_class.manage_module(puppet_module, [], {})
     end
+
+    it 'requests a rebase before syncing when enabled' do
+      described_class.instance_variable_set(:@options, described_class.config_defaults.merge(rebase: true))
+      expect(repository).to receive(:prepare_workspace).with(branch: nil, operate_offline: false, rebase: true)
+
+      described_class.manage_module(puppet_module, [], {})
+    end
   end
 end

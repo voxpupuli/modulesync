@@ -114,6 +114,10 @@ module ModuleSync
              type: :boolean,
              desc: 'Do not run any Git commands. Allows the user to manage Git outside of ModuleSync.',
              default: false
+      option :rebase,
+             type: :boolean,
+             desc: 'Rebase the local branch onto the latest remote default branch before syncing.',
+             default: false
       option :bump,
              type: :boolean,
              desc: 'Bump module version to the next minor',
