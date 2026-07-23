@@ -165,10 +165,10 @@ module ModuleSync
       end
     end
 
-    def tag(version, tag_pattern)
+    def tag(version, tag_pattern, sign: false)
       tag = tag_pattern % version
       puts "Tagging with #{tag}"
-      repo.add_tag(tag)
+      repo.add_tag(tag, sign: sign)
       repo.push('origin', tag)
     end
 
@@ -176,6 +176,19 @@ module ModuleSync
       selected_branch = branch || repo.current_branch || 'master'
       repo.branch(selected_branch).checkout
       selected_branch
+    end
+
+    def commit_changes(message, options)
+      commit_options = {}
+      commit_options[:amend] = true if options[:amend]
+      commit_options[:gpg_sign] = true if options[:sign]
+      return repo.commit(message, commit_options) unless options[:signoff]
+
+      arguments = ["--message=#{message}"]
+      arguments.push('--amend', '--no-edit') if options[:amend]
+      arguments << '--gpg-sign' if options[:sign]
+      arguments << '--signoff'
+      repo.lib.send(:command, 'commit', *arguments)
     end
 
     # Git add/rm, git commit, git push
@@ -190,8 +203,6 @@ module ModuleSync
         end
       end
       begin
-        opts_commit = {}
-        opts_commit = { amend: true } if options[:amend]
         if options[:pre_commit_script]
           script = "#{File.dirname(__FILE__, 3)}/contrib/#{options[:pre_commit_script]}"
           system(script, @directory)
@@ -200,7 +211,7 @@ module ModuleSync
           puts "There were no changes in '#{@directory}'. Not committing."
           return false unless @rebased
         else
-          repo.commit(message, opts_commit)
+          commit_changes(message, options)
         end
         if options[:remote_branch]
           if @rebased || remote_branch_differ?(branch, options[:remote_branch])

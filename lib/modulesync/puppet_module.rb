@@ -25,13 +25,13 @@ module ModuleSync
       end
     end
 
-    def bump(message, changelog = false)
+    def bump(message, changelog = false, signing_options = {})
       m = Blacksmith::Modulefile.new path('metadata.json')
       new = m.bump!
       puts "Bumped to version #{new}"
       repository.git.add('metadata.json')
       update_changelog(new, message) if changelog
-      repository.git.commit("Release version #{new}")
+      repository.commit_changes("Release version #{new}", signing_options)
       repository.git.push
       new
     end

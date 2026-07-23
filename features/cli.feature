@@ -28,6 +28,11 @@ Feature: CLI
       msync clone
     """
 
+  Scenario: Update help lists commit signing options
+    When I successfully run `msync update --help`
+    Then the output should match /--sign/
+    And the output should match /--signoff/
+
   Scenario: When overriding a setting from the config file on the command line
     Given a puppet module "puppet-test" from "fakenamespace"
     And a file named "managed_modules.yml" with:

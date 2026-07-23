@@ -116,4 +116,35 @@ describe ModuleSync::Repository do
       expect(result).to be true
     end
   end
+
+  describe '#commit_changes' do
+    it 'signs the commit when requested' do
+      expect(git).to receive(:commit).with('Update', { gpg_sign: true })
+
+      repository.commit_changes('Update', sign: true, signoff: false)
+    end
+
+    it 'uses the Git signoff option when requested' do
+      expect(git_lib).to receive(:send)
+        .with(:command, 'commit', '--message=Update', '--signoff')
+
+      repository.commit_changes('Update', sign: false, signoff: true)
+    end
+
+    it 'combines amend, signing, and signoff options' do
+      expect(git_lib).to receive(:send)
+        .with(:command, 'commit', '--message=Update', '--amend', '--no-edit', '--gpg-sign', '--signoff')
+
+      repository.commit_changes('Update', amend: true, sign: true, signoff: true)
+    end
+  end
+
+  describe '#tag' do
+    it 'signs and pushes the tag when requested' do
+      expect(git).to receive(:add_tag).with('v1.2.3', sign: true)
+      expect(git).to receive(:push).with('origin', 'v1.2.3')
+
+      repository.tag('1.2.3', 'v%s', sign: true)
+    end
+  end
 end

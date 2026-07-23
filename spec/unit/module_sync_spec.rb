@@ -70,5 +70,17 @@ describe ModuleSync do
 
       described_class.manage_module(puppet_module, [], {})
     end
+
+    it 'passes signing options to a release commit and tag' do
+      options = described_class.config_defaults.merge(message: 'Update', bump: true, tag: true, sign: true, signoff: true)
+      described_class.instance_variable_set(:@options, options)
+      allow(repository).to receive(:submit_changes).and_return(true)
+      expect(puppet_module).to receive(:bump)
+        .with('Update', nil, { sign: true, signoff: true })
+        .and_return('1.2.3')
+      expect(repository).to receive(:tag).with('1.2.3', '%s', sign: true)
+
+      described_class.manage_module(puppet_module, [], {})
+    end
   end
 end

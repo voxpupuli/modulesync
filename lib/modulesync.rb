@@ -151,8 +151,9 @@ module ModuleSync
       pushed = puppet_module.repository.submit_changes(files_to_manage, options)
       # Only bump/tag if pushing didn't fail (i.e. there were changes)
       if pushed && options[:bump]
-        new = puppet_module.bump(options[:message], options[:changelog])
-        puppet_module.repository.tag(new, options[:tag_pattern]) if options[:tag]
+        signing_options = { sign: options[:sign], signoff: options[:signoff] }
+        new = puppet_module.bump(options[:message], options[:changelog], signing_options)
+        puppet_module.repository.tag(new, options[:tag_pattern], sign: options[:sign]) if options[:tag]
       end
       options[:pr] && (pushed || puppet_module.pull_request_branch_ready?) && puppet_module.open_pull_request
     end
