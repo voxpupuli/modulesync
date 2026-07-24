@@ -88,6 +88,14 @@ module ModuleSync
              type: :boolean,
              desc: 'Amend previous commit',
              default: false
+      option :sign,
+             type: :boolean,
+             desc: 'Cryptographically sign commits and tags',
+             default: false
+      option :signoff,
+             type: :boolean,
+             desc: 'Add a Signed-off-by trailer to commits',
+             default: false
       option :force,
              type: :boolean,
              desc: 'Force push amended commit',

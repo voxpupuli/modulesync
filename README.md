@@ -166,6 +166,17 @@ Not required for gerrit.
 msync update --amend --force
 ```
 
+Use `--sign` to cryptographically sign commits and tags with Git's configured signing key and backend.
+ModuleSync only passes Git's signing flags (`git commit --gpg-sign` and `git tag --sign`).
+It does not configure the signing key, format, or backend; users must configure these settings in their Git configuration.
+Use `--signoff` to add Git's `Signed-off-by` trailer.
+The options can be combined and also apply to the release commit created by `--bump`.
+When combined with `--tag`, `--sign` creates signed annotated tags using `git tag --sign`.
+
+```shell
+msync update -m "Commit message" --sign --signoff
+```
+
 #### Automating Updates
 
 You can install a pre-push git hook to automatically clone, update, and push modules upon pushing changes to the configuration directory.
@@ -363,6 +374,12 @@ If you wish to tag the modified repositories with the newly bumped version, you 
 
 ```shell
 msync update -m "Commit message" --bump --tag
+```
+
+Add `--sign` to cryptographically sign both the release commit and tag:
+
+```shell
+msync update -m "Commit message" --bump --tag --sign
 ```
 
 #### Setting the tag pattern
