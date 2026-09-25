@@ -2,9 +2,17 @@
 
 All notable changes to this project will be documented in this file.
 
-## [4.6.0](https://github.com/voxpupuli/modulesync/tree/4.6.0) (2026-07-31)
+## [4.6.1](https://github.com/voxpupuli/modulesync/tree/4.6.1) (2026-09-25)
 
-[Full Changelog](https://github.com/voxpupuli/modulesync/compare/v4.5.0...4.6.0)
+[Full Changelog](https://github.com/voxpupuli/modulesync/compare/v4.6.0...4.6.1)
+
+**Fixed bugs:**
+
+- fix: rebase existing remote branches after a fresh clone [\#376](https://github.com/voxpupuli/modulesync/pull/376) ([rwaffen](https://github.com/rwaffen))
+
+## [v4.6.0](https://github.com/voxpupuli/modulesync/tree/v4.6.0) (2026-07-31)
+
+[Full Changelog](https://github.com/voxpupuli/modulesync/compare/v4.5.0...v4.6.0)
 
 **Implemented enhancements:**
 
