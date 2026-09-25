@@ -105,16 +105,17 @@ module ModuleSync
         puts "Overriding any local changes to repository in '#{@directory}'"
         git.fetch 'origin', prune: true unless operate_offline
         git.reset_hard
-        rebase_target = remote_default_branch if rebase && !operate_offline
         switch(branch: branch)
         git.pull('origin', branch) if !operate_offline && remote_branch_exists?(branch)
-        rebase_onto(rebase_target) if rebase_target
       else
         raise ModuleSync::Error, 'Unable to clone in offline mode.' if operate_offline
 
         clone
         switch(branch: branch)
       end
+
+      rebase_target = remote_default_branch if rebase && !operate_offline
+      rebase_onto(rebase_target) if rebase_target
     end
 
     def rebase_onto(branch)

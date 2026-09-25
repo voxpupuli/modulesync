@@ -73,6 +73,50 @@ describe ModuleSync::Repository do
   end
 
   describe '#prepare_workspace' do
+    context 'with a fresh clone and an existing remote modulesync branch' do
+      before do
+        allow(Dir).to receive(:exist?).with('/tmp/example/.git').and_return(false)
+        allow(Git).to receive(:clone).with('https://github.com/example/repository.git', '/tmp/example').and_return(git)
+        allow(Git).to receive(:default_branch).with('https://github.com/example/repository.git').and_return('main')
+        allow(git).to receive(:current_branch).and_return('main', 'modulesync')
+        allow(branches).to receive(:local).and_return([])
+        allow(git).to receive(:checkout).with('origin/modulesync')
+        allow(git).to receive(:branch).with('modulesync').and_return(instance_double(Git::Branch, checkout: true))
+        allow(log).to receive(:between).with('modulesync', 'origin/main').and_return(log)
+        allow(log).to receive(:execute).and_return([instance_double(Git::Object::Commit)])
+      end
+
+      it 'rebases and pushes the existing branch even when rendering makes no file changes' do
+        allow(git).to receive(:status).and_return(instance_double(Git::Status, added: {}, changed: {}, deleted: {}))
+        expect(git).to receive(:checkout).with('origin/modulesync').ordered
+        expect(git_lib).to receive(:send).with(:command, 'rebase', 'origin/main').ordered
+        expect(git_lib).to receive(:send).with(:command, 'push', '--force-with-lease', 'origin', 'modulesync').ordered
+
+        repository.prepare_workspace(branch: 'modulesync', operate_offline: false, rebase: true)
+
+        expect(repository.submit_changes([], branch: 'modulesync', message: 'Update', force: false)).to be true
+      end
+
+      it 'does not rebase unless requested' do
+        expect(Git).not_to receive(:default_branch)
+        expect(git_lib).not_to receive(:send)
+
+        repository.prepare_workspace(branch: 'modulesync', operate_offline: false)
+      end
+    end
+
+    it 'does not rebase an existing workspace in offline mode' do
+      allow(Dir).to receive(:exist?).with('/tmp/example/.git').and_return(true)
+      allow(git).to receive(:current_branch).and_return('modulesync')
+      expect(git).to receive(:reset_hard)
+      expect(git).not_to receive(:fetch)
+      expect(git).not_to receive(:pull)
+      expect(Git).not_to receive(:default_branch)
+      expect(git_lib).not_to receive(:send)
+
+      repository.prepare_workspace(branch: 'modulesync', operate_offline: true, rebase: true)
+    end
+
     it 'fetches and rebases the selected branch onto the remote default branch when requested' do
       allow(Dir).to receive(:exist?).with('/tmp/example/.git').and_return(true)
       allow(Git).to receive(:default_branch).with('https://github.com/example/repository.git').and_return('main')
