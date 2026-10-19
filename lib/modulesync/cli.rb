@@ -199,6 +199,24 @@ module ModuleSync
       option :env,
              aliases: '-e',
              desc: 'Comma-separated list of environment variables to preserve.'
+      option :pr,
+             type: :boolean,
+             desc: 'Submit pull/merge request',
+             default: false
+      option :pr_title,
+             desc: 'Title of pull/merge request',
+             default: CLI.defaults[:pr_title] || 'Update to module through executed command'
+      option :pr_labels,
+             type: :array,
+             desc: 'Labels to add to the pull/merge request',
+             default: CLI.defaults[:pr_labels] || []
+      option :pr_target_branch,
+             desc: 'Target branch for the pull/merge request',
+             default: CLI.defaults[:pr_target_branch]
+      option :message,
+             aliases: '-m',
+             desc: 'Commit message to apply to changed modules.',
+             default: CLI.defaults[:message]
       def execute(*command_args)
         raise Thor::Error, 'COMMAND is a required argument' if command_args.empty?
 
