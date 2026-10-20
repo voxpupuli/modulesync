@@ -177,10 +177,6 @@ module ModuleSync
         \x5  `msync exec true` will run "$PWD/true", not `/bin/true` if "$PWD/true" exists.
       DESC
 
-      option :configs,
-             aliases: '-c',
-             desc: 'The local directory or remote repository to define the list of managed modules, ' \
-                   'the file templates, and the default values for template variables.'
       option :managed_modules_conf,
              desc: 'The file name to define the list of managed modules'
       option :branch,
