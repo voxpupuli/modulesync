@@ -211,8 +211,11 @@ module ModuleSync
   def self.execute(cli_options)
     @options = config_defaults.merge(cli_options)
 
+    initialized_modules = managed_modules
+    initialized_modules.each(&:git_service) if options[:pr]
+
     errors = {}
-    managed_modules.each do |puppet_module|
+    initialized_modules.each do |puppet_module|
       $stdout.puts "#{puppet_module.given_name}:"
 
       puppet_module.repository.clone unless puppet_module.repository.cloned?
@@ -237,6 +240,16 @@ module ModuleSync
 
         errors[puppet_module.given_name] = message
         warn message
+      end
+
+      if result
+        if @options[:message]
+          repo   = puppet_module.repository
+          status = repo.git.status
+          changed_files = [status.changed, status.added, status.deleted, repo.untracked_unignored_files].flat_map(&:keys).uniq
+          pushed = puppet_module.repository.submit_changes(changed_files, @options)
+        end
+        @options[:pr] && (pushed || puppet_module.pull_request_branch_ready?) && puppet_module.open_pull_request
       end
 
       $stdout.puts ''
