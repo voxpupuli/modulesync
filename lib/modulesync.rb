@@ -159,6 +159,36 @@ module ModuleSync
     end
   end
 
+  def self.execute_in_module(puppet_module, options)
+    puts "Executing in '#{puppet_module.given_name}'"
+    puppet_module.repository.prepare_workspace(branch: options[:branch], operate_offline: false, rebase: options[:rebase])
+
+    command_args = options[:command_args].dup
+    env_whitelist = (options[:env] || '').split(',').map(&:strip)
+    command_args[0] = File.expand_path command_args[0] if File.exist?(File.expand_path(command_args[0]))
+
+    # Remove bundler-related env vars to allow the subprocess to run `bundle` unless explicitly whitelisted.
+    command_env = ENV.reject { |k, _v| k.match?(/(^BUNDLE|^SOURCE_DATE_EPOCH$|^GEM_|RUBY)/) && !env_whitelist.include?(k) }
+
+    success = system(command_env, *command_args, unsetenv_others: true, chdir: puppet_module.working_directory)
+    unless success
+      message = "Command execution failed ('#{command_args.join ' '}': #{$CHILD_STATUS})"
+      raise ModuleSync::Error, message
+    end
+
+    if options[:noop]
+      puts "Using no-op. Files in '#{puppet_module.given_name}' may be changed but will not be committed."
+      changed = puppet_module.repository.show_changes(options)
+      changed && options[:pr] && puppet_module.open_pull_request
+    else
+      status = puppet_module.repository.git.status
+      changed_files = [status.changed, status.added, status.deleted, puppet_module.repository.untracked_unignored_files].flat_map(&:keys).uniq
+      pushed = puppet_module.repository.submit_changes(changed_files, options)
+
+      options[:pr] && (pushed || puppet_module.pull_request_branch_ready?) && puppet_module.open_pull_request
+    end
+  end
+
   def self.config_path(file, options)
     return file if Pathname.new(file).absolute?
 
@@ -211,45 +241,25 @@ module ModuleSync
   def self.execute(cli_options)
     @options = config_defaults.merge(cli_options)
 
-    errors = {}
-    managed_modules.each do |puppet_module|
-      $stdout.puts "#{puppet_module.given_name}:"
+    initialized_modules = managed_modules
+    initialized_modules.each(&:git_service) if options[:pr]
 
-      puppet_module.repository.clone unless puppet_module.repository.cloned?
-      if @options[:default_branch]
-        puppet_module.repository.switch branch: false
-      else
-        puppet_module.repository.switch branch: @options[:branch]
-      end
+    errors = false
+    initialized_modules.each do |puppet_module|
+      execute_in_module(puppet_module, options)
+    rescue ModuleSync::Error, Git::Error => e
+      message = e.message || 'Error during `execute`'
+      warn "#{puppet_module.given_name}: #{message}"
+      exit 1 unless options[:skip_broken]
+      errors = true
+      warn "Skipping '#{puppet_module.given_name}' as execute process failed"
+    rescue StandardError
+      raise unless options[:skip_broken]
 
-      command_args = cli_options[:command_args]
-      env_whitelist = (@options[:env] || '').split(',')
-      local_script = File.expand_path command_args[0]
-      command_args[0] = local_script if File.exist?(local_script)
-
-      # Remove bundler-related env vars to allow the subprocess to run `bundle` unless explicitly whitelisted.
-      command_env = ENV.reject { |k, _v| k.match?(/(^BUNDLE|^SOURCE_DATE_EPOCH$|^GEM_|RUBY)/) && !env_whitelist.include?(k) }
-
-      result = system command_env, *command_args, unsetenv_others: true, chdir: puppet_module.working_directory
-      unless result
-        message = "Command execution failed ('#{@options[:command_args].join ' '}': #{$CHILD_STATUS})"
-        raise Thor::Error, message if @options[:fail_fast]
-
-        errors[puppet_module.given_name] = message
-        warn message
-      end
-
-      $stdout.puts ''
+      errors = true
+      warn "Skipping '#{puppet_module.given_name}' as execute process failed"
     end
-
-    unless errors.empty?
-      raise Thor::Error, <<~MSG
-        Error(s) during `execute` command:
-        #{errors.map { |name, message| "  * #{name}: #{message}" }.join "\n"}
-      MSG
-    end
-
-    exit 1 unless errors.empty?
+    exit 1 if errors
   end
 
   def self.reset(cli_options)

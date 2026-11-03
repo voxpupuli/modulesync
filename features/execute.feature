@@ -15,40 +15,22 @@ Feature: execute
     Then the stdout should not contain "Cloning from 'file://"
 
   @no-clobber
-  Scenario: When command run fails, fail fast if option defined
-    When I run `msync exec --verbose --fail-fast -- /bin/false`
+  Scenario: When command run fails and using default skip_broken value
+    When I run `msync exec --verbose -- /bin/false`
     Then the exit status should be 1
     And the stderr should contain:
     """
-    Command execution failed
+    puppet-test: Command execution failed
     """
 
   @no-clobber
-  Scenario: When command run fails, run all and summarize errors if option fail-fast is not set
-    When I run `msync exec --verbose --no-fail-fast -- /bin/false`
+  Scenario: When command run fails and using skip_broken
+    When I run `msync exec --verbose -s -- /bin/false`
     Then the exit status should be 1
     And the stderr should contain:
     """
-    Error(s) during `execute` command:
-      *
+    Skipping 'puppet-test' as execute process failed
     """
-
-  Scenario: Show fail-fast default value in help
-    When I successfully run `msync help exec`
-    Then the stdout should contain:
-    """
-          [--fail-fast], [--no-fail-fast], [--skip-fail-fast]                 # Abort the run after a command execution failure
-                                                                              # Default: true
-    """
-
-  Scenario: Override fail-fast default value using config file
-    Given the global option "fail_fast" sets to "false"
-    When I successfully run `msync help exec`
-    Then the stdout should contain:
-    """
-    [--fail-fast], [--no-fail-fast], [--skip-fail-fast]                 # Abort the run after a command execution failure
-    """
-    # NOTE: It seems there is a Thor bug here: default value is missing in help when sets to 'false'
 
   Scenario: Show preserved bundle env var.
     Given a basic setup with a puppet module "puppet-test" from "awesome"
@@ -60,3 +42,46 @@ Feature: execute
     """
     BUNLE_PATH=/opt/msync/bundle
     """
+
+  @no-clobber
+  Scenario: Adding a new test file
+    Given a basic setup with a puppet module "puppet-test" from "fakenamespace"
+    When I successfully run `msync exec --noop -- touch test.yaml`
+    Then the output should match:
+      """
+      Files added:
+      test.yaml
+      """
+    And the puppet module "puppet-test" from "fakenamespace" should have no commits made by "Aruba"
+
+  Scenario: Modifying an existing file without commiting the change
+    Given a basic setup with a puppet module "puppet-test" from "fakenamespace"
+    And the puppet module "puppet-test" from "fakenamespace" has a file named "README.md" with:
+      """
+      Hello world!
+      """
+    When I successfully run `msync exec --noop -- sed -i "$ a some text" README.md`
+    Then the output should match:
+      """
+      Files changed:
+      +diff --git a/README.md b/README.md
+      """
+    And the output should contain:
+      """
+      some text
+      """
+    And the puppet module "puppet-test" from "fakenamespace" should have no commits made by "Aruba"
+
+  Scenario: Modifying an existing file and committing the change
+    Given a basic setup with a puppet module "puppet-test" from "fakenamespace"
+    And the puppet module "puppet-test" from "fakenamespace" has a file named "Gemfile" with:
+      """
+      source 'https://rubygems.org'
+      """
+    When I successfully run `msync exec -m "Update Gemfile" -r test -- sed -i "$ a some source" Gemfile`
+    Then the puppet module "puppet-test" from "fakenamespace" should have only 1 commit made by "Aruba"
+    And the puppet module "puppet-test" from "fakenamespace" should have 1 commit made by "Aruba" in branch "test"
+    And the puppet module "puppet-test" from "fakenamespace" should have a branch "test" with a file named "Gemfile" which contains:
+      """
+      some source
+      """

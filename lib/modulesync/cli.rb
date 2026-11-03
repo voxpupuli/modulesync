@@ -177,25 +177,67 @@ module ModuleSync
         \x5  `msync exec true` will run "$PWD/true", not `/bin/true` if "$PWD/true" exists.
       DESC
 
+      option :message,
+             aliases: '-m',
+             desc: 'Commit message to apply to changed modules.',
+             default: CLI.defaults[:message]
       option :configs,
              aliases: '-c',
              desc: 'The local directory or remote repository to define the list of managed modules, ' \
                    'the file templates, and the default values for template variables.'
       option :managed_modules_conf,
              desc: 'The file name to define the list of managed modules'
+      option :remote_branch,
+             aliases: '-r',
+             desc: 'Remote branch name to push the changes to. Defaults to the branch name.',
+             default: CLI.defaults[:remote_branch]
+      option :skip_broken,
+             type: :boolean,
+             aliases: '-s',
+             desc: 'Process remaining modules if an error is found',
+             default: false
+      option :amend,
+             type: :boolean,
+             desc: 'Amend previous commit',
+             default: false
+      option :sign,
+             type: :boolean,
+             desc: 'Cryptographically sign commits and tags',
+             default: false
+      option :signoff,
+             type: :boolean,
+             desc: 'Add a Signed-off-by trailer to commits',
+             default: false
+      option :force,
+             type: :boolean,
+             desc: 'Force push amended commit',
+             default: false
+      option :noop,
+             type: :boolean,
+             desc: 'No-op mode',
+             default: false
+      option :pr,
+             type: :boolean,
+             desc: 'Submit pull/merge request',
+             default: false
+      option :pr_title,
+             desc: 'Title of pull/merge request',
+             default: CLI.defaults[:pr_title] || 'Update to module template files'
+      option :pr_labels,
+             type: :array,
+             desc: 'Labels to add to the pull/merge request',
+             default: CLI.defaults[:pr_labels] || []
+      option :pr_target_branch,
+             desc: 'Target branch for the pull/merge request',
+             default: CLI.defaults[:pr_target_branch]
+      option :rebase,
+             type: :boolean,
+             desc: 'Rebase the local branch onto the latest remote default branch before syncing.',
+             default: false
       option :branch,
              aliases: '-b',
              desc: 'Branch name to make the changes in.',
              default: CLI.defaults[:branch]
-      option :default_branch,
-             aliases: '-B',
-             type: :boolean,
-             desc: 'Work on the default branch (take precedence over --branch).',
-             default: false
-      option :fail_fast,
-             type: :boolean,
-             desc: 'Abort the run after a command execution failure',
-             default: CLI.defaults[:fail_fast].nil? || CLI.defaults[:fail_fast]
       option :env,
              aliases: '-e',
              desc: 'Comma-separated list of environment variables to preserve.'
