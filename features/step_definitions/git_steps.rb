@@ -22,7 +22,6 @@ end
 
 Given 'a mocked git configuration' do
   steps %(
-    Given a mocked home directory
     And I run `git config --global user.name Aruba`
     And I run `git config --global user.email aruba@example.com`
   )
@@ -43,7 +42,7 @@ end
 
 Given 'the global option {string} sets to {string}' do |key, value|
   steps %(
-    Given the file "#{Aruba.config.working_directory}/modulesync.yml" appended with:
+    Given the file "#{aruba.home_directory}/modulesync.yml" appended with:
     """
     #{key}: #{value}
     """
