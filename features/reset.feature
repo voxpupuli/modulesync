@@ -10,10 +10,12 @@ Feature: reset
 
   @no-clobber
   Scenario: Reset when sourcecodes have already been cloned
-    Given the file "modules/awesome/puppet-test/metadata.json" should exist
+    Given a basic setup with a puppet module "puppet-test" from "awesome"
     And the global option "branch" sets to "modulesync"
+    And I successfully run `msync reset --verbose`
+    Given the file "modules/awesome/puppet-test/metadata.json" should exist
     When I successfully run `msync reset --verbose`
-    Then the output should not contain "Cloning from 'file://"
+    Then the output from "msync reset --verbose" should not contain "Cloning from 'file://'"
     And the output should contain "Hard-resetting any local changes to repository in 'modules/awesome/puppet-test' from branch 'origin/master'"
 
   Scenario: Reset after an upstream file addition
