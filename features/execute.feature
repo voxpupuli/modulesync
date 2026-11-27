@@ -10,12 +10,16 @@ Feature: execute
 
   @no-clobber
   Scenario: No clones before running command when sourcecode have already been cloned
+    Given a basic setup with a puppet module "puppet-test" from "awesome"
+    And I successfully run `msync exec --verbose -- /bin/true`
     Then the file "modules/awesome/puppet-test/metadata.json" should exist
     When I successfully run `msync exec --verbose /bin/true`
-    Then the stdout should not contain "Cloning from 'file://"
+    Then the stdout from "msync exec --verbose /bin/true" should not contain "Cloning from 'file://'"
 
   @no-clobber
   Scenario: When command run fails and using default skip_broken value
+    Given a basic setup with a puppet module "puppet-test" from "awesome"
+    And I successfully run `msync exec --verbose -- /bin/true`
     When I run `msync exec --verbose -- /bin/false`
     Then the exit status should be 1
     And the stderr should contain:
@@ -25,6 +29,8 @@ Feature: execute
 
   @no-clobber
   Scenario: When command run fails and using skip_broken
+    Given a basic setup with a puppet module "puppet-test" from "awesome"
+    And I successfully run `msync exec --verbose -- /bin/true`
     When I run `msync exec --verbose -s -- /bin/false`
     Then the exit status should be 1
     And the stderr should contain:
